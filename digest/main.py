@@ -238,7 +238,9 @@ def run(args) -> int:
         arch = ROOT / "archive" / run_date[:7]
         arch.mkdir(parents=True, exist_ok=True)
         (arch / f"{run_date}.md").write_text(to_markdown(digest, run_date))
-    return 1 if errors and len(errors) == len(cfg["delivery"]["channels"]) else 0
+    for ch in errors:   # visible in the Actions summary; data is still committed and published
+        print(f"::warning title=Delivery failed::{ch} delivery failed; brief was still published")
+    return 0
 
 
 def main() -> None:

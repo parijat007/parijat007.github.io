@@ -21,7 +21,7 @@ def _callmebot(msgs: list[str], pause: float) -> None:
                          params={"phone": phone, "apikey": key, "text": m}, timeout=60)
         # CallMeBot returns 200 with an HTML body; treat explicit error text as failure.
         body = r.text.lower()
-        if r.status_code != 200 or any(t in body for t in ("apikey is invalid", "invalid apikey",
+        if not 200 <= r.status_code < 300 or any(t in body for t in ("apikey is invalid", "invalid apikey",
                                                              "not activated", "error:")):
             raise RuntimeError(f"CallMeBot send failed (status {r.status_code}) on message {i + 1}")
         if i < len(msgs) - 1:
@@ -54,7 +54,12 @@ def send(blocks: list[str], cfg: dict, subject: str, dry_run: bool = False,
     """Send to every configured channel; one channel failing does not stop the others."""
     d = cfg["delivery"]
     errors = []
+    needs = {"callmebot": ["CALLMEBOT_PHONE", "CALLMEBOT_APIKEY"], "teams": ["TEAMS_WEBHOOK_URL"],
+             "telegram": ["TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"], "email": ["SMTP_USER", "SMTP_PASSWORD"]}
     for ch in d.get("channels", []):
+        if not dry_run and not all(os.environ.get(v) for v in needs.get(ch, [])):
+            log.info("skipping %s: not configured (set %s)", ch, ", ".join(needs.get(ch, [])))
+            continue
         limit = d.get(f"{ch}_max_chars", 3800) if ch != "email" else 100_000
         msgs = pack(blocks, limit)
         if ch == "teams":

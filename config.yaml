@@ -25,6 +25,7 @@ llm:
       model: openai/gpt-4.1-mini          # verify current id in the GitHub Models catalog
       label: GPT-4.1 mini (GitHub Models)
       api_key_env: [GITHUB_MODELS_TOKEN, GITHUB_TOKEN]
+      headers: {Accept: application/vnd.github+json, X-GitHub-Api-Version: "2022-11-28"}
       json: object
       max_items: 18         # free tier caps tokens per request
       max_text_chars: 220

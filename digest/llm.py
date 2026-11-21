@@ -68,6 +68,7 @@ def _openai_compat(name: str, pc: dict, system: str, user: str) -> tuple[str, di
         raise RuntimeError(f"{name}: no API key in {pc['api_key_env']}")
     if key:
         headers["Authorization"] = f"Bearer {key}"
+    headers.update(pc.get("headers", {}))
     body = {
         "model": os.environ.get(f"WF_{name.upper()}_MODEL", pc["model"]),
         "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
@@ -85,8 +86,14 @@ def _openai_compat(name: str, pc: dict, system: str, user: str) -> tuple[str, di
     r = requests.post(f"{base}/chat/completions", json=body, headers=headers,
                       timeout=pc.get("timeout_seconds", 180))
     if r.status_code >= 400:
-        raise RuntimeError(f"{name}: HTTP {r.status_code} {r.text[:200]}")
-    data = r.json()
+        raise RuntimeError(f"{name}: HTTP {r.status_code} {r.text[:300]}")
+    try:
+        data = r.json()
+    except ValueError:
+        raise RuntimeError(f"{name}: non-JSON response HTTP {r.status_code} "
+                           f"content-type={r.headers.get('content-type')} body={r.text[:300]!r}") from None
+    if not data.get("choices"):
+        raise RuntimeError(f"{name}: no choices in response: {str(data)[:300]}")
     text = THINK_RE.sub("", data["choices"][0]["message"].get("content") or "")
     return text, data.get("usage", {})
 
