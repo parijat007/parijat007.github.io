@@ -247,3 +247,31 @@ h3.sub + .creds + h3.sub { margin-top: 1.4rem; }
 .wfix { margin-top: .45rem; font-size: .9rem; max-width: 62ch; }
 .wfix summary { cursor: pointer; color: var(--tooling); width: max-content; }
 .wfix p { margin: .4rem 0; }
+
+/* Analyst notes */
+.note { max-width: 860px; }
+.note .page-head h1 { max-width: 30ch; }
+.note-teaser { font-weight: 700; font-size: 1.2rem; line-height: 1.3; margin: .2rem 0 .6rem; font-variation-settings: "wdth" 108; max-width: 50ch; }
+.claims { margin: 1.5rem 0 2rem; }
+.claims h2, .note-sources h2 { font-size: 1.05rem; font-weight: 600; margin: 0 0 .75rem; }
+.claims ul { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--rule); }
+.claim { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: .1rem 1rem; padding: .7rem 0; border-bottom: 1px solid var(--rule); }
+.claim .state { grid-row: span 2; font-size: .8rem; font-weight: 600; padding: .15rem .5rem; border-radius: var(--radius-s); align-self: start; width: max-content; }
+.claim.confirmed .state { background: rgba(43, 195, 176, .14); color: var(--tooling); }
+.claim.reported .state { background: rgba(255, 176, 32, .14); color: var(--deadline); }
+.claim.refuted .state { background: var(--panel-2); color: var(--muted); }
+.claim .muted { font-size: .9rem; }
+.note-body { max-width: 72ch; }
+.note-body h2 { font-variation-settings: var(--wide); font-size: 1.3rem; margin: 2.25rem 0 .6rem; }
+.note-body table { width: 100%; border-collapse: collapse; font-size: .92rem; margin: 1rem 0 1.25rem; display: block; overflow-x: auto; }
+.note-body th { text-align: left; color: var(--muted); font-weight: 600; font-size: .84rem; border-bottom: 1px solid var(--rule); padding: .5rem .6rem; }
+.note-body td { border-bottom: 1px solid var(--rule); padding: .55rem .6rem; vertical-align: top; }
+.note-body pre { background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius-m); padding: 1rem; overflow-x: auto; font-size: .84rem; line-height: 1.5; }
+.note-body code { background: var(--panel-2); padding: .05rem .3rem; border-radius: 3px; }
+.note-body pre code { background: none; padding: 0; }
+.note-body li { margin: .3rem 0; }
+.note-sources { margin-top: 2.5rem; max-width: 72ch; }
+.note-sources li { margin: .35rem 0; }
+@media (max-width: 900px) { .claim { grid-template-columns: 1fr; } .claim .state { grid-row: auto; } }
+
+.page-head h1 { line-height: 1.12; }

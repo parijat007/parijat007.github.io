@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{{ n.title }} — {{ p.brand }}{% endblock %}
+{% block desc %}{{ n.summary }}{% endblock %}
+{% block main %}
+<article class="note">
+  <header class="page-head">
+    <p class="hero-date">Analyst note, {{ n.date | longdate }}{% if n.updated %} · updated {{ n.updated | longdate }}{% endif %} · TLP:{{ n.tlp }}</p>
+    <h1>{{ n.title }}</h1>
+    <p class="lede">{{ n.summary }}</p>
+    {% if n.tags %}<ul class="tags">{% for t in n.tags %}<li class="tag">{{ t }}</li>{% endfor %}</ul>{% endif %}
+  </header>
+  {% if n.status %}
+  <section class="claims" aria-labelledby="claims-h">
+    <h2 id="claims-h">What is confirmed</h2>
+    <ul>{% for s in n.status %}<li class="claim {{ s.state }}"><span class="state">{{ {"confirmed": "Confirmed", "reported": "Reported", "refuted": "Not supported"}[s.state] }}</span><b>{{ s.claim }}</b><span class="muted">{{ s.note }}</span></li>{% endfor %}</ul>
+  </section>
+  {% endif %}
+  <div class="prose note-body">{{ n.html }}</div>
+  {% if n.sources %}
+  <section class="note-sources" aria-labelledby="src-h">
+    <h2 id="src-h">Sources</h2>
+    <ol>{% for s in n.sources %}<li><a href="{{ s.url | safe_url }}" rel="noopener nofollow">{{ s.title }}</a></li>{% endfor %}</ol>
+  </section>
+  {% endif %}
+  <p class="report"><a href="{{ p.repo_url }}/issues/new?title={{ ('Correction: ' ~ n.slug) | urlencode }}&labels=correction">Report an error in this note</a></p>
+</article>
+{% endblock %}

@@ -19,6 +19,7 @@ from urllib.parse import urlparse
 from xml.sax.saxutils import escape
 
 import yaml
+from markdown_it import MarkdownIt
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from markupsafe import Markup
 
@@ -117,6 +118,26 @@ def rss(briefs: list[dict], p: dict, base: str) -> str:
             f"<description>Daily source-checked threat brief</description>{''.join(items)}</channel></rss>")
 
 
+MD = MarkdownIt("commonmark", {"html": False, "linkify": False}).enable("table")   # raw HTML in notes is escaped
+
+
+def load_notes() -> list[dict]:
+    """data/notes/*.md with YAML front matter -> dicts with rendered, escaped HTML."""
+    notes = []
+    for f in sorted((DATA / "notes").glob("*.md")) if (DATA / "notes").exists() else []:
+        raw = f.read_text()
+        if not raw.startswith("---"):
+            continue
+        _, front, body = raw.split("---", 2)
+        meta = yaml.safe_load(front) or {}
+        meta["date"] = str(meta.get("date", f.stem[:10]))
+        if meta.get("updated"):
+            meta["updated"] = str(meta["updated"])
+        meta.update(slug=f.stem, html=Markup(MD.render(body)), tags=meta.get("tags", []), tlp=meta.get("tlp", "CLEAR"))
+        notes.append(meta)
+    return sorted(notes, key=lambda n: n["date"], reverse=True)
+
+
 def build(out: Path) -> None:
     p = yaml.safe_load((SITE / "profile.yaml").read_text())
     sys.path.insert(0, str(ROOT))
@@ -148,7 +169,7 @@ def build(out: Path) -> None:
           "sameAs": [l["url"] for l in p.get("links", []) if l["url"].startswith("http") and "[" not in l["url"]],
           "knowsAbout": [n["title"] for n in p.get("niches", [])]}
     page("home.html", "", "", brief=today, watch=watch, cells=cells, watch_due_soon=due_soon,
-         brief_count=len(briefs), person_ld=Markup(json.dumps(ld).replace("</", "<\\/")))
+         brief_count=len(briefs), latest_note=(load_notes() or [None])[0], person_ld=Markup(json.dumps(ld).replace("</", "<\\/")))
     page("today.html", "today/", "today/", brief=today, watch=watch, cells=cells, watch_due_soon=due_soon)
     for b in briefs:
         page("brief.html", f"brief/{b['run_date']}/", "archive/", brief=b)
@@ -157,6 +178,10 @@ def build(out: Path) -> None:
     health = json.loads((DATA / "sources.json").read_text()) if (DATA / "sources.json").exists() else {}
     page("method.html", "method/", "method/", sources=cfg["sources"]["apis"] + cfg["sources"]["feeds"],
          health={k: v.get("status", "–") if isinstance(v, dict) else v for k, v in health.get("status", {}).items()})
+    notes = load_notes()
+    page("notes.html", "notes/", "notes/", notes=notes)
+    for n in notes:
+        page("note.html", f"notes/{n['slug']}/", "notes/", n=n)
     page("404.html", "", "")
 
     (out / "api").mkdir()

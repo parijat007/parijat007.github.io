@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Analyst notes — {{ p.brand }}{% endblock %}
+{% block main %}
+<section class="page-head"><h1>Analyst notes</h1><p class="lede">Longer write-ups on incidents that matter to defenders: what is confirmed, what is only claimed, and how to hunt for it. Written by {{ p.name }}.</p></section>
+{% if notes %}<ul class="archive">
+{% for n in notes %}<li><time datetime="{{ n.date }}">{{ n.date | longdate }}</time><a href="{{ root }}notes/{{ n.slug }}/">{{ n.title }}</a><span class="count">{{ n.tags[:2] | join(", ") }}</span></li>{% endfor %}
+</ul>{% else %}<p class="empty">No notes yet.</p>{% endif %}
+{% endblock %}

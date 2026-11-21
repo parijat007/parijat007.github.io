@@ -227,3 +227,22 @@ def test_headline_cannot_overclaim_exploitation():
     out, problems = validate(d, items, {"Cisco PSIRT": "vendor"})
     assert "xploited" not in out["items"][0]["headline"]
     assert any("toned down" in p for p in problems)
+
+
+def test_notes_render_and_escape_raw_html(tmp_path, monkeypatch):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("site_build2", HERE.parent / "site" / "build.py")
+    sb = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(sb)
+    notes = tmp_path / "data" / "notes"
+    notes.mkdir(parents=True)
+    (notes / "2026-11-21-test.md").write_text(
+        "---\ntitle: Test note\ndate: 2026-11-21\nsummary: s\nstatus:\n  - {claim: c, state: reported, note: n}\n"
+        "sources:\n  - {title: bad, url: 'javascript:alert(1)'}\n---\n\n## Heading\n\n<script>alert(1)</script>\n\n| a | b |\n|---|---|\n| 1 | 2 |\n")
+    monkeypatch.setattr(sb, "DATA", tmp_path / "data")
+    out = tmp_path / "_site"
+    sb.build(out)
+    html = (out / "notes" / "2026-11-21-test" / "index.html").read_text()
+    assert "<script>alert(1)" not in html and "&lt;script&gt;" in html
+    assert "<table>" in html and 'href="javascript:' not in html
+    assert "Test note" in (out / "notes" / "index.html").read_text()

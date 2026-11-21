@@ -43,6 +43,17 @@
   </div>
 </section>
 
+{% if latest_note %}
+<section class="block two" aria-labelledby="note-h">
+  <h2 id="note-h">Latest analyst note</h2>
+  <div>
+    <p class="live-date">{{ latest_note.date | longdate }}</p>
+    <p class="note-teaser"><a class="plain" href="{{ root }}notes/{{ latest_note.slug }}/">{{ latest_note.title }}</a></p>
+    <p class="prose">{{ latest_note.summary }}</p>
+    <p><a href="{{ root }}notes/">All analyst notes</a></p>
+  </div>
+</section>
+{% endif %}
 <section class="block two" aria-labelledby="exp-h">
   <h2 id="exp-h">Experience</h2>
   <div class="exp">
