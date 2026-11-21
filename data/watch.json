@@ -1,0 +1,924 @@
+{
+ "updated": "2026-11-21T18:44:12+00:00",
+ "sources": {
+  "CISA KEV": "ok",
+  "GitHub Advisory": "ok",
+  "CISA Advisories": "ok (1)",
+  "Microsoft MSRC": "ok (2)",
+  "Palo Alto PSIRT": "ok (2)",
+  "Fortinet PSIRT": "ok (1)",
+  "Cisco PSIRT": "ok (3)",
+  "AWS Security Bulletins": "ok (0)"
+ },
+ "entries": [
+  {
+   "id": "CVE-2026-129448",
+   "kind": "KEV",
+   "title": "Apache Roller Deserialization of Untrusted Data Vulnerability",
+   "summary": "Apache Roller contains a deserialization of untrusted data vulnerability that allows an unauthenticated remote attacker to execute arbitrary code via the XML-RPC endpoint, which accepts and deserializes vendor extension types before authentication. This CVE covers the same underl",
+   "source": "CISA KEV",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-129448",
+   "published": "2026-11-20",
+   "cves": [
+    "CVE-2026-129448"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0546,
+    "percentile": 0.929
+   },
+   "poc": 3,
+   "kev_due": "2026-11-23",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discon",
+   "fix": {
+    "weakness": "Unsafe deserialization",
+    "compensating_controls": [
+     "Block or filter untrusted network access to the affected endpoint (WAF rule or network ACL)",
+     "Run the service with least privilege and no outbound internet access where possible"
+    ],
+    "verify": "Hunt for unexpected child processes spawned by the application server process"
+   }
+  },
+  {
+   "id": "CVE-2026-123890",
+   "kind": "KEV",
+   "title": "VMWare vCenter Authentication Bypass Using an Alternate Path or Channel Vulnerability",
+   "summary": "Broadcom VMware vCenter contains an authentication bypass using an alternate path or channel vulnerability in the VMware Directory Service that allows an unauthenticated attacker with network access to vCenter to bypass authentication and gain unauthorized access to the system.",
+   "source": "CISA KEV",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-123890",
+   "published": "2026-11-20",
+   "cves": [
+    "CVE-2026-123890"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0299,
+    "percentile": 0.876
+   },
+   "poc": 6,
+   "kev_due": "2026-11-23",
+   "ransomware": "Unknown",
+   "stack_match": [
+    "VMware"
+   ],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discon",
+   "fix": {
+    "weakness": "Authentication bypass",
+    "compensating_controls": [
+     "Restrict management and admin interfaces to a dedicated admin network or VPN; block them from the internet",
+     "Require phishing-resistant MFA for administrative access where the product supports it",
+     "Rotate admin credentials and API keys, and remove unknown admin accounts"
+    ],
+    "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event"
+   }
+  },
+  {
+   "id": "CVE-2025-42884",
+   "kind": "KEV",
+   "title": "SAP NetWeaver Improper Neutralization of Special Elements in Data Query Logic Vulnerability",
+   "summary": "SAP NetWeaver Enterprise Portal contains an improper neutralization of special elements in data query logic vulnerability that allows an unauthenticated attacker to disclose or modify server information via injected JNDI environment properties or a URL used during JNDI lookup ope",
+   "source": "CISA KEV",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-42884",
+   "published": "2026-11-20",
+   "cves": [
+    "CVE-2025-42884"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0071,
+    "percentile": 0.546
+   },
+   "poc": 0,
+   "kev_due": "2026-11-23",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discon",
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
+  {
+   "id": "CVE-2026-76466",
+   "kind": "KEV",
+   "title": "Cisco Expressway Series Use of Hard-coded Credentials Vulnerability",
+   "summary": "Cisco Expressway Series contains a use of hard-coded credentials vulnerability that allows an unauthenticated, remote attacker with persistent cookies and network access to execute commands as root on a clustered device via the database service.",
+   "source": "CISA KEV",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-76466",
+   "published": "2026-11-20",
+   "cves": [
+    "CVE-2026-76466"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0219,
+    "percentile": 0.829
+   },
+   "poc": 1,
+   "kev_due": "2026-11-23",
+   "ransomware": "Unknown",
+   "stack_match": [
+    "Cisco"
+   ],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discon",
+   "fix": {
+    "weakness": "Hard-coded credentials",
+    "compensating_controls": [
+     "Restrict the device's management interface to an admin network; check for new admin accounts and config changes",
+     "Restrict network access to the affected service to known management hosts",
+     "Change any credentials the vendor allows you to change and monitor for logins by built-in accounts"
+    ],
+    "verify": "Search authentication logs for logins by built-in or service accounts from unexpected sources"
+   }
+  },
+  {
+   "id": "GHSA-4hrh-34w3-5ww8",
+   "kind": "GHSA",
+   "title": "Fabio: Access-control bypass through unnormalized request paths",
+   "summary": "Packages: go:github.com/fabiolb/fabio. ## Summary Route selection uses the raw un-normalized request path, and the per-route ACL and basic-auth gates hang off that selection, so a dot-segment, encoded-dot, or double-slash variant of a protected path selects a different route, ski",
+   "source": "GitHub Advisory",
+   "url": "https://github.com/advisories/GHSA-4hrh-34w3-5ww8",
+   "published": "2026-11-20T14:51:25Z",
+   "cves": [
+    "CVE-2026-104099"
+   ],
+   "cvss": 9.1,
+   "epss": {
+    "score": 0.0057,
+    "percentile": 0.48
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Authentication bypass",
+    "compensating_controls": [
+     "Restrict management and admin interfaces to a dedicated admin network or VPN; block them from the internet",
+     "Require phishing-resistant MFA for administrative access where the product supports it",
+     "Rotate admin credentials and API keys, and remove unknown admin accounts"
+    ],
+    "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event"
+   }
+  },
+  {
+   "id": "GHSA-mc8w-wjhw-45x5",
+   "kind": "GHSA",
+   "title": "Etherpad: Pre-auth arbitrary file read",
+   "summary": "Packages: npm:ep_etherpad-lite. ### Summary An unauthenticated path‑traversal / arbitrary file read vulnerability in Etherpad's /static/* handler allows any remote, unauthenticated user to read any file on the server's filesystem (e.g. GET /static/plugins/ep_etherpad-lite/static/",
+   "source": "GitHub Advisory",
+   "url": "https://github.com/advisories/GHSA-mc8w-wjhw-45x5",
+   "published": "2026-11-20T00:23:45Z",
+   "cves": [
+    "CVE-2026-114516"
+   ],
+   "cvss": 9.8,
+   "epss": {
+    "score": 0.0116,
+    "percentile": 0.68
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [
+    "npm"
+   ],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Path traversal",
+    "compensating_controls": [
+     "Block requests containing traversal sequences at the WAF or reverse proxy",
+     "Restrict the service account's file system permissions"
+    ],
+    "verify": "Search web logs for '../' and encoded variants against the affected paths"
+   }
+  },
+  {
+   "id": "GHSA-wj7x-58c2-5793",
+   "kind": "GHSA",
+   "title": "Daptin: Broken Access Control (IDOR) in the generic YJS collaboration endpoint",
+   "summary": "Packages: go:github.com/daptin/daptin. ### Summary Daptin registers a generic WebSocket endpoint, `GET /yjs/:documentName`, for real-time collaborative document editing (YJS/CRDT). Unlike its purpose-built sibling route, this generic endpoint performs no per-resource authorizatio",
+   "source": "GitHub Advisory",
+   "url": "https://github.com/advisories/GHSA-wj7x-58c2-5793",
+   "published": "2026-11-20T00:14:14Z",
+   "cves": [
+    "CVE-2026-77369"
+   ],
+   "cvss": 9.6,
+   "epss": {
+    "score": 0.004,
+    "percentile": 0.347
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Authentication bypass",
+    "compensating_controls": [
+     "Restrict management and admin interfaces to a dedicated admin network or VPN; block them from the internet",
+     "Require phishing-resistant MFA for administrative access where the product supports it",
+     "Rotate admin credentials and API keys, and remove unknown admin accounts"
+    ],
+    "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event"
+   }
+  },
+  {
+   "id": "GHSA-hq2p-f2vj-v3cm",
+   "kind": "GHSA",
+   "title": "Daptin: Unauthenticated SQL Injection via the `sort` query parameter on every entity list endpoint",
+   "summary": "Packages: go:github.com/daptin/daptin. ### Summary An unauthenticated attacker can inject arbitrary SQL through the `sort` query parameter accepted by Daptin's generic entity list endpoint (`GET /api/ `), which every table in a Daptin instance exposes. The parameter is concatenat",
+   "source": "GitHub Advisory",
+   "url": "https://github.com/advisories/GHSA-hq2p-f2vj-v3cm",
+   "published": "2026-11-20T00:13:19Z",
+   "cves": [
+    "CVE-2026-77367"
+   ],
+   "cvss": 9.4,
+   "epss": {
+    "score": 0.006,
+    "percentile": 0.498
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "SQL injection",
+    "compensating_controls": [
+     "Apply WAF rules for SQL injection on the affected application paths",
+     "Use a least-privilege database account for the application"
+    ],
+    "verify": "Review web logs for SQL syntax in parameters and database logs for errors from the application account"
+   }
+  },
+  {
+   "id": "GHSA-9x8x-crjq-g64h",
+   "kind": "GHSA",
+   "title": "Jupyter MCP Server: Browser DNS rebinding can hijack the Jupyter backend through management routes",
+   "summary": "Packages: pip:jupyter-mcp-server. Standalone `streamable-http` mode in `datalayer/jupyter-mcp-server` rejects forged `Host` and `Origin` headers on `/mcp`, but custom management routes mounted on the same application do not get the same browser-origin protection. A malicious webs",
+   "source": "GitHub Advisory",
+   "url": "https://github.com/advisories/GHSA-9x8x-crjq-g64h",
+   "published": "2026-11-20T00:12:51Z",
+   "cves": [
+    "CVE-2026-77359"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.005,
+    "percentile": 0.439
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
+  {
+   "id": "GHSA-p34x-fmph-9fjx",
+   "kind": "GHSA",
+   "title": "Flyto2 Core: Arbitrary file write via unguarded data.*/file.* modules (incomplete fix of CVE-2026-67429)",
+   "summary": "Packages: pip:flyto-core. # [CRITICAL] Arbitrary file write via unguarded `data.*` / `file.*` write modules — incomplete fix of GHSA-2956 - **CWE:** CWE-22 (Path Traversal) / CWE-73 (External Control of File Name or Path); impact reaches CWE-94 (code execution via file overwrite)",
+   "source": "GitHub Advisory",
+   "url": "https://github.com/advisories/GHSA-p34x-fmph-9fjx",
+   "published": "2026-11-20T00:09:02Z",
+   "cves": [
+    "CVE-2026-77312"
+   ],
+   "cvss": 10.0,
+   "epss": {
+    "score": 0.0075,
+    "percentile": 0.558
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Path traversal",
+    "compensating_controls": [
+     "Block requests containing traversal sequences at the WAF or reverse proxy",
+     "Restrict the service account's file system permissions"
+    ],
+    "verify": "Search web logs for '../' and encoded variants against the affected paths"
+   }
+  },
+  {
+   "id": "GHSA-p32v-8v8j-j534",
+   "kind": "GHSA",
+   "title": "Refitter allows arbitrary code execution through unescaped OpenAPI content-type values",
+   "summary": "Packages: nuget:Refitter. ### Summary Refitter emits the spec's content-type key (content map key in requestBody/responses) verbatim into a Refit `[Headers(\"Accept: \", \"Content-Type: \")]` attribute string without escaping `\"`. A crafted value survives Refitter's default OpenAPI v",
+   "source": "GitHub Advisory",
+   "url": "https://github.com/advisories/GHSA-p32v-8v8j-j534",
+   "published": "2026-11-20T00:06:52Z",
+   "cves": [
+    "CVE-2026-63344"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0057,
+    "percentile": 0.479
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode",
+     "Run the service as a non-privileged user and restrict outbound connections"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
+   }
+  },
+  {
+   "id": "GHSA-58x9-vjvp-6mx8",
+   "kind": "GHSA",
+   "title": "Refitter allows code execution through unescaped OpenAPI header parameter names",
+   "summary": "Packages: nuget:Refitter. ### Summary Refitter emits the spec's header parameter name (parameters[].name with in: header) verbatim into a Refit `[Header(\" \")]` attribute string without escaping `\"`. A crafted value survives Refitter's default OpenAPI validation, breaks out of the",
+   "source": "GitHub Advisory",
+   "url": "https://github.com/advisories/GHSA-58x9-vjvp-6mx8",
+   "published": "2026-11-20T00:06:28Z",
+   "cves": [
+    "CVE-2026-63346"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0057,
+    "percentile": 0.479
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode",
+     "Run the service as a non-privileged user and restrict outbound connections"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
+   }
+  },
+  {
+   "id": "GHSA-3fhm-p725-h3g3",
+   "kind": "GHSA",
+   "title": "Refitter allows arbitrary code execution through unescaped OpenAPI paths",
+   "summary": "Packages: nuget:Refitter. ### Summary Refitter emits each OpenAPI path (the paths-object key) verbatim into a Refit `[Get(\" \")]` attribute string, without escaping `\"` or restricting characters. A crafted single-line, /-prefixed path survives Refitter's default OpenAPI validation",
+   "source": "GitHub Advisory",
+   "url": "https://github.com/advisories/GHSA-3fhm-p725-h3g3",
+   "published": "2026-11-20T00:06:04Z",
+   "cves": [
+    "CVE-2026-63345"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0057,
+    "percentile": 0.479
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode",
+     "Run the service as a non-privileged user and restrict outbound connections"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
+   }
+  },
+  {
+   "id": "GHSA-x8q7-6c7m-52gw",
+   "kind": "GHSA",
+   "title": "NLTK incomplete fix: additional JVM/JAR sandbox bypass through unvalidated launcher tokens in java() command arguments",
+   "summary": "Packages: pip:nltk. ## Summary NLTK 3.10.3 contains security hardening intended to close JVM argument-injection and untrusted JAR/classpath execution paths in `nltk.internals.java()`, including the issue published as GHSA-m4rf-3fr8-xwx3. The patched `options` channel correctly re",
+   "source": "GitHub Advisory",
+   "url": "https://github.com/advisories/GHSA-x8q7-6c7m-52gw",
+   "published": "2026-11-19T23:55:54Z",
+   "cves": [
+    "CVE-2026-128138"
+   ],
+   "cvss": 9.8,
+   "epss": {
+    "score": 0.0068,
+    "percentile": 0.535
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode",
+     "Run the service as a non-privileged user and restrict outbound connections"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
+   }
+  },
+  {
+   "id": "GHSA-833v-v58w-294h",
+   "kind": "GHSA",
+   "title": "Todoist MCP Server: Browser DNS rebinding lets websites write and delete Todoist data through local MCP server",
+   "summary": "Packages: npm:@doist/todoist-mcp. The self-hosted `todoist-mcp-http` server accepts browser-origin MCP requests with attacker-controlled `Host` and `Origin` headers. A malicious website can use DNS rebinding to route its own origin to a victim's local `127.0.0.1` MCP server, then",
+   "source": "GitHub Advisory",
+   "url": "https://github.com/advisories/GHSA-833v-v58w-294h",
+   "published": "2026-11-19T20:38:35Z",
+   "cves": [
+    "CVE-2026-76807"
+   ],
+   "cvss": 9.3,
+   "epss": {
+    "score": 0.0022,
+    "percentile": 0.12
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [
+    "npm"
+   ],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
+  {
+   "id": "GHSA-q8v2-3j4h-xg2p",
+   "kind": "GHSA",
+   "title": "Jane: Instantiation RCE via query parameter name -> raw PHPDoc */ breakout (jane-php/open-api-3)",
+   "summary": "Packages: composer:jane-php/open-api-3. ### Summary jane-php (open-api-3) builds PHP via nikic/php-parser (AST), so string literals are escaped -- but PHPDoc comment text is emitted RAW. The generated Client/Endpoint method docblocks embed the query parameter name verbatim in a `",
+   "source": "GitHub Advisory",
+   "url": "https://github.com/advisories/GHSA-q8v2-3j4h-xg2p",
+   "published": "2026-11-19T16:18:45Z",
+   "cves": [
+    "CVE-2026-63412"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0051,
+    "percentile": 0.441
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode",
+     "Run the service as a non-privileged user and restrict outbound connections"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
+   }
+  },
+  {
+   "id": "GHSA-x9xr-53qx-9qcf",
+   "kind": "GHSA",
+   "title": "Jane: Instantiation RCE via header parameter name -> raw PHPDoc */ breakout (jane-php/open-api-3)",
+   "summary": "Packages: composer:jane-php/open-api-3. ### Summary jane-php (open-api-3) builds PHP via nikic/php-parser (AST), so string literals are escaped -- but PHPDoc comment text is emitted RAW. The generated Client/Endpoint method docblocks embed the header parameter name verbatim in a ",
+   "source": "GitHub Advisory",
+   "url": "https://github.com/advisories/GHSA-x9xr-53qx-9qcf",
+   "published": "2026-11-19T16:12:22Z",
+   "cves": [
+    "CVE-2026-63413"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0047,
+    "percentile": 0.413
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode",
+     "Run the service as a non-privileged user and restrict outbound connections"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
+   }
+  },
+  {
+   "id": "GHSA-xwcw-j52r-34x4",
+   "kind": "GHSA",
+   "title": "Jane: Instantiation RCE via parameter description -> raw PHPDoc */ breakout (jane-php/open-api-3)",
+   "summary": "Packages: composer:jane-php/open-api-3. ### Summary jane-php (open-api-3) builds PHP via nikic/php-parser (AST), so string literals are escaped -- but PHPDoc comment text is emitted RAW. The generated Client/Endpoint method docblocks embed the parameter description verbatim in a ",
+   "source": "GitHub Advisory",
+   "url": "https://github.com/advisories/GHSA-xwcw-j52r-34x4",
+   "published": "2026-11-19T16:12:11Z",
+   "cves": [
+    "CVE-2026-63411"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0047,
+    "percentile": 0.413
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode",
+     "Run the service as a non-privileged user and restrict outbound connections"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
+   }
+  },
+  {
+   "id": "GHSA-8fh7-7q4q-cq52",
+   "kind": "GHSA",
+   "title": "Miren Runtime: Authentication bypass in RPC layer: unverified TLS client certificates grant cluster superuser access",
+   "summary": "Packages: go:miren.dev/runtime. ### Summary The Miren Runtime RPC server (QUIC/HTTP3, default port `:8443`) requested TLS client certificates but never verified that a presented certificate chained to the cluster Certificate Authority. Because a client-certificate identity is gra",
+   "source": "GitHub Advisory",
+   "url": "https://github.com/advisories/GHSA-8fh7-7q4q-cq52",
+   "published": "2026-11-19T00:45:46Z",
+   "cves": [
+    "CVE-2026-75521"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0029,
+    "percentile": 0.214
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Authentication bypass",
+    "compensating_controls": [
+     "Restrict management and admin interfaces to a dedicated admin network or VPN; block them from the internet",
+     "Require phishing-resistant MFA for administrative access where the product supports it",
+     "Rotate admin credentials and API keys, and remove unknown admin accounts"
+    ],
+    "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event"
+   }
+  },
+  {
+   "id": "/node/25833",
+   "kind": "ADVISORY",
+   "title": "CISA Adds Four Known Exploited Vulnerabilities to Catalog",
+   "summary": "CISA has added four new vulnerabilities to its Known Exploited Vulnerabilities (KEV) Catalog , based on evidence of active exploitation. CVE-2025-42884 SAP NetWeaver Improper Neutralization of Special Elements in Data Query Logic Vulnerability CVE-2026-76466 Cisco Expressway Seri",
+   "source": "CISA Advisories",
+   "url": "https://www.cisa.gov/news-events/alerts/2026/11/20/cisa-adds-four-known-exploited-vulnerabilities-catalog",
+   "published": "2026-11-20T12:00:00+00:00",
+   "cves": [
+    "CVE-2025-42884",
+    "CVE-2026-123890",
+    "CVE-2026-129448",
+    "CVE-2026-76466"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0546,
+    "percentile": 0.929
+   },
+   "poc": 6,
+   "kev_due": "2026-11-23",
+   "ransomware": "Unknown",
+   "stack_match": [
+    "Cisco",
+    "VMware"
+   ],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Authentication bypass",
+    "compensating_controls": [
+     "Restrict management and admin interfaces to a dedicated admin network or VPN; block them from the internet",
+     "Require phishing-resistant MFA for administrative access where the product supports it",
+     "Rotate admin credentials and API keys, and remove unknown admin accounts"
+    ],
+    "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event"
+   }
+  },
+  {
+   "id": "CVE-2024-7532",
+   "kind": "ADVISORY",
+   "title": "Chromium: CVE-2024-7533 Use after free in Sharing",
+   "summary": "Information published.",
+   "source": "Microsoft MSRC",
+   "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-7532",
+   "published": "2026-11-20T09:06:50+00:00",
+   "cves": [
+    "CVE-2024-7533"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0071,
+    "percentile": 0.546
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
+  {
+   "id": "CVE-2023-1531",
+   "kind": "ADVISORY",
+   "title": "Chromium: CVE-2023-1531 Use after free in ANGLE",
+   "summary": "Information published.",
+   "source": "Microsoft MSRC",
+   "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2023-1531",
+   "published": "2026-11-20T09:05:37+00:00",
+   "cves": [
+    "CVE-2023-1531"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0321,
+    "percentile": 0.885
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
+  {
+   "id": "https://security.paloaltonetworks.com/CVE-2026-123633",
+   "kind": "ADVISORY",
+   "title": "CVE-2026-123633 Portfolio Status: Impact of NGINX Vulnerabilities (CVE-2026-123633, CVE-2026-123007) on Palo Alto Networks Products (Severity: CRITICAL)",
+   "summary": "",
+   "source": "Palo Alto PSIRT",
+   "url": "https://security.paloaltonetworks.com/CVE-2026-123633",
+   "published": "2026-11-20T23:00:00+00:00",
+   "cves": [
+    "CVE-2026-123007",
+    "CVE-2026-123633"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.2986,
+    "percentile": 0.982
+   },
+   "poc": 37,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [
+    "Palo Alto"
+   ],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
+  {
+   "id": "https://security.paloaltonetworks.com/CVE-2026-114938",
+   "kind": "ADVISORY",
+   "title": "CVE-2026-114938 Portfolio Status: Impact of Java Vulnerability (CVE-2026-114938) on Palo Alto Networks Products (Severity: CRITICAL)",
+   "summary": "",
+   "source": "Palo Alto PSIRT",
+   "url": "https://security.paloaltonetworks.com/CVE-2026-114938",
+   "published": "2026-11-20T17:00:00+00:00",
+   "cves": [
+    "CVE-2026-114938"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.4564,
+    "percentile": 0.988
+   },
+   "poc": 77,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [
+    "Palo Alto"
+   ],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
+  {
+   "id": "https://fortiguard.fortinet.com/psirt/FG-IR-26-279",
+   "kind": "ADVISORY",
+   "title": "NGINX vulnerabilities",
+   "summary": "CVSSv3 Score: 8.1 CVE-2026-123007 (high)This vulnerability affects NGINX OSS versions 1.31.0 - 1.31.8, 1.9.5 - 1.30.6.CVE-2026-123633 (high)This vulnerability affects NGINX OSS versions 1.31.0 - 1.31.8, 1.19.7 - 1.30.6.CVE-2026-121810 (high)This vulnerability affects NGINX OSS ve",
+   "source": "Fortinet PSIRT",
+   "url": "https://fortiguard.fortinet.com/psirt/FG-IR-26-279",
+   "published": "2026-11-20T08:00:00+00:00",
+   "cves": [
+    "CVE-2026-113425",
+    "CVE-2026-118899",
+    "CVE-2026-121810",
+    "CVE-2026-123007"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.2986,
+    "percentile": 0.982
+   },
+   "poc": 37,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
+  {
+   "id": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nginx-nov-2026-e8jska2s",
+   "kind": "ADVISORY",
+   "title": "Vulnerabilities in nginx Affecting Cisco Products: November 2026",
+   "summary": "On November 18, 2026, nginx announced the availability of a fix for multiple critical vulnerabilities in nginx that could lead to remote code execution. These vulnerabilities affect nginx releases 1.9.5 through 1.31.8 and is fixed in releases 1.31.9 (mainline) and 1.30.7 (stable)",
+   "source": "Cisco PSIRT",
+   "url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nginx-nov-2026-e8jska2s?vs_f=Cisco%20Security%20Advisory%26vs_cat=Security%20Intelligence%26vs_type=RSS%26vs_p=Vulnerabilities%20in%20nginx%20Affecting%20Cisco%20Products:%20November%202026%26vs_k=1",
+   "published": "2026-11-21T17:52:10+00:00",
+   "cves": [
+    "CVE-2026-113425",
+    "CVE-2026-121810",
+    "CVE-2026-123007",
+    "CVE-2026-123633"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.2986,
+    "percentile": 0.982
+   },
+   "poc": 37,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [
+    "Cisco"
+   ],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode",
+     "Run the service as a non-privileged user and restrict outbound connections"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
+   }
+  },
+  {
+   "id": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nov2026-java-rce-eCa6ss9z",
+   "kind": "ADVISORY",
+   "title": "Vulnerability in Oracle OpenJDK (Java4Shell) Affecting Cisco Products: November 2026",
+   "summary": "On November 17, 2026, Oracle announced the availability of fixes for a vulnerability in OpenJDK that could lead to remote code execution identified by CVE-2026-114938. The vulnerability affects OpenJDK Java 17.0.6 and later on x86-64 platforms when processing Base64 encoded conte",
+   "source": "Cisco PSIRT",
+   "url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nov2026-java-rce-eCa6ss9z?vs_f=Cisco%20Security%20Advisory%26vs_cat=Security%20Intelligence%26vs_type=RSS%26vs_p=Vulnerability%20in%20Oracle%20OpenJDK%20(Java4Shell)%20Affecting%20Cisco%20Products:%20November%202026%26vs_k=1",
+   "published": "2026-11-20T20:37:16+00:00",
+   "cves": [
+    "CVE-2026-114938"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.4564,
+    "percentile": 0.988
+   },
+   "poc": 77,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [
+    "Cisco"
+   ],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode",
+     "Run the service as a non-privileged user and restrict outbound connections"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
+   }
+  },
+  {
+   "id": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-emudhra-info-ScS22A1r",
+   "kind": "ADVISORY",
+   "title": "Cisco Informational for Emergency Distrust of eMudhra Root and Intermediate Certificate Authorities",
+   "summary": "Between October 17 and October 20, 2026, a critical security compromise involving Certificate Authorities that are managed by eMudhra was uncovered. A security researcher demonstrated that the private keys for eight eMudhra intermediate certificates were fundamentally broken due ",
+   "source": "Cisco PSIRT",
+   "url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-emudhra-info-ScS22A1r?vs_f=Cisco%20Security%20Advisory%26vs_cat=Security%20Intelligence%26vs_type=RSS%26vs_p=Cisco%20Informational%20for%20Emergency%20Distrust%20of%20eMudhra%20Root%20and%20Intermediate%20Certificate%20Authorities%26vs_k=1",
+   "published": "2026-11-20T15:13:54+00:00",
+   "cves": [],
+   "cvss": null,
+   "epss": null,
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [
+    "Cisco"
+   ],
+   "first_seen": "2026-11-21T18:44:12+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  }
+ ]
+}
