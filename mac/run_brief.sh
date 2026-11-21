@@ -13,6 +13,7 @@ kc() { security find-generic-password -a watchfloor -s "$1" -w 2>/dev/null || tr
 export CALLMEBOT_PHONE="$(kc callmebot-phone)" CALLMEBOT_APIKEY="$(kc callmebot-apikey)"
 export NVD_API_KEY="$(kc nvd-apikey)" TEAMS_WEBHOOK_URL="$(kc teams-webhook-url)"
 export GEMINI_API_KEY="$(kc gemini-apikey)"
+export TELEGRAM_BOT_TOKEN="$(kc telegram-bot-token)" TELEGRAM_CHAT_ID="$(kc telegram-chat-id)"
 export WF_LOCAL_BASE_URL="http://127.0.0.1:${LLAMA_PORT}/v1"
 GH_TOKEN="$(kc github-push-token)"
 export GROQ_API_KEY="$(kc groq-apikey)" OPENROUTER_API_KEY="$(kc openrouter-apikey)"

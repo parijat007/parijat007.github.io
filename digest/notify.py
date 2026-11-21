@@ -32,9 +32,13 @@ def _telegram(msgs: list[str], pause: float) -> None:
     token, chat = os.environ["TELEGRAM_BOT_TOKEN"], os.environ["TELEGRAM_CHAT_ID"]
     for m in msgs:
         # Plain text: WhatsApp-style *bold* shows literally, but nothing breaks.
-        r = requests.post(f"https://api.telegram.org/bot{token}/sendMessage", timeout=60,
-                          json={"chat_id": chat, "text": m, "disable_web_page_preview": True})
-        r.raise_for_status()
+        payload = {"chat_id": chat, "text": m, "disable_web_page_preview": True, "parse_mode": "Markdown"}
+        r = requests.post(f"https://api.telegram.org/bot{token}/sendMessage", timeout=60, json=payload)
+        if r.status_code == 400:   # an underscore in a URL or ID broke Markdown parsing: send as plain text
+            payload.pop("parse_mode")
+            r = requests.post(f"https://api.telegram.org/bot{token}/sendMessage", timeout=60, json=payload)
+        if r.status_code >= 300:
+            raise RuntimeError(f"Telegram HTTP {r.status_code}: {r.text[:200]}")
         time.sleep(pause / 4)
 
 

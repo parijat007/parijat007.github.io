@@ -20,6 +20,8 @@ store github-push-token   "GitHub token (optional: press Enter to use your gh si
 store gemini-apikey       "Gemini API key from aistudio.google.com (optional backup)"
 store groq-apikey         "Groq API key from console.groq.com/keys (optional backup)"
 store openrouter-apikey   "OpenRouter API key from openrouter.ai/keys (optional backup)"
+store telegram-bot-token  "Telegram bot token from @BotFather (optional)"
+store telegram-chat-id    "Telegram chat id (optional)"
 store teams-webhook-url   "Teams Workflows webhook URL (optional)"
 store callmebot-phone     "CallMeBot phone (+1...)"
 store callmebot-apikey    "CallMeBot API key"

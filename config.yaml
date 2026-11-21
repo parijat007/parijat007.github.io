@@ -109,7 +109,7 @@ max_entries_per_feed: 15   # feeds live in sources.yaml
 
 # Delivery
 delivery:
-  channels: [callmebot, teams]   # any of: callmebot, teams, telegram, email (each needs its secrets)
+  channels: [callmebot, telegram, teams]   # unconfigured channels are skipped automatically
   callmebot_max_chars: 1400 # CallMeBot uses GET; keep chunks small so the URL stays short
   telegram_max_chars: 3800
   pause_seconds: 4          # gap between WhatsApp messages
