@@ -1,0 +1,112 @@
+# Watchfloor — configuration. Sources live in sources.yaml; profile in site/profile.yaml.
+# Edit freely; no code changes needed.
+
+window_hours: 30            # look-back window; 30h absorbs schedule jitter. Use 72 on Mondays (auto, see weekend_hours)
+weekend_hours: 78           # used on Mondays so Fri–Sun items are not missed
+repeat_suppression_days: 7  # IDs reported within this many days are suppressed unless status changed
+max_items_to_llm: 40        # pre-ranked cap on items sent to the model (token control)
+
+# Analyst model chain. First provider that answers wins; if all fail, a facts-only brief is published.
+# On the Mac: local -> github_models -> gemini.  In GitHub Actions: WF_LLM_CHAIN=github_models,gemini
+llm:
+  chain: [local, github_models, gemini]
+  providers:
+    local:          # llama.cpp llama-server on the M1 Max. $0, nothing leaves the machine.
+      base_url: http://127.0.0.1:8080/v1
+      model: local
+      label: Qwen3.6-35B-A3B (local)
+      json: schema          # grammar-constrained JSON
+      no_think: true
+      max_items: 40
+      max_text_chars: 400
+      timeout_seconds: 1800
+    github_models:  # free, rate-limited; inside Actions the built-in token works (permissions: models: read)
+      base_url: https://models.github.ai/inference
+      model: openai/gpt-4.1-mini          # verify current id in the GitHub Models catalog
+      label: GPT-4.1 mini (GitHub Models)
+      api_key_env: [GITHUB_MODELS_TOKEN, GITHUB_TOKEN]
+      json: object
+      max_items: 18         # free tier caps tokens per request
+      max_text_chars: 220
+      max_output_tokens: 3000
+      timeout_seconds: 180
+    gemini:         # Google AI Studio free tier; key from aistudio.google.com
+      base_url: https://generativelanguage.googleapis.com/v1beta/openai
+      model: gemini-flash-latest          # verify current id in AI Studio
+      label: Gemini Flash (free tier)
+      api_key_env: [GEMINI_API_KEY]
+      json: object
+      max_items: 40
+      max_text_chars: 400
+      timeout_seconds: 180
+
+site:
+  url: "https://theparijat.com"
+
+# Products/platforms you care about. Items touching these rank higher and get tagged.
+stack_watchlist:
+  - AWS
+  - Azure
+  - Entra ID
+  - Microsoft 365
+  - GCP
+  - Okta
+  - Kubernetes
+  - GitHub Actions
+  - Palo Alto
+  - Fortinet
+  - Cisco
+  - Citrix
+  - Ivanti
+  - VMware
+  - CrowdStrike
+  - Splunk
+  - Terraform
+  - Docker
+  - npm
+  - PyPI
+  - LLM
+
+# NVD: critical CVEs published inside the window
+nvd:
+  enabled: true
+  severities: [CRITICAL]
+  max_results: 40
+
+# GitHub Security Advisories (reviewed)
+ghsa:
+  enabled: true
+  severities: [critical, high]
+  max_results: 30
+
+# GitHub repo discovery: new repos with traction in these topics
+github_repos:
+  enabled: true
+  created_within_days: 14
+  min_stars: 40
+  max_per_query: 8
+  queries:
+    - "topic:detection-engineering"
+    - "topic:threat-hunting"
+    - "topic:cloud-security"
+    - "topic:kubernetes-security"
+    - "topic:incident-response"
+    - "topic:llm-security"
+    - "topic:sigma"
+    - "topic:red-team"
+
+max_entries_per_feed: 15   # feeds live in sources.yaml
+
+# Delivery
+delivery:
+  channels: [callmebot, teams]   # any of: callmebot, teams, telegram, email (each needs its secrets)
+  callmebot_max_chars: 1400 # CallMeBot uses GET; keep chunks small so the URL stays short
+  telegram_max_chars: 3800
+  pause_seconds: 4          # gap between WhatsApp messages
+  on_failure_alert: true    # send a one-line alert if the run fails
+
+# Hourly Watch (deterministic, runs on GitHub Actions)
+watch:
+  lookback_hours: 48
+  retain_days: 7
+  alert_on_stack_kev: true

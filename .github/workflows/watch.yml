@@ -1,0 +1,48 @@
+name: Hourly watch
+
+on:
+  schedule:
+    - cron: "15 * * * *"     # every hour at :15 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write            # commit data/watch.json
+
+concurrency:
+  group: data-writer         # never two jobs pushing data at once
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install -r requirements.txt
+      - name: Update watch (no LLM)
+        env:
+          GITHUB_TOKEN:     ${{ secrets.GITHUB_TOKEN }}
+          NVD_API_KEY:      ${{ secrets.NVD_API_KEY }}
+          CALLMEBOT_PHONE:  ${{ secrets.CALLMEBOT_PHONE }}
+          CALLMEBOT_APIKEY: ${{ secrets.CALLMEBOT_APIKEY }}
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+        run: python -m digest.watch
+      - name: Commit data
+        run: |
+          git config user.name  "watchfloor-bot"
+          git config user.email "watchfloor-bot@users.noreply.github.com"
+          git add data/watch.json
+          git diff --cached --quiet && exit 0
+          git commit -m "watch: $(date -u +%FT%H:%MZ)"
+          git pull --rebase --autostash && git push
+      - name: Dead-man's switch
+        if: success() && env.HC_URL != ''
+        env: { HC_URL: "${{ secrets.HEALTHCHECK_URL_WATCH }}" }
+        run: curl -fsS -m 10 "$HC_URL" > /dev/null
+
+  deploy:
+    needs: watch
+    uses: ./.github/workflows/pages.yml
+    permissions: { contents: read, pages: write, id-token: write }

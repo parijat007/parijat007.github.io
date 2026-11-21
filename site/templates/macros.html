@@ -1,0 +1,37 @@
+{% macro tags(e) -%}
+<ul class="tags">
+  <li class="tag sev-{{ e.severity }}">{{ e.severity | sev }}</li>
+  <li class="tag x-{{ e.exploitation }}">{{ e.exploitation | xlabel }}</li>
+  <li class="tag cat-{{ e.category }}">{{ e.category | cat }}</li>
+  {% if e.kev_due_date %}<li class="tag due">Patch by {{ e.kev_due_date | nicedate }}</li>{% endif %}
+  {% for s in e.stack_match %}<li class="tag stack">{{ s }}</li>{% endfor %}
+  {% if e.is_update %}<li class="tag">Update</li>{% endif %}
+</ul>
+{%- endmacro %}
+
+{% macro fix(rm, advisory) -%}
+<dt>Patch</dt><dd>{% if rm.fixed_versions %}Upgrade to {{ rm.fixed_versions }}{% else %}No fixed version is stated in the source. Check the <a href="{{ advisory | safe_url }}" rel="noopener nofollow">vendor advisory</a>.{% endif %}</dd>
+<dt>Until patched</dt><dd><ul class="fixlist">{% for c in rm.compensating_controls %}<li>{{ c }}</li>{% endfor %}</ul></dd>
+<dt>Verify</dt><dd>{{ rm.verify }}</dd>
+{%- endmacro %}
+
+{% macro entry(e, p, run_date) -%}
+<li class="entry" id="item-{{ e.rank }}">
+  <span class="rail {{ e.exploitation }}" aria-hidden="true"></span>
+  <span class="rank">{{ e.rank }}</span>
+  <details>
+    <summary><h3>{{ e.headline }}</h3>{{ tags(e) }}</summary>
+    <dl class="detail">
+      <dt>What happened</dt><dd>{{ e.summary }}</dd>
+      <dt>Affected</dt><dd>{{ e.target }}</dd>
+      {% if e.identifiers %}<dt>Identifiers</dt><dd class="ids">{% for i in e.identifiers %}<span class="id">{{ i }}</span>{% endfor %}</dd>{% endif %}
+      <dt>Do this</dt><dd>{{ e.action }}</dd>
+      {% if e.hunt %}<dt>Hunt for</dt><dd>{{ e.hunt }}</dd>{% endif %}
+      {% if e.remediation %}{{ fix(e.remediation, e.primary_source) }}{% endif %}
+      <dt>Confidence</dt><dd>{{ e.confidence | title }}</dd>
+      <dt>Sources</dt><dd><a href="{{ e.primary_source | safe_url }}" rel="noopener nofollow">{{ e.primary_source | host }}</a>{% for u in e.corroborating_sources %}, <a href="{{ u | safe_url }}" rel="noopener nofollow">{{ u | host }}</a>{% endfor %}</dd>
+    </dl>
+    <a class="report" href="{{ p.repo_url }}/issues/new?title={{ ('Correction: ' ~ run_date ~ ' #' ~ e.rank) | urlencode }}&labels=correction">Report an error in this item</a>
+  </details>
+</li>
+{%- endmacro %}

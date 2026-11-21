@@ -1,0 +1,17 @@
+{% extends "base.html" %}{% from "macros.html" import entry %}
+{% block title %}Threat brief, {{ brief.run_date | longdate }} — {{ p.name }}{% endblock %}
+{% block desc %}{{ brief.executive_pulse }}{% endblock %}
+{% block main %}
+<section class="page-head">
+  <h1>Threat brief, {{ brief.run_date | longdate }}</h1>
+  <p class="lede">{{ brief.executive_pulse }}</p>
+</section>
+{% if brief["items"] %}<ol class="entries">{% for e in brief["items"] %}{{ entry(e, p, brief.run_date) }}{% endfor %}</ol>
+{% else %}<p class="empty">Quiet day: nothing met the bar for exploitation or exposure.</p>{% endif %}
+{% if brief.meta %}
+<section class="block prose"><h2>Run details</h2>
+<p>Window {{ brief.meta.window_start }} to {{ brief.meta.window_end }}. {{ brief.meta.items_screened }} items screened.
+{% if brief.meta.mode == "fallback" %}Automated fallback: the analyst model was offline, so this lists confirmed items without commentary.{% else %}Analyst model: {{ brief.meta.model }}, prompt {{ brief.meta.prompt_version }}.{% endif %}
+{% if brief.meta.dropped %}{{ brief.meta.dropped | length }} model output(s) rejected by source validation.{% endif %}</p>
+</section>{% endif %}
+{% endblock %}

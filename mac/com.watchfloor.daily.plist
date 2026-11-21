@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.watchfloor.daily</string>
+  <key>ProgramArguments</key>
+  <array><string>/bin/zsh</string><string>__REPO_DIR__/mac/run_brief.sh</string></array>
+  <!-- 6:35 AM local time. If the Mac was asleep, launchd runs it at next wake. -->
+  <!-- Also run at login/boot: catches up if the Mac was off at 6:35 (skips if today's brief exists). -->
+  <key>RunAtLoad</key><true/>
+  <key>StartCalendarInterval</key>
+  <dict><key>Hour</key><integer>6</integer><key>Minute</key><integer>35</integer></dict>
+  <key>StandardOutPath</key><string>/tmp/watchfloor.launchd.log</string>
+  <key>StandardErrorPath</key><string>/tmp/watchfloor.launchd.log</string>
+</dict>
+</plist>

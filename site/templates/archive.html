@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Archive — {{ p.name }}{% endblock %}
+{% block main %}
+<section class="page-head"><h1>Archive</h1><p class="lede">Every daily brief, newest first. Each page is permanent and citable.</p></section>
+{% if briefs %}<ul class="archive">
+{% for b in briefs %}<li><time datetime="{{ b.run_date }}">{{ b.run_date | longdate }}</time><a href="{{ root }}brief/{{ b.run_date }}/">{{ b["items"][0].headline if b["items"] else "Quiet day" }}</a><span class="count">{{ b["items"] | length }} items</span></li>{% endfor %}
+</ul>{% else %}<p class="empty">The first brief appears here after the first daily run.</p>{% endif %}
+{% endblock %}

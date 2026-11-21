@@ -1,0 +1,59 @@
+name: Cloud brief (Mac offline backup)
+
+# The Mac writes the brief with the local model at ~6:35 AM local time.
+# If today's brief hasn't landed by this run, the cloud writes it with free models:
+# GitHub Models (built-in token, no key) -> Gemini free tier -> facts-only brief.
+on:
+  schedule:
+    - cron: "20 12 * * *"    # 12:20 UTC = 7:20 AM EST / 8:20 AM EDT
+  workflow_dispatch:
+
+permissions:
+  contents: write            # commit data/
+  models: read               # free GitHub Models inference with GITHUB_TOKEN
+
+concurrency:
+  group: data-writer
+  cancel-in-progress: false
+
+jobs:
+  brief:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      published: ${{ steps.c.outputs.published }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install -r requirements.txt
+      - name: Write brief only if the Mac hasn't
+        env:
+          WF_LLM_CHAIN:       github_models,gemini
+          GITHUB_TOKEN:       ${{ secrets.GITHUB_TOKEN }}
+          GEMINI_API_KEY:     ${{ secrets.GEMINI_API_KEY }}
+          NVD_API_KEY:        ${{ secrets.NVD_API_KEY }}
+          CALLMEBOT_PHONE:    ${{ secrets.CALLMEBOT_PHONE }}
+          CALLMEBOT_APIKEY:   ${{ secrets.CALLMEBOT_APIKEY }}
+          TEAMS_WEBHOOK_URL:  ${{ secrets.TEAMS_WEBHOOK_URL }}
+        run: python -m digest.main --skip-if-exists
+      - id: c
+        name: Commit
+        run: |
+          git config user.name  "watchfloor-bot"
+          git config user.email "watchfloor-bot@users.noreply.github.com"
+          git add data/ state/
+          if git diff --cached --quiet; then echo "published=false" >> "$GITHUB_OUTPUT"; exit 0; fi
+          git commit -m "brief (cloud): $(date -u +%F)"
+          git pull --rebase --autostash && git push
+          echo "published=true" >> "$GITHUB_OUTPUT"
+      - name: Dead-man's switch
+        if: success() && env.HC_URL != ''
+        env: { HC_URL: "${{ secrets.HEALTHCHECK_URL_BRIEF }}" }
+        run: curl -fsS -m 10 "$HC_URL" > /dev/null
+
+  deploy:
+    needs: brief
+    if: needs.brief.outputs.published == 'true'
+    uses: ./.github/workflows/pages.yml
+    permissions: { contents: read, pages: write, id-token: write }

@@ -1,0 +1,66 @@
+# Watchfloor source registry — the only places facts may come from.
+#
+# Admission criteria (all must hold):
+#   1. Operator is identifiable: a government body, the product vendor, a named research team,
+#      or an established newsroom with editorial standards and published corrections.
+#   2. Served over HTTPS from the operator's own domain, as a documented feed or API.
+#   3. Terms allow automated reading; we publish only short summaries in our own words, with a link.
+#   4. Links in the feed resolve to the operator's domains (enforced: see `domains`).
+#
+# Tiers decide what a source can prove:
+#   authority  government / CERT. Can CONFIRM exploitation.
+#   vendor     the product's own PSIRT or security blog. Can CONFIRM exploitation of its products.
+#   research   named vendor research teams. Can REPORT exploitation; confirmation needs authority/vendor.
+#   press      newsrooms. Can REPORT; a press-only claim is capped at "Exploitation reported", confidence MEDIUM.
+#   data       structured enrichment (scores, PoC indexes). Never a source of claims by itself.
+#
+# Review: re-check every entry quarterly (verified_on). Remove anything that fails a criterion.
+
+apis:
+  - {name: CISA KEV, tier: authority, operator: "US Cybersecurity and Infrastructure Security Agency",
+     url: "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+     mirror: "https://raw.githubusercontent.com/cisagov/kev-data/main/known_exploited_vulnerabilities.json",
+     basis: "Official catalog of vulnerabilities with evidence of exploitation in the wild", verified_on: "[date]"}
+  - {name: NVD, tier: authority, operator: "NIST National Vulnerability Database",
+     url: "https://services.nvd.nist.gov/rest/json/cves/2.0", basis: "Official CVE records and CVSS scoring", verified_on: "[date]"}
+  - {name: GitHub Advisory, tier: authority, operator: "GitHub Security Lab (reviewed advisories, CNA)",
+     url: "https://api.github.com/advisories", basis: "Curated, reviewed ecosystem advisories (CVE Numbering Authority)", verified_on: "[date]"}
+  - {name: FIRST EPSS, tier: data, operator: "FIRST.org", url: "https://api.first.org/data/v1/epss",
+     basis: "Exploit prediction score; prioritization only, never proof", verified_on: "[date]"}
+  - {name: PoC-in-GitHub, tier: data, operator: "nomi-sec (community index, CC0)",
+     url: "https://github.com/nomi-sec/PoC-in-GitHub", basis: "Index of public PoC repos; counts only, repos never recommended", verified_on: "[date]"}
+  - {name: GitHub, tier: data, operator: "GitHub repository search",
+     url: "https://api.github.com/search/repositories", basis: "Tooling discovery; repos filtered for license, docs, activity", verified_on: "[date]"}
+
+feeds:
+  - {name: CISA Advisories, tier: authority, operator: CISA, url: "https://www.cisa.gov/cybersecurity-advisories/all.xml",
+     domains: [cisa.gov], basis: "US government advisories and joint alerts", verified_on: "[date]"}
+  - {name: Microsoft MSRC, tier: vendor, operator: Microsoft, url: "https://api.msrc.microsoft.com/update-guide/rss",
+     domains: [microsoft.com], basis: "Microsoft's own security update guide", verified_on: "[date]"}
+  - {name: Microsoft Security, tier: research, operator: "Microsoft Threat Intelligence", url: "https://www.microsoft.com/en-us/security/blog/feed/",
+     domains: [microsoft.com], basis: "Named research team; first-party telemetry", verified_on: "[date]"}
+  - {name: Palo Alto PSIRT, tier: vendor, operator: "Palo Alto Networks", url: "https://security.paloaltonetworks.com/rss.xml",
+     domains: [paloaltonetworks.com], basis: "Vendor PSIRT for PAN-OS and Prisma", verified_on: "[date]"}
+  - {name: Fortinet PSIRT, tier: vendor, operator: "Fortinet FortiGuard", url: "https://www.fortiguard.com/rss/ir.xml",
+     domains: [fortiguard.com, fortinet.com], basis: "Vendor PSIRT for FortiOS and Fortinet products", verified_on: "[date]"}
+  - {name: Cisco PSIRT, tier: vendor, operator: Cisco, url: "https://sec.cloudapps.cisco.com/security/center/psirtrss20/CiscoSecurityAdvisory.xml",
+     domains: [cisco.com], basis: "Vendor PSIRT for Cisco products", verified_on: "[date]"}
+  - {name: AWS Security Bulletins, tier: vendor, operator: "Amazon Web Services", url: "https://aws.amazon.com/security/security-bulletins/rss/feed/",
+     domains: [amazon.com, aws.amazon.com], basis: "AWS's own security bulletins", verified_on: "[date]"}
+  - {name: Unit 42, tier: research, operator: "Palo Alto Networks Unit 42", url: "https://unit42.paloaltonetworks.com/feed/",
+     domains: [paloaltonetworks.com], basis: "Named threat research team", verified_on: "[date]"}
+  - {name: Google Threat Intel, tier: research, operator: "Google Threat Intelligence Group / Mandiant", url: "https://cloud.google.com/blog/topics/threat-intelligence/rss/",
+     domains: [cloud.google.com, google.com], basis: "Named threat research team; incident response findings", verified_on: "[date]"}
+  - {name: BleepingComputer, tier: press, operator: BleepingComputer, url: "https://www.bleepingcomputer.com/feed/",
+     domains: [bleepingcomputer.com], basis: "Established security newsroom with corrections", verified_on: "[date]"}
+  - {name: The Hacker News, tier: press, operator: "The Hacker News", url: "https://feeds.feedburner.com/TheHackersNews",
+     domains: [thehackernews.com, feedproxy.google.com, feeds.feedburner.com], basis: "Established security newsroom", verified_on: "[date]"}
+  - {name: SecurityWeek, tier: press, operator: SecurityWeek, url: "https://www.securityweek.com/feed/",
+     domains: [securityweek.com], basis: "Established security newsroom", verified_on: "[date]"}
+  - {name: The Record, tier: press, operator: "Recorded Future News", url: "https://therecord.media/feed",
+     domains: [therecord.media], basis: "Newsroom with editorial independence policy", verified_on: "[date]"}
+  - {name: Krebs on Security, tier: press, operator: "Brian Krebs", url: "https://krebsonsecurity.com/feed/",
+     domains: [krebsonsecurity.com], basis: "Named investigative journalist with long track record", verified_on: "[date]"}
+
+# Candidates under evaluation (not collected until moved above):
+#   ENISA EUVD exploited flag, Google Project Zero in-the-wild sheet, vendor PSIRTs for Okta, Ivanti, Citrix, VMware/Broadcom

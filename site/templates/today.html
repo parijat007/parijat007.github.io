@@ -1,0 +1,44 @@
+{% extends "base.html" %}{% from "macros.html" import entry, tags %}
+{% block title %}Today's brief — {{ p.brand }}{% endblock %}
+{% block main %}
+{% if brief and brief["items"] %}{% set top = brief["items"][0] %}
+<section class="hero" aria-labelledby="top-h">
+  <div class="hero-item">
+    <span class="rail {{ top.exploitation }} live" aria-hidden="true"></span>
+    <div>
+      <p class="hero-date">Top item for {{ brief.run_date | longdate }}</p>
+      <h1 id="top-h"{% if top.headline|length > 60 %} class="long"{% endif %}><a href="{{ root }}brief/{{ brief.run_date }}/#item-1" class="plain">{{ top.headline }}</a></h1>
+      <p class="summary">{{ top.summary }}</p>
+      {{ tags(top) }}
+      {% if top.kev_due_date %}<p class="mt"><span class="deadline"><strong>{{ top.kev_due_date | days_left }}</strong> days left to patch under CISA KEV</span></p>{% endif %}
+    </div>
+  </div>
+  <aside class="side" aria-label="Today in brief">
+    <p class="pulse-text">{{ brief.executive_pulse }}</p>
+    <dl class="stats">
+      <div class="hot"><dt>Exploited, confirmed</dt><dd>{{ brief["items"] | selectattr("exploitation", "equalto", "EXPLOITED_CONFIRMED") | list | length }}</dd></div>
+      <div><dt>KEV due within 14 days</dt><dd>{{ watch_due_soon }}</dd></div>
+      <div><dt>Items screened</dt><dd>{{ brief.meta.items_screened if brief.meta else "–" }}</dd></div>
+    </dl>
+  </aside>
+</section>
+{% else %}
+<section class="page-head"><h1>No brief published yet today</h1><p class="lede">The daily brief publishes around 7 AM Eastern. The hourly watch below is live.</p></section>
+{% endif %}
+
+<section class="strip" aria-labelledby="strip-h">
+  <div class="strip-head"><h2 id="strip-h">Last 24 hours of the watch</h2><p>Updated {{ watch.updated | ago }}. Each cell is one hour; a dot marks a new KEV listing.</p></div>
+  <div class="cells" role="img" aria-label="{{ cells | sum(attribute='n') }} new advisories and KEV entries in the last 24 hours">
+    {% for c in cells %}<span class="cell{% if c.kev %} kev{% endif %}" data-n="{{ [c.n, 4] | min }}" title="{{ c.label }}: {{ c.n }} new"></span>{% endfor %}
+  </div>
+  <div class="cell-scale"><span>24 h ago</span><span>Now</span></div>
+</section>
+
+{% if brief and brief["items"]|length > 1 %}
+<section class="block" aria-labelledby="brief-h">
+  <h2 id="brief-h">Today's brief</h2>
+  <p class="lede">Ranked by confirmed exploitation first, then exposure of widely deployed edge, identity and cloud systems. Open an item for the action and hunting focus.</p>
+  <ol class="entries">{% for e in brief["items"] %}{{ entry(e, p, brief.run_date) }}{% endfor %}</ol>
+</section>
+{% endif %}
+{% endblock %}

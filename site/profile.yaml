@@ -1,0 +1,54 @@
+# Public profile — everything here is published at https://theparijat.com/
+# [Brackets] are placeholders: fill or delete before going public.
+name: Parijat Sharma
+brand: Watchfloor
+site_title: Parijat Sharma — Cloud Detection & Response | Watchfloor
+headline: Lead Cyber Security Architect. Cloud detection and response, Zero Trust, multi-cloud security.
+location: New Jersey, USA
+intro: >
+  I design and run detection and response for cloud-first enterprises: telemetry engineering,
+  detection-as-code mapped to MITRE ATT&CK, and identity-first Zero Trust across AWS, Azure and GCP.
+  Twenty-plus years across financial services, media, healthcare, transportation and critical
+  infrastructure.
+watchfloor_blurb: >
+  Watchfloor is my public service for defenders: an hourly watch of newly exploited vulnerabilities
+  and vendor advisories, and a daily brief that ranks what matters, with a patch action and a hunting
+  focus for each item. Every claim links to its source.
+
+niches:
+  - title: Cloud detection and response engineering
+    detail: Telemetry pipelines, detection-as-code and SIEM/SOAR integration across AWS, Azure and GCP control planes.
+  - title: Identity-first Zero Trust
+    detail: Entra ID, Okta and SailPoint governance; conditional access and privileged paths designed around blast radius.
+  - title: Multi-cloud security architecture
+    detail: Secure landing zones, policy-as-code guardrails and reference patterns for regulated workloads.
+  - title: Kubernetes and IaC security
+    detail: AKS and EKS runtime security, admission control, and IaC scanning built into the delivery pipeline.
+  - title: GenAI and LLM application security
+    detail: Threat modeling LLM applications and agents against OWASP Top 10 for LLMs and MITRE ATLAS; local-model security tooling.
+  - title: Regulated enterprise resilience
+    detail: HIPAA, PCI DSS, SOC 2 and GDPR controls mapped to architecture decisions, using SABSA and TOGAF.
+
+experience:          # set show_employers: false to hide organisation names
+  - {org: Hearst, role: Lead Cyber Security – Detection & Response Engineering, years: "2025–present"}
+  - {org: Morgan Stanley, role: Cloud Cyber Security Architect Expert, years: "2020–2024"}
+  - {org: "IBM, Wipro, Tata Communications, CSC, Steria", role: Multi-cloud architecture and security, years: "before 2020"}
+show_employers: true
+
+certifications:      # earned credentials only
+  - {name: "Microsoft Certified: Cybersecurity Architect Expert", issuer: Microsoft}
+  - {name: "AWS Certified Solutions Architect – Professional", issuer: AWS}
+  - {name: "AWS Certified Security – Specialty", issuer: AWS}
+
+training:            # courses completed; no certification implied
+  - {name: "SANS SEC545: GenAI and LLM Application Security", provider: SANS Institute}
+  - {name: "SANS SEC530: Defensible Security Architecture and Engineering: Implementing Zero Trust for the Hybrid Enterprise", provider: SANS Institute}
+
+writing: []         # - {title: "Cloud Detection & Resilience Notes, issue 1", url: "https://...", year: 2026}
+
+links:
+  - {label: GitHub, url: "https://github.com/parijat007"}
+  - {label: RSS, url: "feed.xml"}
+
+disclaimer: Personal project. Views are my own and do not represent any employer.
+repo_url: "https://github.com/parijat007/parijat007.github.io"

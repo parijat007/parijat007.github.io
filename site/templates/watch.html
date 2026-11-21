@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Hourly watch — {{ p.name }}{% endblock %}
+{% block main %}
+<section class="page-head">
+  <h1>Hourly watch</h1>
+  <p class="lede">New CISA KEV listings, vendor security advisories and critical GitHub advisories from the last {{ retain_days }} days. No AI summaries: every row comes straight from the source. Updated {{ watch.updated | ago }}.</p>
+</section>
+<div class="filters" role="group" aria-label="Filter by type">
+  <button type="button" data-f="all" aria-pressed="true">All</button>
+  <button type="button" data-f="KEV" aria-pressed="false">KEV</button>
+  <button type="button" data-f="ADVISORY" aria-pressed="false">Vendor advisories</button>
+  <button type="button" data-f="GHSA" aria-pressed="false">GitHub advisories</button>
+  <button type="button" data-f="stack" aria-pressed="false">My watchlist</button>
+</div>
+{% if watch.entries %}
+<div class="table-scroll"><table class="watch">
+<thead><tr><th scope="col">Type</th><th scope="col">Item</th><th scope="col">CVSS</th><th scope="col">EPSS</th><th scope="col">Public PoC</th><th scope="col">KEV due</th><th scope="col">Seen</th></tr></thead>
+<tbody>
+{% for e in watch.entries %}
+<tr class="{{ 'kev' if e.kind == 'KEV' }}" data-kind="{{ e.kind }}" data-stack="{{ 'yes' if e.stack_match else 'no' }}">
+  <td><span class="kind {{ e.kind }}">{{ e.kind | kindlabel }}</span></td>
+  <td><a href="{{ e.url | safe_url }}" rel="noopener nofollow">{{ e.title }}</a>
+    {% if e.cves %}<div class="ids">{% for c in e.cves %}<span class="id">{{ c }}</span>{% endfor %}</div>{% endif %}
+    {% if e.stack_match %}<ul class="tags mt-s">{% for s in e.stack_match %}<li class="tag stack">{{ s }}</li>{% endfor %}</ul>{% endif %}
+    {% if e.fix %}<details class="wfix"><summary>How to fix</summary>
+      <p>{% if e.required_action and e.kind == "KEV" %}{{ e.required_action }}{% else %}Apply the fix in the <a href="{{ e.url | safe_url }}" rel="noopener nofollow">advisory</a>.{% endif %}</p>
+      <p class="muted">Until patched ({{ e.fix.weakness | lower }}):</p>
+      <ul class="fixlist">{% for c in e.fix.compensating_controls %}<li>{{ c }}</li>{% endfor %}</ul>
+      <p class="muted">Verify: {{ e.fix.verify }}</p>
+    </details>{% endif %}</td>
+  <td class="num">{{ e.cvss if e.cvss is not none else "–" }}</td>
+  <td class="num">{{ "%.0f%%" | format(e.epss.score * 100) if e.epss else "–" }}</td>
+  <td class="num">{{ e.poc if e.poc else "–" }}</td>
+  <td class="num">{{ e.kev_due | nicedate if e.kev_due else "–" }}</td>
+  <td class="num"><time datetime="{{ e.first_seen }}">{{ e.first_seen | ago }}</time></td>
+</tr>
+{% endfor %}
+</tbody></table></div>
+{% else %}<p class="empty">No entries yet. The first hourly run fills this table.</p>{% endif %}
+{% endblock %}
+{% block scripts %}<script src="{{ root }}static/watch.js" defer></script>{% endblock %}

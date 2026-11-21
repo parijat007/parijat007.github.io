@@ -1,0 +1,61 @@
+{% extends "base.html" %}{% from "macros.html" import tags %}
+{% block main %}
+<section class="intro" aria-labelledby="me">
+  <div class="intro-text">
+    <h1 id="me">{{ p.name }}</h1>
+    <p class="role">{{ p.headline }}</p>
+    <p class="lead">{{ p.intro }}</p>
+    <ul class="links" aria-label="Elsewhere">{% for l in p.links %}<li><a href="{{ (root ~ l.url) if not l.url.startswith('http') else (l.url | safe_url) }}" rel="me noopener">{{ l.label }}</a></li>{% endfor %}</ul>
+  </div>
+  <aside class="live" aria-labelledby="live-h">
+    <h2 id="live-h"><span class="dot" aria-hidden="true"></span>Live from Watchfloor</h2>
+    {% if brief and brief["items"] %}{% set top = brief["items"][0] %}
+    <div class="live-top">
+      <span class="rail {{ top.exploitation }}" aria-hidden="true"></span>
+      <div>
+        <p class="live-date">Top item, {{ brief.run_date | longdate }}</p>
+        <p class="live-head"><a class="plain" href="{{ root }}today/">{{ top.headline }}</a></p>
+        {{ tags(top) }}
+      </div>
+    </div>
+    {% else %}<p class="live-date">The first daily brief publishes tomorrow morning.</p>{% endif %}
+    <div class="cells mini" role="img" aria-label="{{ cells | sum(attribute='n') }} new advisories and KEV entries in the last 24 hours">
+      {% for c in cells %}<span class="cell{% if c.kev %} kev{% endif %}" data-n="{{ [c.n, 4] | min }}" title="{{ c.label }}: {{ c.n }} new"></span>{% endfor %}
+    </div>
+    <p class="live-foot">Last 24 hours, updated {{ watch.updated | ago }}. <a href="{{ root }}today/">Read today's brief</a> or <a href="{{ root }}watch/">open the hourly watch</a>.</p>
+  </aside>
+</section>
+
+<section class="block two" aria-labelledby="work-h">
+  <h2 id="work-h">What I work on</h2>
+  <dl class="niches">{% for n in p.niches %}<div><dt>{{ n.title }}</dt><dd>{{ n.detail }}</dd></div>{% endfor %}</dl>
+</section>
+
+<section class="block two" aria-labelledby="wf-h">
+  <h2 id="wf-h">Watchfloor</h2>
+  <div>
+    <p class="prose">{{ p.watchfloor_blurb }}</p>
+    <dl class="stats wide">
+      <div class="hot"><dt>KEV listings in the last 7 days</dt><dd>{{ watch.entries | selectattr("kind", "equalto", "KEV") | list | length }}</dd></div>
+      <div><dt>KEV deadlines in the next 14 days</dt><dd>{{ watch_due_soon }}</dd></div>
+      <div><dt>Daily briefs published</dt><dd>{{ brief_count }}</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section class="block two" aria-labelledby="exp-h">
+  <h2 id="exp-h">Experience</h2>
+  <div class="exp">
+    <ol class="timeline">{% for x in p.experience %}<li><b>{{ x.role }}</b><span>{% if p.show_employers %}{{ x.org }}, {% endif %}{{ x.years }}</span></li>{% endfor %}</ol>
+    <div>
+      <h3 class="sub">Certifications</h3>
+      <ul class="creds">{% for c in p.certifications %}<li><b>{% if c.verify_url and c.verify_url.startswith('http') %}<a class="plain" href="{{ c.verify_url | safe_url }}" rel="noopener">{{ c.name }}</a>{% else %}{{ c.name }}{% endif %}</b><span>{{ c.issuer }}</span></li>{% endfor %}</ul>
+      {% if p.training %}<h3 class="sub">Training</h3>
+      <ul class="creds">{% for c in p.training %}<li><b>{{ c.name }}</b><span>{{ c.provider }}</span></li>{% endfor %}</ul>{% endif %}
+      {% if p.writing %}<h3 class="sub">Writing</h3>
+      <ul class="plainlist">{% for w in p.writing %}<li>{% if w.url.startswith('http') %}<a href="{{ w.url | safe_url }}">{{ w.title }}</a>{% else %}{{ w.title }}{% endif %} <span class="muted">{{ w.year }}</span></li>{% endfor %}</ul>{% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block head %}<script type="application/ld+json">{{ person_ld }}</script>{% endblock %}

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Threat Brief logo">
+  <!-- Original mark: shield with a P counter cut as a scan line. Not derived from any vendor logo. -->
+  <path d="M32 3 L56 11 V30 C56 45 46 55 32 61 C18 55 8 45 8 30 V11 Z" fill="#121823" stroke="#F0283C" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M24 46 V18 H35 C41.5 18 45 21.8 45 27.5 C45 33.2 41.5 37 35 37 H24" fill="none" stroke="#E8ECF2" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M15 29.5 H49" stroke="#F0283C" stroke-width="2.2"/>
+</svg>

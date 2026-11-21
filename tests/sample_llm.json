@@ -1,0 +1,63 @@
+{
+ "run_date": "2026-11-21",
+ "quiet_day": false,
+ "executive_pulse": "Edge-device auth bypass is under active exploitation; identity detection content is the tooling highlight.",
+ "items": [
+  {
+   "rank": 1,
+   "headline": "ExampleVendor Edge Gateway auth bypass added to KEV",
+   "category": "VULNERABILITY",
+   "severity": "CRITICAL",
+   "exploitation": "EXPLOITED_CONFIRMED",
+   "is_update": false,
+   "stack_match": [],
+   "target": "ExampleVendor Edge Gateway < 9.2",
+   "identifiers": [
+    "CVE-2026-0001",
+    "T1190"
+   ],
+   "kev_due_date": "2026-12-11",
+   "summary": "Unauthenticated management-plane bypass; KEV-listed.",
+   "action": "Upgrade to 9.2.1; restrict mgmt interface to admin VLAN.",
+   "confidence": "HIGH",
+   "primary_source": "https://nvd.nist.gov/vuln/detail/CVE-2026-0001",
+   "corroborating_sources": [
+    "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+    "https://evil.example/made-up"
+   ],
+   "hunt": "Edge gateway mgmt logs: admin session created without prior auth event from external IP"
+  },
+  {
+   "rank": 2,
+   "headline": "Hallucinated item",
+   "category": "ACTIVE_ATTACK",
+   "severity": "HIGH",
+   "exploitation": "EXPLOITED_REPORTED",
+   "primary_source": "https://not-in-input.example/x",
+   "identifiers": [],
+   "summary": "x",
+   "action": "y"
+  },
+  {
+   "rank": 3,
+   "headline": "detect-kit: Sigma rules for Entra ID sign-in abuse",
+   "category": "GITHUB_REPO",
+   "severity": "INFO",
+   "exploitation": "N/A",
+   "is_update": false,
+   "stack_match": [
+    "Entra ID"
+   ],
+   "target": "Entra ID / Sigma",
+   "identifiers": [
+    "example/detect-kit"
+   ],
+   "kev_due_date": null,
+   "summary": "Sigma rules for token replay and MFA fatigue.",
+   "action": "Convert two rules to your SIEM and test against 30 days of sign-in logs.",
+   "confidence": "MEDIUM",
+   "primary_source": "https://github.com/example/detect-kit",
+   "corroborating_sources": []
+  }
+ ]
+}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Method — {{ p.name }}{% endblock %}
+{% block main %}
+<section class="page-head"><h1>Sources and method</h1><p class="lede">Facts come from fixed sources. A model only ranks and summarizes them, and its output is checked before anything is published.</p></section>
+<div class="prose">
+<h2>Which sources, and why they are trusted</h2>
+<p>Facts come only from the sources below. Each has an identifiable operator, is read over HTTPS from the operator's own feed or API, and links that point outside the operator's domains are discarded. A source's tier limits what it can prove: only government or vendor sources (or a CISA KEV listing) can mark exploitation as confirmed. A claim backed only by press coverage is published as "Exploitation reported" with medium confidence at most.</p>
+</div>
+<div class="table-scroll"><table class="watch sources">
+<thead><tr><th scope="col">Source</th><th scope="col">Tier</th><th scope="col">Operator</th><th scope="col">Why it is trusted</th><th scope="col">Last run</th></tr></thead>
+<tbody>
+{% for s in sources %}<tr><td><a href="{{ s.url | safe_url }}" rel="noopener nofollow">{{ s.name }}</a></td><td><span class="kind tier-{{ s.tier }}">{{ s.tier | title }}</span></td><td>{{ s.operator }}</td><td>{{ s.basis }}</td><td class="num">{{ health.get(s.name, "–") }}</td></tr>
+{% endfor %}</tbody></table></div>
+<div class="prose">
+<h2>Exploitation labels</h2>
+<p><b>Exploited, confirmed</b>: listed in CISA KEV, or the vendor or a national CERT states exploitation. <b>Exploitation reported</b>: one non-vendor source reports it; not yet confirmed. <b>Public PoC</b>: working proof-of-concept code is published, no exploitation reported. <b>No known exploit</b>: disclosure or patch only.</p>
+<h2>Ranking</h2>
+<p>Confirmed exploitation first; then critical issues in widely deployed edge, identity, cloud control-plane, CI/CD and AI systems; then supply-chain compromises and new techniques; then useful open-source tooling. At most eight items a day. Quiet days are published as quiet.</p>
+<h2>Checks before publishing</h2>
+<p>The analyst model runs locally on the author's machine, with free cloud models as a backup when it is offline; if none answer, a facts-only brief is published without commentary. Models return structured output only. Every item must cite a URL that was actually collected; anything else is dropped. Severity data (KEV, CVSS, EPSS, PoC counts) comes from the sources, not the model. The hourly watch uses no model at all.</p>
+<h2>Corrections</h2>
+<p>Every item has a "Report an error" link that opens a public issue. Corrections are made in the open and the page history is kept in git.</p>
+<h2>Do not run PoC code from this site</h2>
+<p>Linked proof-of-concept repositories are not vetted. Fake PoCs carrying malware are common. Review them only in an isolated lab.</p>
+</div>
+{% endblock %}

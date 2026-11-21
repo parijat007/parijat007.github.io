@@ -1,0 +1,4 @@
+[
+ {"id":"CVE-2026-0001","source_type":"kev","source_name":"CISA KEV","title":"ExampleVendor Edge Gateway: Auth Bypass","text":"Auth bypass in management interface.","url":"https://nvd.nist.gov/vuln/detail/CVE-2026-0001","refs":["https://www.cisa.gov/known-exploited-vulnerabilities-catalog"],"cves":["CVE-2026-0001"],"kev":{"listed":true,"dueDate":"2026-12-11"},"stack_match":[]},
+ {"id":"example/detect-kit","source_type":"repo","source_name":"GitHub","title":"example/detect-kit","text":"Sigma rules for Entra ID sign-in abuse","url":"https://github.com/example/detect-kit","refs":[],"cves":[],"stack_match":["Entra ID"]}
+]

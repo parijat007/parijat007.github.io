@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; font-src 'self'; script-src 'self'; img-src 'self' data:; base-uri 'self'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>{% block title %}{{ p.site_title }}{% endblock %}</title>
+<meta name="description" content="{% block desc %}{{ p.headline }} Watchfloor: daily source-checked threat brief and hourly exploited-vulnerability watch.{% endblock %}">
+<link rel="icon" href="{{ root }}static/logo.svg" type="image/svg+xml">
+<link rel="alternate" type="application/rss+xml" title="{{ p.site_title }}" href="{{ root }}feed.xml">
+<link rel="preload" href="{{ root }}static/fonts/archivo-wdth.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="{{ root }}static/style.css">
+{% block head %}{% endblock %}
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="bar"><div class="wrap">
+  <a class="brand" href="{{ root }}"><img src="{{ root }}static/logo.svg" alt=""><b>{{ p.name }}</b><span>{{ p.brand }}</span></a>
+  <nav class="nav" aria-label="Main">
+    {% for href, label in [("", "Profile"), ("today/", "Today's brief"), ("watch/", "Hourly watch"), ("archive/", "Archive"), ("method/", "Sources & method")] %}
+    <a href="{{ root }}{{ href }}"{% if page == href %} aria-current="page"{% endif %}>{{ label }}</a>
+    {% endfor %}
+  </nav>
+</div></header>
+<main id="main" class="wrap">
+{% block main %}{% endblock %}
+</main>
+<footer><div class="wrap">
+  <p>{{ p.disclaimer }} Briefs are AI-assisted and checked automatically against their sources. Content CC BY 4.0, code MIT.</p>
+  <nav aria-label="Feeds">
+    <a href="{{ root }}feed.xml">RSS</a><a href="{{ root }}api/latest.json">JSON</a><a href="{{ root }}api/watch.json">Watch JSON</a><a href="{{ p.repo_url }}">Source</a>
+  </nav>
+</div></footer>
+{% block scripts %}{% endblock %}
+</body>
+</html>
