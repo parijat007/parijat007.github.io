@@ -52,6 +52,12 @@ def validate(digest: dict, items: list[dict], tiers: dict | None = None) -> tupl
         if e.get("exploitation") == "EXPLOITED_CONFIRMED" and not kev_backed and not (cited_tiers & CAN_CONFIRM):
             e["exploitation"] = "EXPLOITED_REPORTED"
             problems.append(f"downgraded to reported (no authority/vendor/KEV source): {e.get('headline', '?')[:50]}")
+        # A "Public PoC" label needs evidence: a PoC index hit, or the source itself saying so
+        poc_text = re.search(r"proof[- ]of[- ]concept|\bpoc\b|exploit code|publicly available exploit",
+                             " ".join(f"{it.get('title', '')} {it.get('text', '')}" for it in cited), re.I)
+        if e.get("exploitation") == "POC_PUBLIC" and not (any(it.get("public_poc") for it in cited) or poc_text):
+            e["exploitation"] = "NO_KNOWN_EXPLOIT"
+            problems.append(f"PoC label removed (no PoC evidence in sources): {e.get('headline', '?')[:50]}")
         if cited_tiers and cited_tiers <= {"press"} and e.get("confidence") == "HIGH":
             e["confidence"] = "MEDIUM"
         e["source_tiers"] = sorted(cited_tiers)

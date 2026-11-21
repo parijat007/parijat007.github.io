@@ -204,3 +204,16 @@ def test_playbook_classifies_by_cwe_then_keywords():
     assert classify(["CWE-502"], "") == "deserialization"
     assert classify([], "authentication bypass using an alternate path or channel") == "auth"
     assert classify([], "something else") == "default"
+
+
+def test_poc_label_requires_evidence():
+    items = [{"id": "x", "source_name": "Cisco PSIRT", "url": "https://sec.cloudapps.cisco.com/b",
+              "title": "OpenJDK flaw", "text": "A vulnerability could allow remote code execution.", "cves": []}]
+    d = {"items": [{"headline": "h", "category": "VULNERABILITY", "exploitation": "POC_PUBLIC",
+                    "primary_source": "https://sec.cloudapps.cisco.com/b"}]}
+    out, problems = validate(d, items, {"Cisco PSIRT": "vendor"})
+    assert out["items"][0]["exploitation"] == "NO_KNOWN_EXPLOIT"
+    items[0]["public_poc"] = {"count": 3}
+    d["items"][0]["exploitation"] = "POC_PUBLIC"
+    out, _ = validate(d, items, {"Cisco PSIRT": "vendor"})
+    assert out["items"][0]["exploitation"] == "POC_PUBLIC"
