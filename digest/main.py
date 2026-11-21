@@ -128,7 +128,10 @@ SEV_FROM_CVSS = [(9.0, "CRITICAL"), (7.0, "HIGH"), (4.0, "MEDIUM"), (0, "INFO")]
 
 def fallback_digest(items: list[dict], run_date: str) -> dict:
     """Deterministic brief used when the local model is unavailable. Facts only, no prose generation."""
-    picks = [it for it in items if it.get("kev")][:5] or [it for it in items if (it.get("cvss") or 0) >= 9][:5]
+    # Facts-only mode: lead with the authoritative KEV records themselves, not news articles about them
+    picks = ([it for it in items if it.get("source_type") == "kev"][:5]
+             or [it for it in items if it.get("kev")][:5]
+             or [it for it in items if (it.get("cvss") or 0) >= 9][:5])
     out = []
     for i, it in enumerate(picks, 1):
         cvss = it.get("cvss") or 0

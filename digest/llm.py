@@ -83,15 +83,18 @@ def _openai_compat(name: str, pc: dict, system: str, user: str) -> tuple[str, di
         body["response_format"] = {"type": "json_object"}
     if pc.get("no_think"):
         body["chat_template_kwargs"] = {"enable_thinking": False}   # Qwen3 family
-    r = requests.post(f"{base}/chat/completions", json=body, headers=headers,
-                      timeout=pc.get("timeout_seconds", 180))
+    url = f"{base}/chat/completions"
+    r = requests.post(url, json=body, headers=headers, timeout=pc.get("timeout_seconds", 180),
+                      allow_redirects=False)   # a redirect turns POST into GET; surface it instead
+    if 300 <= r.status_code < 400:
+        raise RuntimeError(f"{name}: redirected HTTP {r.status_code} from {url} to {r.headers.get('location')}")
     if r.status_code >= 400:
         raise RuntimeError(f"{name}: HTTP {r.status_code} {r.text[:300]}")
     try:
         data = r.json()
     except ValueError:
         raise RuntimeError(f"{name}: non-JSON response HTTP {r.status_code} "
-                           f"content-type={r.headers.get('content-type')} body={r.text[:300]!r}") from None
+                           f"content-type={r.headers.get('content-type')} url={r.url} body={r.text[:300]!r}") from None
     if not data.get("choices"):
         raise RuntimeError(f"{name}: no choices in response: {str(data)[:300]}")
     text = THINK_RE.sub("", data["choices"][0]["message"].get("content") or "")
