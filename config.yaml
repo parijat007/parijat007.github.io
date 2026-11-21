@@ -26,6 +26,8 @@ llm:
       label: Gemini Flash (free tier)
       api_key_env: [GEMINI_API_KEY]
       json: object
+      reasoning_effort: low       # hidden "thinking" tokens count against max_tokens; keep them small
+      max_output_tokens: 12000
       max_items: 40
       max_text_chars: 400
       timeout_seconds: 180

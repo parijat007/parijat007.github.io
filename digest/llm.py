@@ -81,6 +81,8 @@ def _openai_compat(name: str, pc: dict, system: str, user: str) -> tuple[str, di
                                    "json_schema": {"name": "digest", "strict": True, "schema": DIGEST_SCHEMA}}
     elif pc.get("json") == "object":
         body["response_format"] = {"type": "json_object"}
+    if pc.get("reasoning_effort"):
+        body["reasoning_effort"] = pc["reasoning_effort"]
     if pc.get("no_think"):
         body["chat_template_kwargs"] = {"enable_thinking": False}   # Qwen3 family
     url = f"{base}/chat/completions"
@@ -97,7 +99,10 @@ def _openai_compat(name: str, pc: dict, system: str, user: str) -> tuple[str, di
                            f"content-type={r.headers.get('content-type')} url={r.url} body={r.text[:300]!r}") from None
     if not data.get("choices"):
         raise RuntimeError(f"{name}: no choices in response: {str(data)[:300]}")
-    text = THINK_RE.sub("", data["choices"][0]["message"].get("content") or "")
+    choice = data["choices"][0]
+    text = THINK_RE.sub("", choice["message"].get("content") or "")
+    if choice.get("finish_reason") == "length":
+        raise RuntimeError(f"{name}: output truncated at max_tokens ({len(text)} chars); raise max_output_tokens")
     return text, data.get("usage", {})
 
 

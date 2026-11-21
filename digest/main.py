@@ -12,6 +12,7 @@ import json
 import logging
 import os
 import sys
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -98,10 +99,14 @@ def call_llm(cfg: dict, items: list[dict], ctx: dict) -> tuple[str, str]:
                     raise ValueError("no items array")
                 return text, name
             except Exception as e:  # noqa: BLE001  (network, quota, bad JSON: move on)
-                log.warning("provider %s attempt %d failed: %s", name, attempt, str(e)[:200])
+                log.warning("provider %s attempt %d failed: %s", name, attempt, str(e)[:300])
+                if isinstance(e, ValueError) and "text" in locals():
+                    log.warning("provider %s returned (first 300 chars): %r", name, text[:300])
                 errors.append(f"{name}: {type(e).__name__}")
-                if "HTTP 429" in str(e) or "no API key" in str(e) or "Connection" in type(e).__name__:
+                if "no API key" in str(e) or "Connection" in type(e).__name__:
                     break
+                if any(code in str(e) for code in ("HTTP 429", "HTTP 503", "HTTP 500")) and attempt == 1:
+                    time.sleep(30)   # overloaded or rate-limited: wait, then one more try
     raise RuntimeError("all model providers failed: " + "; ".join(errors))
 
 
