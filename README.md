@@ -12,8 +12,8 @@ Architecture and full flow: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 | Situation | What happens |
 |---|---|
 | Mac on at 6:35 AM | Local llama-server (Qwen3.6-35B-A3B) writes the brief, pushes it, site deploys |
-| Mac on but port busy (e.g. SEC545 batch) | Mac uses GitHub Models, then Gemini |
-| Mac asleep/off | 7:20 AM ET: GitHub Actions writes it with GitHub Models, then Gemini |
+| Mac on but port busy (e.g. SEC545 batch) | Mac uses Gemini, then Groq, then OpenRouter |
+| Mac asleep/off | 7:20 AM ET: GitHub Actions writes it with Gemini, then Groq, then OpenRouter |
 | Every model fails or is rate-limited | Facts-only brief from KEV/NVD data, no commentary |
 | Mac wakes later | launchd catch-up runs, sees today's brief exists, does nothing |
 | Any hour | Hourly watch runs on GitHub, no model; KEV hit on your stack alerts WhatsApp + Teams |
@@ -43,7 +43,7 @@ Enforced in code:
    | `GEMINI_API_KEY` | second cloud backup (free key at aistudio.google.com) |
    | `NVD_API_KEY` | higher NVD rate limits (optional) |
    | `HEALTHCHECK_URL_WATCH`, `HEALTHCHECK_URL_BRIEF` | missed-run alerts (optional, healthchecks.io) |
-   GitHub Models needs no secret: workflows request `models: read` for the built-in token.
+   Cloud backups: `GEMINI_API_KEY`, `GROQ_API_KEY`, `OPENROUTER_API_KEY` (all free, no card). Any one is enough; more means more resilience.
 4. Actions → *Hourly watch* → Run workflow. Then *Cloud brief* → Run workflow.
 5. Set `site.url` in `config.yaml`; fill the `[brackets]` in `site/profile.yaml`.
 
@@ -62,14 +62,14 @@ Use a personal or community team; check your organisation's policy before postin
 ### 4. Before going public
 - Check your employer's outside-activity and social media policy; `show_employers: false` hides names.
 - Pin every `uses:` action to a commit SHA; enable Dependabot, branch protection, and a `correction` issue label.
-- Verify the cloud model ids in `config.yaml` against the GitHub Models catalog and AI Studio.
+- Verify the cloud model ids in `config.yaml` against AI Studio, Groq and OpenRouter model lists.
 
 ## Local commands
 ```bash
 python -m pytest -q tests                          # 14 offline tests
 python -m digest.watch --no-alert                  # update hourly watch data
 python -m digest.main --dry-run                    # full brief; print WhatsApp text and Teams card size
-WF_LLM_CHAIN=github_models,gemini python -m digest.main --dry-run   # simulate Mac-off path
+WF_LLM_CHAIN=gemini,groq,openrouter python -m digest.main --dry-run   # simulate Mac-off path
 python site/build.py && python -m http.server -d _site 8000
 ```
 

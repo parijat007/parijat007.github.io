@@ -26,8 +26,8 @@ flowchart TB
   subgraph DAILY["Daily brief · model chain"]
     M0{Mac awake?<br/>6:35 AM + on wake}
     M1[Local llama-server<br/>Qwen3.6-35B-A3B · JSON grammar]
-    M2[GitHub Models<br/>free · built-in token]
-    M3[Gemini free tier]
+    M2[Gemini · Groq · OpenRouter<br/>free tiers]
+    M3[next provider in chain]
     M4[Facts-only brief<br/>no model]
     C0{Cloud check 7:20 AM ET:<br/>brief already published?}
   end

@@ -10,8 +10,10 @@ python3 -m venv .venv && .venv/bin/pip install -q -r requirements.txt
 
 echo "2/4 Secrets -> macOS Keychain (input hidden; press Enter to skip optional ones)"
 store() { read -rs "?$2: " v; echo; [[ -n "$v" ]] && security add-generic-password -U -a watchfloor -s "$1" -w "$v"; }
-store github-push-token   "GitHub fine-grained token (this repo: Contents read/write; account: Models read)"
+store github-push-token   "GitHub fine-grained token (this repo only: Contents read/write)"
 store gemini-apikey       "Gemini API key from aistudio.google.com (optional backup)"
+store groq-apikey         "Groq API key from console.groq.com/keys (optional backup)"
+store openrouter-apikey   "OpenRouter API key from openrouter.ai/keys (optional backup)"
 store teams-webhook-url   "Teams Workflows webhook URL (optional)"
 store callmebot-phone     "CallMeBot phone (+1...)"
 store callmebot-apikey    "CallMeBot API key"

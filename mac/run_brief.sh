@@ -14,7 +14,7 @@ export NVD_API_KEY="$(kc nvd-apikey)" TEAMS_WEBHOOK_URL="$(kc teams-webhook-url)
 export GEMINI_API_KEY="$(kc gemini-apikey)"
 export WF_LOCAL_BASE_URL="http://127.0.0.1:${LLAMA_PORT}/v1"
 GH_TOKEN="$(kc github-push-token)"
-export GITHUB_MODELS_TOKEN="$GH_TOKEN"   # same fine-grained token, with Models: read added
+export GROQ_API_KEY="$(kc groq-apikey)" OPENROUTER_API_KEY="$(kc openrouter-apikey)"
 HC_URL="$(kc healthcheck-url-brief)"
 
 cd "$REPO_DIR"
@@ -28,7 +28,7 @@ if curl -fsS -m 3 "http://127.0.0.1:${LLAMA_PORT}/health" >/dev/null 2>&1; then
   # Something is already serving (e.g. an overnight SEC545 batch). Don't hijack it.
   if ! curl -fsS -m 3 "http://127.0.0.1:${LLAMA_PORT}/v1/models" | grep -qi "$(basename "$MODEL_PATH" .gguf)"; then
     echo "port ${LLAMA_PORT} busy with another model (e.g. SEC545 batch); using free cloud models instead"
-    export WF_LLM_CHAIN="github_models,gemini"
+    export WF_LLM_CHAIN="gemini,groq,openrouter"
   fi
 else
   echo "starting llama-server"
@@ -37,7 +37,7 @@ else
     -ctk q8_0 -ctv q8_0 --jinja --host 127.0.0.1 >>"$HOME/Library/Logs/watchfloor-llama.log" 2>&1 &
   LLAMA_PID=$!; STARTED=1
   for i in {1..90}; do curl -fsS -m 2 "http://127.0.0.1:${LLAMA_PORT}/health" >/dev/null 2>&1 && break; sleep 2; done
-  curl -fsS -m 2 "http://127.0.0.1:${LLAMA_PORT}/health" >/dev/null 2>&1 || { echo "llama-server failed to start; using cloud models"; export WF_LLM_CHAIN="github_models,gemini"; }
+  curl -fsS -m 2 "http://127.0.0.1:${LLAMA_PORT}/health" >/dev/null 2>&1 || { echo "llama-server failed to start; using cloud models"; export WF_LLM_CHAIN="gemini,groq,openrouter"; }
 fi
 
 # caffeinate keeps the Mac awake for the duration of the run only

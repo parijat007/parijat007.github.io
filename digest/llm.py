@@ -60,7 +60,7 @@ THINK_RE = re.compile(r"<think>.*?</think>", re.S)
 
 
 def _openai_compat(name: str, pc: dict, system: str, user: str) -> tuple[str, dict]:
-    """One code path for every provider: llama-server, GitHub Models, Gemini, Groq, OpenRouter..."""
+    """One code path for every provider: llama-server, Gemini, Groq, OpenRouter..."""
     base = os.environ.get(f"WF_{name.upper()}_BASE_URL", pc["base_url"]).rstrip("/")
     headers = {"Content-Type": "application/json"}
     key = next((os.environ[k] for k in pc.get("api_key_env", []) if os.environ.get(k)), None)
@@ -120,9 +120,20 @@ def chain(cfg: dict) -> list[str]:
 def complete(name: str, cfg: dict, system: str, user: str) -> str:
     pc = cfg["providers"][name]
     fn = _anthropic if pc.get("kind") == "anthropic" else _openai_compat
-    text, usage = fn(name, pc, system, user)
-    log.info("LLM provider=%s model=%s usage=%s", name, pc.get("model"), usage)
-    return text
+    models = pc.get("models") or [pc.get("model", "local")]
+    last = None
+    for m in models:   # model ids get retired; fall through the list on 404/400 "model not found"
+        try:
+            text, usage = fn(name, {**pc, "model": m}, system, user)
+            log.info("LLM provider=%s model=%s usage=%s", name, m, usage)
+            pc["_used_model"] = m
+            return text
+        except RuntimeError as e:
+            last = e
+            if not any(k in str(e) for k in ("HTTP 404", "HTTP 400", "not found", "does not exist")):
+                raise
+            log.warning("%s: model %s unavailable, trying next", name, m)
+    raise last or RuntimeError(f"{name}: no models configured")
 
 
 def local_up(cfg: dict) -> bool:
