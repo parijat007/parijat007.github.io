@@ -1,0 +1,76 @@
+{
+ "status": {
+  "CISA KEV": {
+   "status": "ok (4 new)",
+   "checked": "2026-11-21 18:49 UTC"
+  },
+  "NVD": {
+   "status": "ok (4)",
+   "checked": "2026-11-21 18:49 UTC"
+  },
+  "GitHub Advisory": {
+   "status": "ok (37)",
+   "checked": "2026-11-21 18:49 UTC"
+  },
+  "GitHub": {
+   "status": "ok (10)",
+   "checked": "2026-11-21 18:49 UTC"
+  },
+  "CISA Advisories": {
+   "status": "ok (0)",
+   "checked": "2026-11-21 18:49 UTC"
+  },
+  "Microsoft MSRC": {
+   "status": "ok (0)",
+   "checked": "2026-11-21 18:49 UTC"
+  },
+  "Microsoft Security": {
+   "status": "ok (1)",
+   "checked": "2026-11-21 18:49 UTC"
+  },
+  "Palo Alto PSIRT": {
+   "status": "ok (2)",
+   "checked": "2026-11-21 18:49 UTC"
+  },
+  "Fortinet PSIRT": {
+   "status": "ok (0)",
+   "checked": "2026-11-21 18:49 UTC"
+  },
+  "Cisco PSIRT": {
+   "status": "ok (3)",
+   "checked": "2026-11-21 18:49 UTC"
+  },
+  "AWS Security Bulletins": {
+   "status": "ok (2)",
+   "checked": "2026-11-21 18:49 UTC"
+  },
+  "Unit 42": {
+   "status": "ok (1)",
+   "checked": "2026-11-21 18:49 UTC"
+  },
+  "Google Threat Intel": {
+   "status": "ok (0)",
+   "checked": "2026-11-21 18:49 UTC"
+  },
+  "BleepingComputer": {
+   "status": "ok (8)",
+   "checked": "2026-11-21 18:49 UTC"
+  },
+  "The Hacker News": {
+   "status": "ok (7)",
+   "checked": "2026-11-21 18:49 UTC"
+  },
+  "SecurityWeek": {
+   "status": "ok (3)",
+   "checked": "2026-11-21 18:49 UTC"
+  },
+  "The Record": {
+   "status": "ok (5)",
+   "checked": "2026-11-21 18:49 UTC"
+  },
+  "Krebs on Security": {
+   "status": "ok (1)",
+   "checked": "2026-11-21 18:49 UTC"
+  }
+ }
+}
