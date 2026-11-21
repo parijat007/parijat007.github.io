@@ -217,3 +217,13 @@ def test_poc_label_requires_evidence():
     d["items"][0]["exploitation"] = "POC_PUBLIC"
     out, _ = validate(d, items, {"Cisco PSIRT": "vendor"})
     assert out["items"][0]["exploitation"] == "POC_PUBLIC"
+
+
+def test_headline_cannot_overclaim_exploitation():
+    items = [{"id": "x", "source_name": "Cisco PSIRT", "url": "https://sec.cloudapps.cisco.com/c",
+              "title": "nginx flaws", "text": "Vulnerabilities in nginx affect products.", "cves": []}]
+    d = {"items": [{"headline": "nginx RCEs Exploited in Palo Alto & Cisco Products", "category": "VULNERABILITY",
+                    "exploitation": "NO_KNOWN_EXPLOIT", "primary_source": "https://sec.cloudapps.cisco.com/c"}]}
+    out, problems = validate(d, items, {"Cisco PSIRT": "vendor"})
+    assert "xploited" not in out["items"][0]["headline"]
+    assert any("toned down" in p for p in problems)

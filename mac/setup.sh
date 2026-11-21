@@ -9,7 +9,13 @@ echo "1/4 Python environment"
 python3 -m venv .venv && .venv/bin/pip install -q -r requirements.txt
 
 echo "2/4 Secrets -> macOS Keychain (input hidden; press Enter to skip optional ones)"
-store() { read -rs "?$2: " v; echo; [[ -n "$v" ]] && security add-generic-password -U -a watchfloor -s "$1" -w "$v"; }
+store() {
+  # Re-runs keep existing keys: press Enter to keep (or skip), or paste a new value to replace
+  local have=""; security find-generic-password -a watchfloor -s "$1" >/dev/null 2>&1 && have=" [saved; Enter keeps it]"
+  local v; read -rs "?$2${have}: " v; echo
+  if [[ -n "$v" ]]; then security add-generic-password -U -a watchfloor -s "$1" -w "$v"; fi
+  return 0
+}
 store github-push-token   "GitHub token (optional: press Enter to use your gh sign-in instead)"
 store gemini-apikey       "Gemini API key from aistudio.google.com (optional backup)"
 store groq-apikey         "Groq API key from console.groq.com/keys (optional backup)"
