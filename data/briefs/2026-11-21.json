@@ -1,0 +1,224 @@
+{
+ "run_date": "2026-11-21",
+ "quiet_day": false,
+ "executive_pulse": "Advisories from Cisco and Palo Alto Networks confirm enterprise exposure to critical OpenJDK and NGINX flaws, alongside an emergency root CA distrust advisory.",
+ "items": [
+  {
+   "rank": 1,
+   "headline": "Oracle OpenJDK Base64 RCE Affects Cisco and Palo Alto Networks Portfolios",
+   "category": "VULNERABILITY",
+   "severity": "CRITICAL",
+   "exploitation": "POC_PUBLIC",
+   "is_update": false,
+   "stack_match": [
+    "Cisco",
+    "Palo Alto"
+   ],
+   "target": "Oracle OpenJDK 17.0.6+ on x86-64 / Cisco & Palo Alto Networks products",
+   "identifiers": [
+    "CVE-2026-114938"
+   ],
+   "kev_due_date": null,
+   "summary": "Critical OpenJDK vulnerability allows remote code execution when processing Base64 encoded content on x86-64 platforms, prompting product impact assessments across enterprise infrastructure.",
+   "action": "Audit environments for vulnerable OpenJDK runtime dependencies across impacted vendor appliances and deploy vendor updates.",
+   "hunt": null,
+   "fixed_versions": null,
+   "confidence": "HIGH",
+   "primary_source": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nov2026-java-rce-eCa6ss9z?vs_f=Cisco%20Security%20Advisory%26vs_cat=Security%20Intelligence%26vs_type=RSS%26vs_p=Vulnerability%20in%20Oracle%20OpenJDK%20(Java4Shell)%20Affecting%20Cisco%20Products:%20November%202026%26vs_k=1",
+   "corroborating_sources": [
+    "https://security.paloaltonetworks.com/CVE-2026-114938"
+   ],
+   "source_tiers": [
+    "vendor"
+   ],
+   "remediation": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode",
+     "Run the service as a non-privileged user and restrict outbound connections"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries",
+    "fixed_versions": null
+   }
+  },
+  {
+   "rank": 2,
+   "headline": "Multiple Critical Flaws in NGINX Expose Cisco and Palo Alto Appliances",
+   "category": "VULNERABILITY",
+   "severity": "CRITICAL",
+   "exploitation": "POC_PUBLIC",
+   "is_update": false,
+   "stack_match": [
+    "Cisco",
+    "Palo Alto"
+   ],
+   "target": "NGINX 1.9.5 through 1.31.8 / Cisco & Palo Alto Networks products",
+   "identifiers": [
+    "CVE-2026-123633",
+    "CVE-2026-123007",
+    "CVE-2026-113425",
+    "CVE-2026-121810",
+    "CVE-2026-123634"
+   ],
+   "kev_due_date": null,
+   "summary": "Multiple vulnerabilities in NGINX, including ngx_mail_proxy_module defects, enable remote code execution across upstream packages integrated into enterprise edge systems.",
+   "action": "Upgrade standalone NGINX instances to fixed branches and track vendor hardware/software patch matrices.",
+   "hunt": null,
+   "fixed_versions": "1.31.9 (mainline), 1.30.7 (stable)",
+   "confidence": "HIGH",
+   "primary_source": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nginx-nov-2026-e8jska2s?vs_f=Cisco%20Security%20Advisory%26vs_cat=Security%20Intelligence%26vs_type=RSS%26vs_p=Vulnerabilities%20in%20nginx%20Affecting%20Cisco%20Products:%20November%202026%26vs_k=1",
+   "corroborating_sources": [
+    "https://security.paloaltonetworks.com/CVE-2026-123633"
+   ],
+   "source_tiers": [
+    "vendor"
+   ],
+   "remediation": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Restrict the device's management interface to an admin network; check for new admin accounts and config changes",
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries",
+    "fixed_versions": "1.31.9 (mainline), 1.30.7 (stable)"
+   }
+  },
+  {
+   "rank": 3,
+   "headline": "AWS ssosync Vulnerable to Privilege Inheritance on Reused Identifiers",
+   "category": "VULNERABILITY",
+   "severity": "MEDIUM",
+   "exploitation": "NO_KNOWN_EXPLOIT",
+   "is_update": false,
+   "stack_match": [
+    "AWS"
+   ],
+   "target": "AWS ssosync before 2.9.5",
+   "identifiers": [
+    "CVE-2026-133199"
+   ],
+   "kev_due_date": null,
+   "summary": "Incorrect privilege assignment in user and group reconciliation logic allows users assigned a reused Google Workspace email or group name to inherit IAM Identity Center permissions.",
+   "action": "Upgrade AWS ssosync to version 2.9.5 or later.",
+   "hunt": "AWS CloudTrail: changes to IAM Identity Center group memberships and permission sets tied to ssosync sync events.",
+   "fixed_versions": "2.9.5",
+   "confidence": "HIGH",
+   "primary_source": "https://aws.amazon.com/security/security-bulletins/rss/2026-194-aws/",
+   "corroborating_sources": [],
+   "source_tiers": [
+    "vendor"
+   ],
+   "remediation": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching",
+    "fixed_versions": "2.9.5"
+   }
+  },
+  {
+   "rank": 4,
+   "headline": "Emergency Distrust of eMudhra Root and Intermediate CAs Following Key Ceremony Flaw",
+   "category": "SUPPLY_CHAIN",
+   "severity": "HIGH",
+   "exploitation": "NO_KNOWN_EXPLOIT",
+   "is_update": false,
+   "stack_match": [
+    "Cisco"
+   ],
+   "target": "eMudhra Root and Intermediate Certificate Authorities",
+   "identifiers": [],
+   "kev_due_date": null,
+   "summary": "An implementation error during an April 2025 Key Generation Ceremony left private keys for eight intermediate certificates vulnerable to brute-force compromise, triggering emergency distrust advisories.",
+   "action": "Remove or untrust affected eMudhra root and intermediate CAs across trust stores and edge certificates.",
+   "hunt": null,
+   "fixed_versions": null,
+   "confidence": "HIGH",
+   "primary_source": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-emudhra-info-ScS22A1r?vs_f=Cisco%20Security%20Advisory%26vs_cat=Security%20Intelligence%26vs_type=RSS%26vs_p=Cisco%20Informational%20for%20Emergency%20Distrust%20of%20eMudhra%20Root%20and%20Intermediate%20Certificate%20Authorities%26vs_k=1",
+   "corroborating_sources": [],
+   "source_tiers": [
+    "vendor"
+   ],
+   "remediation": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching",
+    "fixed_versions": null
+   }
+  },
+  {
+   "rank": 5,
+   "headline": "Arbitrary File Traversal in AWS Labs Document Loader MCP Server",
+   "category": "AI_THREAT",
+   "severity": "MEDIUM",
+   "exploitation": "NO_KNOWN_EXPLOIT",
+   "is_update": false,
+   "stack_match": [
+    "AWS"
+   ],
+   "target": "Amazon awslabs.document-loader-mcp-server 1.0.10 through 1.0.20",
+   "identifiers": [
+    "CVE-2026-130901"
+   ],
+   "kev_due_date": null,
+   "summary": "Improper pathname validation allows context-dependent actors to read files outside the intended base directory via crafted documents processed by an MCP client.",
+   "action": "Update awslabs.document-loader-mcp-server past version 1.0.20.",
+   "hunt": null,
+   "fixed_versions": null,
+   "confidence": "HIGH",
+   "primary_source": "https://aws.amazon.com/security/security-bulletins/rss/2026-195-aws/",
+   "corroborating_sources": [],
+   "source_tiers": [
+    "vendor"
+   ],
+   "remediation": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching",
+    "fixed_versions": null
+   }
+  }
+ ],
+ "notes": "Previously reported KEV items (CVE-2025-42884, CVE-2026-123890, CVE-2026-129448, CVE-2026-76466) were omitted as no material status change occurred within the window.",
+ "meta": {
+  "generated_at": "2026-11-21T19:14:45+00:00",
+  "mode": "analyst",
+  "prompt_version": "v2.1",
+  "model": "Gemini Flash (free tier)",
+  "provider": "gemini",
+  "window_start": "2026-11-20 13:14 UTC",
+  "window_end": "2026-11-21 19:14 UTC",
+  "items_screened": 40,
+  "dropped": [],
+  "sources": {
+   "CISA KEV": "ok (4 new)",
+   "NVD": "ok (4)",
+   "GitHub Advisory": "ok (37)",
+   "GitHub": "ok (10)",
+   "CISA Advisories": "ok (0)",
+   "Microsoft MSRC": "ok (0)",
+   "Microsoft Security": "ok (1)",
+   "Palo Alto PSIRT": "ok (2)",
+   "Fortinet PSIRT": "ok (0)",
+   "Cisco PSIRT": "ok (3)",
+   "AWS Security Bulletins": "ok (2)",
+   "Unit 42": "ok (1)",
+   "Google Threat Intel": "ok (0)",
+   "BleepingComputer": "ok (8)",
+   "The Hacker News": "ok (7)",
+   "SecurityWeek": "ok (3)",
+   "The Record": "ok (5)",
+   "Krebs on Security": "ok (1)"
+  }
+ }
+}
