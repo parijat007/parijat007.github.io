@@ -2,6 +2,7 @@
 # Watchfloor daily brief on the Mac: collect -> local model (cloud models if local fails) -> validate -> WhatsApp -> push data -> site deploys.
 # Started by launchd (see com.threatbrief.daily.plist). Safe to run by hand.
 set -euo pipefail
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 HERE="${0:A:h}"
 source "$HERE/brief.env"
 LOG="$HOME/Library/Logs/watchfloor.log"
@@ -18,13 +19,19 @@ export GROQ_API_KEY="$(kc groq-apikey)" OPENROUTER_API_KEY="$(kc openrouter-apik
 HC_URL="$(kc healthcheck-url-brief)"
 
 cd "$REPO_DIR"
-git pull --rebase --autostash --quiet "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPO}.git" main
+# Use a Keychain token if one was stored; otherwise the gh CLI sign-in (gh auth setup-git) handles auth
+if [[ -n "$GH_TOKEN" ]]; then REMOTE="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPO}.git"; else REMOTE="origin"; fi
+git pull --rebase --autostash --quiet "$REMOTE" main
 
 STARTED=0
 cleanup() { if [[ $STARTED == 1 ]]; then kill "$LLAMA_PID" 2>/dev/null || true; echo "llama-server stopped"; fi; }
 trap cleanup EXIT
 
-if curl -fsS -m 3 "http://127.0.0.1:${LLAMA_PORT}/health" >/dev/null 2>&1; then
+if pgrep -x llama-server >/dev/null && ! curl -fsS -m 3 "http://127.0.0.1:${LLAMA_PORT}/health" >/dev/null 2>&1; then
+  # Another model is loaded (e.g. SEC545 generator or 70B judge). Two models can exceed 64 GB: use cloud.
+  echo "another llama-server is running; not loading a second model. Using free cloud models."
+  export WF_LLM_CHAIN="gemini,groq,openrouter"
+elif curl -fsS -m 3 "http://127.0.0.1:${LLAMA_PORT}/health" >/dev/null 2>&1; then
   # Something is already serving (e.g. an overnight SEC545 batch). Don't hijack it.
   if ! curl -fsS -m 3 "http://127.0.0.1:${LLAMA_PORT}/v1/models" | grep -qi "$(basename "$MODEL_PATH" .gguf)"; then
     echo "port ${LLAMA_PORT} busy with another model (e.g. SEC545 batch); using free cloud models instead"
@@ -46,7 +53,7 @@ caffeinate -i "$REPO_DIR/.venv/bin/python" -m digest.main --skip-if-exists
 git add data/ state/
 if ! git diff --cached --quiet; then
   git -c user.name="watchfloor-bot" -c user.email="watchfloor-bot@users.noreply.github.com" commit -qm "brief: $(date +%F)"
-  git push --quiet "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPO}.git" HEAD:main
+  git push --quiet "$REMOTE" HEAD:main
   echo "pushed; GitHub Pages deploy starts automatically"
 fi
 [[ -n "$HC_URL" ]] && curl -fsS -m 10 "$HC_URL" >/dev/null || true
