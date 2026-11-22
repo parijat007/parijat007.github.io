@@ -1,296 +1,299 @@
 {
- "run_date": "2026-11-22",
- "quiet_day": false,
- "executive_pulse": "CISA added CVE-2026-129448 to KEV; Cisco nginx RCEs remain unpatched in production. Rackspace Spot breach exposed Kubernetes secrets; AI agent TTPs and detection tooling are the primary new signals.",
- "notes": "CVE-2026-129448 status changed: added to KEV. CVE-2026-113425 is an update: Cisco PSIRT advisory published with fixed versions.",
- "items": [
-  {
-   "rank": 1,
-   "headline": "CISA KEV: CVE-2026-129448 (VMware vCenter)",
-   "category": "VULNERABILITY",
-   "severity": "CRITICAL",
-   "exploitation": "EXPLOITED_CONFIRMED",
-   "is_update": true,
-   "stack_match": [
-    "VMware"
-   ],
-   "target": "Broadcom VMware vCenter",
-   "identifiers": [
-    "CVE-2026-129448"
-   ],
-   "kev_due_date": "2026-11-23",
-   "summary": "CISA added CVE-2026-129448 to KEV on 2026-11-20. CVSS 9.8. Deserialization of untrusted data. Active exploitation confirmed.",
-   "action": "Patch VMware vCenter immediately. Due date 2026-11-23.",
-   "hunt": "null",
-   "fixed_versions": null,
-   "confidence": "MEDIUM",
-   "primary_source": "https://thehackernews.com/2026/11/hackers-exploit-critical-vmware-cisco.html",
-   "corroborating_sources": [],
-   "source_tiers": [
-    "press"
-   ],
-   "remediation": {
-    "weakness": "Unsafe deserialization",
-    "compensating_controls": [
-     "Restrict the device's management interface to an admin network; check for new admin accounts and config changes",
-     "Block or filter untrusted network access to the affected endpoint (WAF rule or network ACL)",
-     "Run the service with least privilege and no outbound internet access where possible"
-    ],
-    "verify": "Hunt for unexpected child processes spawned by the application server process",
-    "fixed_versions": null
-   }
-  },
-  {
-   "rank": 2,
-   "headline": "Cisco nginx RCEs (CVE-2026-113425 et al.)",
-   "category": "VULNERABILITY",
-   "severity": "CRITICAL",
-   "exploitation": "POC_PUBLIC",
-   "is_update": true,
-   "stack_match": [
-    "Cisco"
-   ],
-   "target": "Cisco products using nginx 1.9.5-1.31.8",
-   "identifiers": [
-    "CVE-2026-113425",
-    "CVE-2026-121810",
-    "CVE-2026-123007",
-    "CVE-2026-123633",
-    "CVE-2026-123634"
-   ],
-   "kev_due_date": null,
-   "summary": "Cisco PSIRT advisory released for multiple nginx RCEs affecting Cisco products. Fixed in nginx 1.31.9 (mainline) and 1.30.7 (stable). 37 public PoCs.",
-   "action": "Upgrade nginx to 1.31.9 or 1.30.7 in all Cisco-affected deployments.",
-   "hunt": "null",
-   "fixed_versions": "nginx 1.31.9, 1.30.7",
-   "confidence": "HIGH",
-   "primary_source": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nginx-nov-2026-e8jska2s?vs_f=Cisco%20Security%20Advisory%26vs_cat=Security%20Intelligence%26vs_type=RSS%26vs_p=Vulnerabilities%20in%20nginx%20Affecting%20Cisco%20Products:%20November%202026%26vs_k=1",
-   "corroborating_sources": [],
-   "source_tiers": [
-    "vendor"
-   ],
-   "remediation": {
-    "weakness": "Command or code injection",
-    "compensating_controls": [
-     "Remove internet exposure of the affected interface until patched",
-     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode",
-     "Run the service as a non-privileged user and restrict outbound connections"
-    ],
-    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries",
-    "fixed_versions": "nginx 1.31.9, 1.30.7"
-   }
-  },
-  {
-   "rank": 3,
-   "headline": "Rackspace Spot breach exposes Kubernetes secrets",
-   "category": "ACTIVE_ATTACK",
-   "severity": "HIGH",
-   "exploitation": "EXPLOITED_REPORTED",
-   "is_update": false,
-   "stack_match": [
-    "Kubernetes"
-   ],
-   "target": "Rackspace Spot cloud platform",
-   "identifiers": [],
-   "kev_due_date": null,
-   "summary": "Rackspace confirmed hackers breached Spot using compromised credentials, deploying unauthorized workloads and accessing Kubernetes secrets in customer clusters.",
-   "action": "Audit Rackspace Spot access logs for unauthorized workload deployments and secret access.",
-   "hunt": "Kubernetes audit logs: unauthorized workload creation or secret access from unexpected identities.",
-   "fixed_versions": null,
-   "confidence": "MEDIUM",
-   "primary_source": "https://www.bleepingcomputer.com/news/security/rackspace-spot-breach-let-hackers-access-customer-kubernetes-secrets/",
-   "corroborating_sources": [],
-   "source_tiers": [
-    "press"
-   ],
-   "remediation": {
-    "weakness": "Vulnerability",
-    "compensating_controls": [
-     "Reduce exposure: remove internet access to the affected service or interface until patched",
-     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
-    ],
-    "verify": "Confirm the installed version on every instance after patching",
-    "fixed_versions": null
-   }
-  },
-  {
-   "rank": 4,
-   "headline": "China-linked AI agents exploit MONAI Label zero-day",
-   "category": "ACTIVE_ATTACK",
-   "severity": "HIGH",
-   "exploitation": "EXPLOITED_REPORTED",
-   "is_update": false,
-   "stack_match": [],
-   "target": "MONAI Label 0.8.5 and earlier",
-   "identifiers": [],
-   "kev_due_date": null,
-   "summary": "Amazon Threat Intelligence reports China-linked actors used autonomous AI agents to find and exploit a zero-day in MONAI Label, gaining root access to a university server.",
-   "action": "Update MONAI Label to latest version. Restrict file write permissions in default setup.",
-   "hunt": "null",
-   "fixed_versions": null,
-   "confidence": "MEDIUM",
-   "primary_source": "https://thehackernews.com/2026/11/attackers-ai-agents-found-zero-day-in.html",
-   "corroborating_sources": [
-    "https://www.securityweek.com/amazon-china-linked-hackers-ai-agents-exploited-medical-software-zero-day/"
-   ],
-   "source_tiers": [
-    "press"
-   ],
-   "remediation": {
-    "weakness": "Vulnerability",
-    "compensating_controls": [
-     "Reduce exposure: remove internet access to the affected service or interface until patched",
-     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
-    ],
-    "verify": "Confirm the installed version on every instance after patching",
-    "fixed_versions": null
-   }
-  },
-  {
-   "rank": 5,
-   "headline": "OpenRouter drops providers after prompt theft",
-   "category": "ACTIVE_ATTACK",
-   "severity": "HIGH",
-   "exploitation": "EXPLOITED_REPORTED",
-   "is_update": false,
-   "stack_match": [],
-   "target": "OpenRouter AI inference providers",
-   "identifiers": [],
-   "kev_due_date": null,
-   "summary": "Dragos researchers found months of prompt theft at three AI inference providers routed through OpenRouter. Some stolen requests were flagged as Zero Data Retention.",
-   "action": "Review OpenRouter provider contracts and data retention settings. Audit prompt logs for exfiltration.",
-   "hunt": "null",
-   "fixed_versions": null,
-   "confidence": "MEDIUM",
-   "primary_source": "https://thehackernews.com/2026/11/openrouter-drops-3-providers-after.html",
-   "corroborating_sources": [],
-   "source_tiers": [
-    "press"
-   ],
-   "remediation": {
-    "weakness": "Vulnerability",
-    "compensating_controls": [
-     "Restrict the device's management interface to an admin network; check for new admin accounts and config changes",
-     "Reduce exposure: remove internet access to the affected service or interface until patched",
-     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
-    ],
-    "verify": "Confirm the installed version on every instance after patching",
-    "fixed_versions": null
-   }
-  },
-  {
-   "rank": 6,
-   "headline": "ThreatDefence/agentic-attack-detections",
-   "category": "GITHUB_REPO",
-   "severity": "INFO",
-   "exploitation": "N/A",
-   "is_update": false,
-   "stack_match": [
-    "Splunk",
-    "LLM"
-   ],
-   "target": "Microsoft Sentinel, Defender XDR, Splunk, Elastic",
-   "identifiers": [
-    "ThreatDefence/agentic-attack-detections"
-   ],
-   "kev_due_date": null,
-   "summary": "Detection rules and IOCs for AI agent attack frameworks: ARTEX, Cairn, PentAGI, HexStrike, CyberStrikeAI, Strix, Hermes Agent, Agent Zero. KQL, Sigma, Suricata, Zeek, YARA, Splunk, Elastic, STIX 2.1.",
-   "action": "Deploy relevant KQL/Sigma rules for detected AI agent TTPs.",
-   "hunt": "null",
-   "fixed_versions": null,
-   "confidence": "HIGH",
-   "primary_source": "https://github.com/ThreatDefence/agentic-attack-detections",
-   "corroborating_sources": [],
-   "source_tiers": [
-    "data"
-   ]
-  },
-  {
-   "rank": 7,
-   "headline": "tracebit-com/turingpot",
-   "category": "GITHUB_REPO",
-   "severity": "INFO",
-   "exploitation": "N/A",
-   "is_update": false,
-   "stack_match": [
-    "LLM"
-   ],
-   "target": "Autonomous offensive frameworks (AOFs)",
-   "identifiers": [
-    "tracebit-com/turingpot"
-   ],
-   "kev_due_date": null,
-   "summary": "Open-source AI agent honeypot PoC for investigating ARTEX and other autonomous offensive frameworks. Cloudflare Workers.",
-   "action": "Evaluate for deployment in isolated lab to detect autonomous agent probing.",
-   "hunt": "null",
-   "fixed_versions": null,
-   "confidence": "HIGH",
-   "primary_source": "https://github.com/tracebit-com/turingpot",
-   "corroborating_sources": [],
-   "source_tiers": [
-    "data"
-   ]
-  },
-  {
-   "rank": 8,
-   "headline": "spacesky-cell/TwinFix",
-   "category": "GITHUB_REPO",
-   "severity": "INFO",
-   "exploitation": "N/A",
-   "is_update": false,
-   "stack_match": [
-    "Docker"
-   ],
-   "target": "Automated bug fixing",
-   "identifiers": [
-    "spacesky-cell/TwinFix"
-   ],
-   "kev_due_date": null,
-   "summary": "AI agent that diagnoses, reproduces and fixes bugs in a disposable twin environment. Docker-based.",
-   "action": "Review for automated repair capabilities in CI/CD pipelines.",
-   "hunt": "null",
-   "fixed_versions": null,
-   "confidence": "HIGH",
-   "primary_source": "https://github.com/spacesky-cell/TwinFix",
-   "corroborating_sources": [],
-   "source_tiers": [
-    "data"
-   ]
-  }
- ],
- "meta": {
-  "generated_at": "2026-11-22T11:58:20+00:00",
-  "mode": "analyst",
-  "prompt_version": "v2.1",
-  "model": "Qwen3.6-35B-A3B (local)",
-  "provider": "local",
-  "window_start": "2026-11-21 05:58 UTC",
-  "window_end": "2026-11-22 11:58 UTC",
-  "items_screened": 30,
-  "dropped": [
-   "downgraded to reported (no authority/vendor/KEV source): Rackspace Spot breach exposes Kubernetes secrets",
-   "downgraded to reported (no authority/vendor/KEV source): China-linked AI agents exploit MONAI Label zero-da",
-   "downgraded to reported (no authority/vendor/KEV source): OpenRouter drops providers after prompt theft"
+  "run_date": "2026-11-22",
+  "quiet_day": false,
+  "executive_pulse": "CISA added CVE-2026-129448 to KEV; Cisco nginx RCEs remain unpatched in production. Rackspace Spot breach exposed Kubernetes secrets; AI agent TTPs and detection tooling are the primary new signals.",
+  "notes": "CVE-2026-129448 status changed: added to KEV. CVE-2026-113425 is an update: Cisco PSIRT advisory published with fixed versions.",
+  "items": [
+    {
+      "rank": 1,
+      "headline": "CISA KEV: CVE-2026-129448 (VMware vCenter)",
+      "category": "VULNERABILITY",
+      "severity": "CRITICAL",
+      "exploitation": "EXPLOITED_CONFIRMED",
+      "is_update": true,
+      "stack_match": [
+        "VMware"
+      ],
+      "target": "Broadcom VMware vCenter",
+      "identifiers": [
+        "CVE-2026-129448"
+      ],
+      "kev_due_date": "2026-11-23",
+      "summary": "CISA added CVE-2026-129448 to KEV on 2026-11-20. CVSS 9.8. Deserialization of untrusted data. Active exploitation confirmed.",
+      "action": "Patch VMware vCenter immediately. Due date 2026-11-23.",
+      "hunt": null,
+      "fixed_versions": null,
+      "confidence": "MEDIUM",
+      "primary_source": "https://www.cisa.gov/news-events/alerts/2026/11/20/cisa-adds-four-known-exploited-vulnerabilities-catalog",
+      "corroborating_sources": [
+        "https://thehackernews.com/2026/11/hackers-exploit-critical-vmware-cisco.html"
+      ],
+      "source_tiers": [
+        "authority",
+        "press"
+      ],
+      "remediation": {
+        "weakness": "Unsafe deserialization",
+        "compensating_controls": [
+          "Restrict the device's management interface to an admin network; check for new admin accounts and config changes",
+          "Block or filter untrusted network access to the affected endpoint (WAF rule or network ACL)",
+          "Run the service with least privilege and no outbound internet access where possible"
+        ],
+        "verify": "Hunt for unexpected child processes spawned by the application server process",
+        "fixed_versions": null
+      }
+    },
+    {
+      "rank": 2,
+      "headline": "Cisco nginx RCEs (CVE-2026-113425 et al.)",
+      "category": "VULNERABILITY",
+      "severity": "CRITICAL",
+      "exploitation": "POC_PUBLIC",
+      "is_update": true,
+      "stack_match": [
+        "Cisco"
+      ],
+      "target": "Cisco products using nginx 1.9.5-1.31.8",
+      "identifiers": [
+        "CVE-2026-113425",
+        "CVE-2026-121810",
+        "CVE-2026-123007",
+        "CVE-2026-123633",
+        "CVE-2026-123634"
+      ],
+      "kev_due_date": null,
+      "summary": "Cisco PSIRT advisory released for multiple nginx RCEs affecting Cisco products. Fixed in nginx 1.31.9 (mainline) and 1.30.7 (stable). 37 public PoCs.",
+      "action": "Upgrade nginx to 1.31.9 or 1.30.7 in all Cisco-affected deployments.",
+      "hunt": null,
+      "fixed_versions": "nginx 1.31.9, 1.30.7",
+      "confidence": "HIGH",
+      "primary_source": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nginx-nov-2026-e8jska2s",
+      "corroborating_sources": [],
+      "source_tiers": [
+        "vendor"
+      ],
+      "remediation": {
+        "weakness": "Command or code injection",
+        "compensating_controls": [
+          "Remove internet exposure of the affected interface until patched",
+          "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode",
+          "Run the service as a non-privileged user and restrict outbound connections"
+        ],
+        "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries",
+        "fixed_versions": "nginx 1.31.9, 1.30.7"
+      }
+    },
+    {
+      "rank": 3,
+      "headline": "Rackspace Spot breach exposes Kubernetes secrets",
+      "category": "ACTIVE_ATTACK",
+      "severity": "HIGH",
+      "exploitation": "EXPLOITED_REPORTED",
+      "is_update": false,
+      "stack_match": [
+        "Kubernetes"
+      ],
+      "target": "Rackspace Spot cloud platform",
+      "identifiers": [],
+      "kev_due_date": null,
+      "summary": "Rackspace confirmed hackers breached Spot using compromised credentials, deploying unauthorized workloads and accessing Kubernetes secrets in customer clusters.",
+      "action": "Audit Rackspace Spot access logs for unauthorized workload deployments and secret access.",
+      "hunt": "Kubernetes audit logs: unauthorized workload creation or secret access from unexpected identities.",
+      "fixed_versions": null,
+      "confidence": "MEDIUM",
+      "primary_source": "https://www.bleepingcomputer.com/news/security/rackspace-spot-breach-let-hackers-access-customer-kubernetes-secrets/",
+      "corroborating_sources": [],
+      "source_tiers": [
+        "press"
+      ],
+      "remediation": {
+        "weakness": "Vulnerability",
+        "compensating_controls": [
+          "Reduce exposure: remove internet access to the affected service or interface until patched",
+          "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+        ],
+        "verify": "Confirm the installed version on every instance after patching",
+        "fixed_versions": null
+      }
+    },
+    {
+      "rank": 4,
+      "headline": "China-linked AI agents exploit MONAI Label zero-day",
+      "category": "ACTIVE_ATTACK",
+      "severity": "HIGH",
+      "exploitation": "EXPLOITED_REPORTED",
+      "is_update": false,
+      "stack_match": [],
+      "target": "MONAI Label 0.8.5 and earlier",
+      "identifiers": [],
+      "kev_due_date": null,
+      "summary": "Amazon Threat Intelligence reports China-linked actors used autonomous AI agents to find and exploit a zero-day in MONAI Label, gaining root access to a university server.",
+      "action": "Update MONAI Label to latest version. Restrict file write permissions in default setup.",
+      "hunt": null,
+      "fixed_versions": null,
+      "confidence": "MEDIUM",
+      "primary_source": "https://thehackernews.com/2026/11/attackers-ai-agents-found-zero-day-in.html",
+      "corroborating_sources": [
+        "https://www.securityweek.com/amazon-china-linked-hackers-ai-agents-exploited-medical-software-zero-day/"
+      ],
+      "source_tiers": [
+        "press"
+      ],
+      "remediation": {
+        "weakness": "Vulnerability",
+        "compensating_controls": [
+          "Reduce exposure: remove internet access to the affected service or interface until patched",
+          "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+        ],
+        "verify": "Confirm the installed version on every instance after patching",
+        "fixed_versions": null
+      }
+    },
+    {
+      "rank": 5,
+      "headline": "OpenRouter drops providers after prompt theft",
+      "category": "ACTIVE_ATTACK",
+      "severity": "HIGH",
+      "exploitation": "EXPLOITED_REPORTED",
+      "is_update": false,
+      "stack_match": [],
+      "target": "OpenRouter AI inference providers",
+      "identifiers": [],
+      "kev_due_date": null,
+      "summary": "Dragos researchers found months of prompt theft at three AI inference providers routed through OpenRouter. Some stolen requests were flagged as Zero Data Retention.",
+      "action": "Review OpenRouter provider contracts and data retention settings. Audit prompt logs for exfiltration.",
+      "hunt": null,
+      "fixed_versions": null,
+      "confidence": "MEDIUM",
+      "primary_source": "https://thehackernews.com/2026/11/openrouter-drops-3-providers-after.html",
+      "corroborating_sources": [],
+      "source_tiers": [
+        "press"
+      ],
+      "remediation": {
+        "weakness": "Vulnerability",
+        "compensating_controls": [
+          "Restrict the device's management interface to an admin network; check for new admin accounts and config changes",
+          "Reduce exposure: remove internet access to the affected service or interface until patched",
+          "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+        ],
+        "verify": "Confirm the installed version on every instance after patching",
+        "fixed_versions": null
+      }
+    },
+    {
+      "rank": 6,
+      "headline": "ThreatDefence/agentic-attack-detections",
+      "category": "GITHUB_REPO",
+      "severity": "INFO",
+      "exploitation": "N/A",
+      "is_update": false,
+      "stack_match": [
+        "Splunk",
+        "LLM"
+      ],
+      "target": "Microsoft Sentinel, Defender XDR, Splunk, Elastic",
+      "identifiers": [
+        "ThreatDefence/agentic-attack-detections"
+      ],
+      "kev_due_date": null,
+      "summary": "Detection rules and IOCs for AI agent attack frameworks: ARTEX, Cairn, PentAGI, HexStrike, CyberStrikeAI, Strix, Hermes Agent, Agent Zero. KQL, Sigma, Suricata, Zeek, YARA, Splunk, Elastic, STIX 2.1.",
+      "action": "Deploy relevant KQL/Sigma rules for detected AI agent TTPs.",
+      "hunt": null,
+      "fixed_versions": null,
+      "confidence": "HIGH",
+      "primary_source": "https://github.com/ThreatDefence/agentic-attack-detections",
+      "corroborating_sources": [],
+      "source_tiers": [
+        "data"
+      ]
+    },
+    {
+      "rank": 7,
+      "headline": "tracebit-com/turingpot",
+      "category": "GITHUB_REPO",
+      "severity": "INFO",
+      "exploitation": "N/A",
+      "is_update": false,
+      "stack_match": [
+        "LLM"
+      ],
+      "target": "Autonomous offensive frameworks (AOFs)",
+      "identifiers": [
+        "tracebit-com/turingpot"
+      ],
+      "kev_due_date": null,
+      "summary": "Open-source AI agent honeypot PoC for investigating ARTEX and other autonomous offensive frameworks. Cloudflare Workers.",
+      "action": "Evaluate for deployment in isolated lab to detect autonomous agent probing.",
+      "hunt": null,
+      "fixed_versions": null,
+      "confidence": "HIGH",
+      "primary_source": "https://github.com/tracebit-com/turingpot",
+      "corroborating_sources": [],
+      "source_tiers": [
+        "data"
+      ]
+    },
+    {
+      "rank": 8,
+      "headline": "spacesky-cell/TwinFix",
+      "category": "GITHUB_REPO",
+      "severity": "INFO",
+      "exploitation": "N/A",
+      "is_update": false,
+      "stack_match": [
+        "Docker"
+      ],
+      "target": "Automated bug fixing",
+      "identifiers": [
+        "spacesky-cell/TwinFix"
+      ],
+      "kev_due_date": null,
+      "summary": "AI agent that diagnoses, reproduces and fixes bugs in a disposable twin environment. Docker-based.",
+      "action": "Review for automated repair capabilities in CI/CD pipelines.",
+      "hunt": null,
+      "fixed_versions": null,
+      "confidence": "HIGH",
+      "primary_source": "https://github.com/spacesky-cell/TwinFix",
+      "corroborating_sources": [],
+      "source_tiers": [
+        "data"
+      ]
+    }
   ],
-  "sources": {
-   "CISA KEV": "ok (0 new)",
-   "NVD": "ok (4)",
-   "GitHub Advisory": "ok (0)",
-   "GitHub": "ok (11)",
-   "CISA Advisories": "ok (0)",
-   "Microsoft MSRC": "ok (0)",
-   "Microsoft Security": "ok (0)",
-   "Palo Alto PSIRT": "ok (0)",
-   "Fortinet PSIRT": "ok (0)",
-   "Cisco PSIRT": "ok (1)",
-   "AWS Security Bulletins": "ok (0)",
-   "Unit 42": "ok (0)",
-   "Google Threat Intel": "ok (0)",
-   "BleepingComputer": "ok (4)",
-   "The Hacker News": "ok (7)",
-   "SecurityWeek": "ok (3)",
-   "The Record": "ok (0)",
-   "Krebs on Security": "ok (0)"
+  "meta": {
+    "generated_at": "2026-11-22T11:58:20+00:00",
+    "mode": "analyst",
+    "prompt_version": "v2.1",
+    "model": "Qwen3.6-35B-A3B (local)",
+    "provider": "local",
+    "window_start": "2026-11-21 05:58 UTC",
+    "window_end": "2026-11-22 11:58 UTC",
+    "items_screened": 30,
+    "dropped": [
+      "downgraded to reported (no authority/vendor/KEV source): Rackspace Spot breach exposes Kubernetes secrets",
+      "downgraded to reported (no authority/vendor/KEV source): China-linked AI agents exploit MONAI Label zero-da",
+      "downgraded to reported (no authority/vendor/KEV source): OpenRouter drops providers after prompt theft"
+    ],
+    "sources": {
+      "CISA KEV": "ok (0 new)",
+      "NVD": "ok (4)",
+      "GitHub Advisory": "ok (0)",
+      "GitHub": "ok (11)",
+      "CISA Advisories": "ok (0)",
+      "Microsoft MSRC": "ok (0)",
+      "Microsoft Security": "ok (0)",
+      "Palo Alto PSIRT": "ok (0)",
+      "Fortinet PSIRT": "ok (0)",
+      "Cisco PSIRT": "ok (1)",
+      "AWS Security Bulletins": "ok (0)",
+      "Unit 42": "ok (0)",
+      "Google Threat Intel": "ok (0)",
+      "BleepingComputer": "ok (4)",
+      "The Hacker News": "ok (7)",
+      "SecurityWeek": "ok (3)",
+      "The Record": "ok (0)",
+      "Krebs on Security": "ok (0)"
+    }
   }
- }
 }

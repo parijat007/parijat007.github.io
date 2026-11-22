@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.watchfloor.watch</string>
+  <key>ProgramArguments</key>
+  <array><string>/bin/zsh</string><string>__REPO_DIR__/mac/trigger_watch.sh</string></array>
+  <!-- Every 20 minutes while the Mac is awake; the script only starts a run if the last one is over 40 min old. -->
+  <key>StartInterval</key><integer>1200</integer>
+  <key>RunAtLoad</key><true/>
+  <key>StandardOutPath</key><string>/tmp/watchfloor.watch.log</string>
+  <key>StandardErrorPath</key><string>/tmp/watchfloor.watch.log</string>
+</dict>
+</plist>

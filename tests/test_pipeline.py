@@ -246,3 +246,30 @@ def test_notes_render_and_escape_raw_html(tmp_path, monkeypatch):
     assert "<script>alert(1)" not in html and "&lt;script&gt;" in html
     assert "<table>" in html and 'href="javascript:' not in html
     assert "Test note" in (out / "notes" / "index.html").read_text()
+
+
+def test_official_record_becomes_primary_and_nulls_and_tracking_are_cleaned():
+    kev = {"id": "CVE-2026-129448", "source_name": "CISA KEV", "title": "VMware vCenter",
+           "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-129448", "cves": ["CVE-2026-129448"],
+           "kev": {"dueDate": "2026-11-23"}}
+    news = {"id": "n", "source_name": "The Hacker News", "title": "Hackers exploit CVE-2026-129448",
+            "url": "https://thehackernews.com/a?utm_source=rss", "cves": ["CVE-2026-129448"],
+            "kev": {"dueDate": "2026-11-23"}}
+    cisco = {"id": "c", "source_name": "Cisco PSIRT", "title": "nginx",
+             "url": "https://sec.cloudapps.cisco.com/x?vs_f=Cisco%20Security%26vs_k=1", "cves": []}
+    d = {"items": [
+        {"headline": "vCenter", "category": "VULNERABILITY", "exploitation": "EXPLOITED_CONFIRMED",
+         "identifiers": ["CVE-2026-129448"], "hunt": "null", "fixed_versions": "None",
+         "primary_source": "https://thehackernews.com/a?utm_source=rss"},
+        {"headline": "nginx", "category": "VULNERABILITY", "exploitation": "NO_KNOWN_EXPLOIT",
+         "primary_source": cisco["url"]}]}
+    tiers = {"CISA KEV": "authority", "The Hacker News": "press", "Cisco PSIRT": "vendor"}
+    out, problems = validate(d, [kev, news, cisco], tiers)
+    a, b = out["items"]
+    assert a["primary_source"] == kev["url"]
+    assert a["corroborating_sources"] == ["https://thehackernews.com/a"]
+    assert a["hunt"] is None and a["fixed_versions"] is None
+    text = "\n".join(render(out, "2026-11-22"))
+    assert "Hunt" not in text and "null" not in text
+    assert b["primary_source"] == "https://sec.cloudapps.cisco.com/x"
+    assert any("official record" in p for p in problems)

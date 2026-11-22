@@ -20,6 +20,7 @@ from . import collectors as C
 from .config import load_config
 from .notify import send
 from .playbook import remediation_for
+from .render import clean_url
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "data" / "watch.json"
@@ -29,7 +30,7 @@ log = logging.getLogger("digest.watch")
 def _entry(it: dict, kind: str, now: str) -> dict:
     return {
         "id": it["id"], "kind": kind, "title": it["title"][:200], "summary": it.get("text", "")[:280],
-        "source": it["source_name"], "url": it["url"], "published": it.get("published"),
+        "source": it["source_name"], "url": clean_url(it["url"]), "published": it.get("published"),
         "cves": it.get("cves", [])[:4], "cvss": it.get("cvss"), "epss": it.get("epss"),
         "poc": (it.get("public_poc") or {}).get("count", 0),
         "kev_due": (it.get("kev") or {}).get("dueDate"), "ransomware": (it.get("kev") or {}).get("ransomware"),

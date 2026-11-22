@@ -32,6 +32,10 @@ echo "3/4 launchd job"
 sed "s#__REPO_DIR__#${REPO_DIR}#" mac/com.watchfloor.daily.plist > ~/Library/LaunchAgents/com.watchfloor.daily.plist
 launchctl bootout "gui/$(id -u)/com.watchfloor.daily" 2>/dev/null || true
 launchctl bootstrap "gui/$(id -u)" ~/Library/LaunchAgents/com.watchfloor.daily.plist
+# Hourly-watch backstop: GitHub skips scheduled runs on quiet repos
+sed "s#__REPO_DIR__#${REPO_DIR}#" mac/com.watchfloor.watch.plist > ~/Library/LaunchAgents/com.watchfloor.watch.plist
+launchctl bootout "gui/$(id -u)/com.watchfloor.watch" 2>/dev/null || true
+launchctl bootstrap "gui/$(id -u)" ~/Library/LaunchAgents/com.watchfloor.watch.plist
 
 echo "4/4 Wake the Mac at 6:30 daily (needs admin; Mac must be on power)"
 sudo pmset repeat wakeorpoweron MTWRFSU 06:30:00

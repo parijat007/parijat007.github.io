@@ -29,6 +29,37 @@ def parse_json(text: str) -> dict:
 
 
 CAN_CONFIRM = {"authority", "vendor"}
+NULLISH = {"", "null", "none", "n/a", "na", "-", "unknown"}
+TRACKING = re.compile(r"^(utm_|vs_|mc_|fbclid$|gclid$)", re.I)
+CVE_RE = re.compile(r"CVE-\d{4}-\d{4,}", re.I)
+
+
+def _nullish(v):
+    return None if v is None or (isinstance(v, str) and v.strip().lower() in NULLISH) else v
+
+
+def clean_url(u: str) -> str:
+    """Drop tracking query parameters (utm_*, Cisco's vs_*) so links stay short and readable."""
+    from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+    if not u:
+        return u
+    p = urlsplit(u)
+    q = [(k, v) for k, v in parse_qsl(p.query, keep_blank_values=True) if not TRACKING.match(k)]
+    return urlunsplit((p.scheme, p.netloc, p.path, urlencode(q), p.fragment))
+
+
+def _authority_index(items: list[dict], tiers: dict) -> dict:
+    """CVE -> URL of the best official record that mentions it (authority first, then vendor)."""
+    idx: dict[str, tuple[int, str]] = {}
+    for it in items:
+        rank = {"authority": 0, "vendor": 1}.get(tiers.get(it.get("source_name"), "press"))
+        if rank is None:
+            continue
+        blob = f"{it.get('id', '')} {it.get('title', '')} {it.get('text', '')} {it.get('url', '')}"
+        for c in {c.upper() for c in CVE_RE.findall(blob)}:
+            if c not in idx or rank < idx[c][0]:
+                idx[c] = (rank, it["url"])
+    return {c: u for c, (_, u) in idx.items()}
 
 
 def validate(digest: dict, items: list[dict], tiers: dict | None = None) -> tuple[dict, list[str]]:
@@ -41,11 +72,25 @@ def validate(digest: dict, items: list[dict], tiers: dict | None = None) -> tupl
             by_url.setdefault(u, []).append(it)
     problems, kept = [], []
     threats = repos = 0
+    official = _authority_index(items, tiers)
     for e in digest.get("items", []):
+        for f in ("hunt", "fixed_versions", "action", "target", "kev_due_date"):
+            e[f] = _nullish(e.get(f))
         if e.get("primary_source") not in allowed:
             problems.append(f"dropped (URL not in input): {e.get('headline', '?')[:60]}")
             continue
-        e["corroborating_sources"] = [u for u in e.get("corroborating_sources", []) if u in allowed][:2]
+        e["corroborating_sources"] = [u for u in (e.get("corroborating_sources") or []) if u in allowed]
+        # Cite the official record first when one was collected for the same CVE
+        primary_tier = {tiers.get(it["source_name"], "press") for it in by_url.get(e["primary_source"], [])}
+        if not primary_tier & CAN_CONFIRM:
+            ids = [str(i).upper() for i in e.get("identifiers") or []] + \
+                  [c.upper() for c in CVE_RE.findall(e.get("headline", ""))]
+            off = next((official[i] for i in ids if i in official), None)
+            if off and off != e["primary_source"]:
+                e["corroborating_sources"] = [e["primary_source"]] + [u for u in e["corroborating_sources"] if u != off]
+                e["primary_source"] = off
+                problems.append(f"primary source switched to official record: {e.get('headline', '?')[:50]}")
+        e["corroborating_sources"] = e["corroborating_sources"][:2]
         cited = [it for u in [e["primary_source"], *e["corroborating_sources"]] for it in by_url.get(u, [])]
         cited_tiers = {tiers.get(it["source_name"], "press") for it in cited}
         kev_backed = any(it.get("kev") for it in cited)
@@ -81,6 +126,8 @@ def validate(digest: dict, items: list[dict], tiers: dict | None = None) -> tupl
             continue
         repos += is_repo
         threats += not is_repo
+        e["primary_source"] = clean_url(e["primary_source"])
+        e["corroborating_sources"] = [clean_url(u) for u in e["corroborating_sources"]]
         kept.append(e)
     digest["items"] = kept[:8]
     for i, e in enumerate(digest["items"], 1):
