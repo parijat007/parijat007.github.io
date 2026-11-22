@@ -114,7 +114,7 @@
   <div>
     <p class="prose">{{ p.open_to.intro }}</p>
     <dl class="niches open">{% for o in p.open_to["items"] %}<div><dt>{{ o.title }}</dt><dd>{{ o.detail }}</dd></div>{% endfor %}</dl>
-    {% if p.open_to.contact_url %}<p class="cta"><a class="button" href="{{ p.open_to.contact_url | safe_url }}" rel="noopener">{{ p.open_to.contact_label }}</a></p>{% endif %}
+    <p class="cta">{% if p.open_to.email and p.open_to.email.address %}<a class="button{% if p.open_to.email.confirm %} draft{% endif %}" href="mailto:{{ p.open_to.email.address }}">Email {{ p.open_to.email.address }}</a> {% endif %}{% if p.open_to.contact_url %}<a class="button ghost" href="{{ p.open_to.contact_url | safe_url }}" rel="noopener">{{ p.open_to.contact_label }}</a>{% endif %}</p>
   </div>
 </section>
 {% endif %}

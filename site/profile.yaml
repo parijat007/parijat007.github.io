@@ -139,11 +139,12 @@ open_to:
     - {title: Mentoring, detail: "Early-career security engineers and students moving into detection, cloud or AI security."}
     - {title: Security education, detail: "Awareness sessions for students, schools and non-profit groups, using public material only."}
     - {title: Talks and panels, detail: "Detection lifecycle governance, telemetry engineering and guardrails for AI agents, drawn from my published work."}
+  email: {address: contact@theparijat.com}
   contact_label: Send an invitation on LinkedIn
   contact_url: "https://www.linkedin.com/in/parijat-sharma-sec"
 
-# security.txt (RFC 9116). Enable GitHub private vulnerability reporting first, then uncomment:
-# security_contact: "https://github.com/parijat007/parijat007.github.io/security/advisories/new"
+# security.txt (RFC 9116): uncomment once security@theparijat.com receives mail
+security_contact: {address: "mailto:security@theparijat.com"}
 
 # Awards: list wins, finalist or shortlist places. Self-nominations carry little weight publicly.
 awards:

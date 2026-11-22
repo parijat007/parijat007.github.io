@@ -355,3 +355,6 @@ h3.sub + .creds + h3.sub { margin-top: 1.4rem; }
 .button:focus-visible { outline: 2px solid var(--info); outline-offset: 3px; }
 .open-note { margin: 1rem 0 .2rem; font-size: .95rem; }
 .open-note a { color: var(--tooling); text-decoration-color: rgba(43,195,176,.45); }
+
+.button.ghost { background: transparent; color: var(--text); border: 1px solid var(--rule); margin-left: .5rem; }
+.button.ghost:hover { border-color: var(--text); background: transparent; }

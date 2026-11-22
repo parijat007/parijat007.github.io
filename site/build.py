@@ -226,12 +226,14 @@ def build(out: Path) -> None:
         (out / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n'
                                          '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls + "</urlset>\n")
     (out / ".nojekyll").write_text("")
-    if base and p.get("security_contact"):
+    sc = p.get("security_contact")
+    sc = sc.get("address") if isinstance(sc, dict) else sc
+    if base and sc:
         # RFC 9116: tells researchers how to report a problem with this site
         expires = (NOW + timedelta(days=330)).strftime("%Y-%m-%dT00:00:00Z")
         (out / ".well-known").mkdir(exist_ok=True)
         (out / ".well-known" / "security.txt").write_text(
-            f"Contact: {p['security_contact']}\nExpires: {expires}\nPreferred-Languages: en\n"
+            f"Contact: {sc}\nExpires: {expires}\nPreferred-Languages: en\n"
             f"Canonical: {base}/.well-known/security.txt\nPolicy: {base}/method/\n")
     print(f"built {out} ({len(briefs)} briefs, {len(watch['entries'])} watch entries)")
 
