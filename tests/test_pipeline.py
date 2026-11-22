@@ -273,3 +273,20 @@ def test_official_record_becomes_primary_and_nulls_and_tracking_are_cleaned():
     assert "Hunt" not in text and "null" not in text
     assert b["primary_source"] == "https://sec.cloudapps.cisco.com/x"
     assert any("official record" in p for p in problems)
+
+
+def test_profile_drafts_never_publish():
+    import importlib.util
+    import yaml
+    spec = importlib.util.spec_from_file_location("site_build3", HERE.parent / "site" / "build.py")
+    sb = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(sb)
+    raw = {"awards": [{"name": "A", "confirm": True}, {"name": "B"}],
+           "earlier": {"names": "x", "confirm": True}, "links": [{"label": "L"}]}
+    pub, prev = sb.gate_profile(raw, False), sb.gate_profile(raw, True)
+    assert [a["name"] for a in pub["awards"]] == ["B"] and "earlier" not in pub
+    assert len(prev["awards"]) == 2 and "earlier" in prev
+    # The real profile: nothing published may still carry a [placeholder]
+    live = sb.gate_profile(yaml.safe_load((HERE.parent / "site" / "profile.yaml").read_text()), False)
+    import re
+    assert not re.search(r"\[[a-z][^\]]*\]", yaml.safe_dump(live, allow_unicode=True)), "placeholder in published profile"

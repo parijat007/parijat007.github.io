@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import sys
 from datetime import date, datetime, timedelta, timezone
@@ -138,8 +139,21 @@ def load_notes() -> list[dict]:
     return sorted(notes, key=lambda n: n["date"], reverse=True)
 
 
+def gate_profile(p, preview: bool):
+    """Items marked `confirm: true` are drafts: shown (flagged) in preview builds, never published."""
+    if isinstance(p, dict):
+        return {k: gate_profile(v, preview) for k, v in p.items()
+                if preview or not (isinstance(v, dict) and v.get("confirm"))}
+    if isinstance(p, list):
+        return [gate_profile(x, preview) for x in p
+                if preview or not (isinstance(x, dict) and x.get("confirm"))]
+    return p
+
+
 def build(out: Path) -> None:
-    p = yaml.safe_load((SITE / "profile.yaml").read_text())
+    preview = os.environ.get("WF_PREVIEW") == "1"
+    p = gate_profile(yaml.safe_load((SITE / "profile.yaml").read_text()), preview)
+    p["preview"] = preview
     sys.path.insert(0, str(ROOT))
     from digest.config import load_config  # noqa: PLC0415
     cfg = load_config()

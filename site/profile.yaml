@@ -1,15 +1,18 @@
 # Public profile — everything here is published at https://theparijat.com/
-# [Brackets] are placeholders: fill or delete before going public.
+# Items with `confirm: true` are drafts: they appear (flagged) only in a preview build
+# (WF_PREVIEW=1 python site/build.py) and are never published. Remove the flag once verified.
 name: Parijat Sharma
 brand: Watchfloor
 site_title: Parijat Sharma — Cloud Detection & Response | Watchfloor
-headline: Lead Cyber Security Architect. Cloud detection and response, Zero Trust, multi-cloud security.
+headline: Lead Cyber Security Architect. Cloud detection and response, identity-first Zero Trust, and security governance for agentic AI.
 location: New Jersey, USA
 intro: >
-  I design and run detection and response for cloud-first enterprises: telemetry engineering,
-  detection-as-code mapped to MITRE ATT&CK, and identity-first Zero Trust across AWS, Azure and GCP.
-  Twenty-plus years across financial services, media, healthcare, transportation and critical
-  infrastructure.
+  I lead detection and response engineering for cloud-first enterprises: telemetry engineering,
+  detection-as-code mapped to MITRE ATT&CK, incident response and adversary simulation, and
+  identity-first Zero Trust across AWS, Azure and GCP.
+  My published frameworks treat detections as governed, testable assets and set guardrails for
+  autonomous AI agents in the SOC. Twenty-plus years across financial services, media, healthcare,
+  transportation and critical infrastructure.
 watchfloor_blurb: >
   Watchfloor is my public service for defenders: an hourly watch of newly exploited vulnerabilities
   and vendor advisories, and a daily brief that ranks what matters, with a patch action and a hunting
@@ -20,25 +23,136 @@ niches:
     detail: Telemetry pipelines, detection-as-code and SIEM/SOAR integration across AWS, Azure and GCP control planes.
   - title: Identity-first Zero Trust
     detail: Entra ID, Okta and SailPoint governance; conditional access and privileged paths designed around blast radius.
+  - title: Agentic AI security governance
+    detail: Scoping, guardrails and audit for autonomous agents; delegated-authority controls for multi-agent LLM systems.
+  - title: Incident response and adversary simulation
+    detail: IR playbooks, tabletop exercises and post-incident review; red team and intelligence-driven testing tied to remediation.
   - title: Multi-cloud security architecture
     detail: Secure landing zones, policy-as-code guardrails and reference patterns for regulated workloads.
   - title: Kubernetes and IaC security
     detail: AKS and EKS runtime security, admission control, and IaC scanning built into the delivery pipeline.
   - title: GenAI and LLM application security
-    detail: Threat modeling LLM applications and agents against OWASP Top 10 for LLMs and MITRE ATLAS; local-model security tooling.
-  - title: Regulated enterprise resilience
-    detail: HIPAA, PCI DSS, SOC 2 and GDPR controls mapped to architecture decisions, using SABSA and TOGAF.
+    detail: Threat modeling LLM applications against OWASP Top 10 for LLMs and MITRE ATLAS, including prompt injection through voice and tool channels.
 
-experience:          # set show_employers: false to hide organisation names
+# Original frameworks. `stages` renders as a sequence, so list them in order.
+frameworks:
+  - name: Detection Lifecycle Codex
+    short: DLC
+    summary: A stage-gated lifecycle that governs each detection as a versioned, tested asset. Its key output is an authorization class (advisory, human-gated or bounded autonomous response) rather than a severity label.
+    stages: [Use case, Telemetry contract, Logic design, Adversarial validation, Confidence calibration, Authorization class, Runtime assurance, Retirement]
+    paper: "https://doi.org/10.63282/3050-9262.IJAIDSML-V7I3P111"
+  - name: Agentic Security Governance Framework
+    short: ASGF
+    summary: A governance model for autonomous AI actions in the SOC, from classifying an agent's authority to recovering from a bad action.
+    stages: [Classify, Scope, Guardrail, Audit, Recover]
+    paper: "https://doi.org/10.63282/3050-9262.IJAIDSML-V7I3P111"
+  - name: Telemetry Detection Readiness
+    short: TDR
+    summary: A measurement model that treats detection readiness as a design property of a telemetry pipeline, backed by a twelve-stage pipeline design method and a seven-layer cross-cloud signal taxonomy.
+    dims: [Coverage supportability, Signal fidelity, Semantic consistency, Temporal integrity, Schema stability]
+    paper: "https://doi.org/10.70917/ijcisim-2026-4984"
+  - name: "[Confirm full name] (IACSP)"
+    short: IACSP
+    summary: Repositions enterprise identity infrastructure as an active detection and containment surface rather than a passive access-governance system.
+    stages: [Observe, Detect, Contain, Recover]
+    confirm: true      # two expansions appear in past drafts; confirm which is correct
+  - name: AI-Era Cyber Immunity Framework
+    short: ACIF
+    summary: A ten-pillar operating model for organisations responding to AI-accelerated vulnerability discovery.
+    confirm: true      # confirm the expansion; another draft used a different name
+  - name: Delegated Authority Laundering
+    short: DAL
+    summary: Formalises how authority leaks through natural-language handoffs between LLM agents, extending the confused-deputy problem, with an intersection-of-scope permission model as the control.
+    confirm: true      # confirm you want this listed as a framework
+
+# Impact figures are published only if your employer is comfortable with them.
+impact:
+  - {figure: "~40%", label: "fewer security incidents after the cloud security strategy was introduced", org: Hearst, confirm: true}
+  - {figure: "~20 → ~3 days", label: "security architecture review cycle", org: Morgan Stanley, confirm: true}
+
+# status: published | preprint | submitted | in review. `url` is optional.
+publications:
+  - title: "Detection Confidence as the Authorization Gate: Integrating the Detection Lifecycle Codex and Agentic Security Governance Framework into a Closed-Loop Autonomous SOC Architecture"
+    venue: "International Journal of Artificial Intelligence, Data Science, and Machine Learning 7(3), pp. 83–94"
+    status: published
+    year: 2026
+    url: "https://doi.org/10.63282/3050-9262.IJAIDSML-V7I3P111"
+  - title: "Telemetry Engineering as a Security Architecture Discipline: A Design Framework for Detection-Ready Multi-Cloud Pipelines"
+    venue: "International Journal of Computer Information Systems and Industrial Management Applications 18(18s), pp. 204–217"
+    status: published
+    year: 2026
+    url: "https://doi.org/10.70917/ijcisim-2026-4984"
+  - title: "Non-Human Identity as the Primary Attack Surface: A Governance Architecture for AI Agent Credentials in Regulated Multi-Cloud Enterprises"
+    venue: "International Journal of Cyber Threat Intelligence and Secure Networking (Pinnacle International Journals)"
+    status: published
+    year: 2026
+    url: "https://aimjournals.net/index.php/tpij/article/view/264"
+    # Certificate gives DOI 10.55640/ijctisn-v03i10-02 and vol 3(10); the live page shows vol 1(1), pp. 8-21 and no DOI,
+    # and the DOI does not resolve yet. Add volume/DOI once the journal's page and the DOI agree.
+  - {title: "[Article title]", venue: "ISACA Journal", status: submitted, year: 2026, confirm: true}   # submitted 14 May 2026; decision?
+  - {title: "Identity-First Defense for Agentic AI", venue: "IEEE Security & Privacy (magazine)", status: "[status]", year: 2026, confirm: true}
+  - {title: "Delegated Authority Laundering in Multi-Agent LLM Systems", venue: "[venue]", status: "[status]", year: 2026, confirm: true}
+  - {title: "Audio Prompt Injection Against LLM-Powered Voice Assistants", venue: "[venue]", status: "[status]", year: 2026, confirm: true}
+  - {title: "Security of Offline Bluetooth Mesh Messaging: Bridgefy, Briar, BitChat and Meshtastic", venue: "[venue]", status: "[status]", year: 2026, confirm: true}
+
+# Peer review and judging: external, verifiable roles only.
+service:
+  - role: Peer reviewer
+    event: "IEEE ICIIS 2026, the 20th International Conference on Industrial and Information Systems"
+    detail: "Evaluated 10 manuscripts in Track 1 (Image, Signal and AI) for the IEEE conference organised by ABV-IIITM Gwalior. Certificate of appreciation ICIIS2026/PR/T1/047."
+    year: 2026
+    url: "https://iiitm.ac.in/events/ieee-international-conference-on-industrial-and-information-systems-ieee-iciis-2026"
+  - role: Judge
+    event: "Multimodal AI Hackathon 2026, KamandPrompt, IIT Mandi"
+    detail: "Scored more than 40 submissions across four tracks (cardiovascular risk, flood-damage mapping from space, speech analytics, adaptive tutoring), verifying claimed metrics against the code and flagging integrity issues to organisers."
+    year: 2026
+  - role: Judge
+    event: "Code2Create, ACM and ACM-W student chapters, Vellore Institute of Technology"
+    detail: "Evaluated participating teams as an invited industry judge. Certificate of gratitude issued by ACM and ACM-W VIT."
+    year: 2026
+  - role: Technical reviewer
+    event: "[Venue] — Multi-Modal Robust Forensic Identification Architecture (MM-RFIA)"
+    detail: "Adversarial-robustness, biometric fusion, C2PA provenance and code review of a research specification; recommended major revision."
+    year: 2026
+    confirm: true      # confirm the venue or programme this review was for, or delete
+
+# Coverage by others. Only list outlets you are comfortable being associated with.
+media:
+  - outlet: Oneindia
+    title: "The Next Generation of Cybersecurity Will Be Measured by Recovery, Not Prevention"
+    date: "13 August 2026"
+    url: "[paste the full Oneindia article link]"
+    confirm: true      # article calls you "head of cybersecurity at Hearst" (not your title); section is branded content; URL to confirm
+
+# Awards: list wins, finalist or shortlist places. Self-nominations carry little weight publicly.
+awards:
+  - {name: "Juniper Research Future Digital Awards 2026 — Identity Leader of the Year", result: "[nominated / shortlisted / winner]", year: 2026, confirm: true}
+  - {name: "SANS Difference Makers Award", result: "[nominated / finalist / winner]", year: 2026, confirm: true}
+  - {name: "ISACA Global Achievement Award — Educational Excellence", result: "[nominated / winner]", year: 2027, confirm: true}
+
+experience:          # set show_employers to false to hide organisation names
   - {org: Hearst, role: Lead Cyber Security – Detection & Response Engineering, years: "2025–present"}
   - {org: Morgan Stanley, role: Cloud Cyber Security Architect Expert, years: "2020–2024"}
-  - {org: "IBM, Wipro, Tata Communications, CSC, Steria", role: Multi-cloud architecture and security, years: "before 2020"}
+  - {org: Merrill Corporation, role: Cloud Architect, years: "2019"}
+  - {org: Metropolitan Transportation Authority (MTA), role: Cloud Architect, years: "2018–2019"}
+  - {org: Ford Motor Company, role: Managing Solutions Architect, years: "2018"}
+  - {org: Johnson & Johnson, role: Solution Architect, years: "2016–2017"}
+  - {org: "Tata Communications, Wipro, IBM, CSC, Steria and others", role: "Cloud, network and datacenter architecture", years: "2005–2016"}
 show_employers: true
+
+education:
+  - {degree: "M.Sc., Information Technology", school: Manipal Academy of Higher Education, year: 2003}
+  - {degree: "B.Sc.", school: Garhwal University, year: 1998}
 
 certifications:      # earned credentials only
   - {name: "Microsoft Certified: Cybersecurity Architect Expert", issuer: Microsoft}
   - {name: "AWS Certified Solutions Architect – Professional", issuer: AWS}
   - {name: "AWS Certified Security – Specialty", issuer: AWS}
+  - {name: "Microsoft Certified: Azure Solutions Architect Expert", issuer: Microsoft}
+
+earlier_certifications:   # foundation and legacy credentials, shown as one line
+  names: "AWS Certified Solutions Architect – Associate, Fortinet Certified Associate in Cybersecurity, Cisco CCNA, VMware VCP 5, ITIL Foundation, NetApp ONTAP and SAN"
+  confirm: true            # several may have lapsed; confirm wording or delete
 
 training:            # courses completed; no certification implied
   - {name: "SANS SEC545: GenAI and LLM Application Security", provider: SANS Institute}
@@ -47,6 +161,8 @@ training:            # courses completed; no certification implied
 writing: []         # - {title: "Cloud Detection & Resilience Notes, issue 1", url: "https://...", year: 2026}
 
 links:
+  - {label: LinkedIn, url: "https://www.linkedin.com/in/parijat-sharma-sec"}
+  - {label: ORCID, url: "https://orcid.org/0009-0000-9233-3352"}
   - {label: GitHub, url: "https://github.com/parijat007"}
   - {label: RSS, url: "feed.xml"}
 

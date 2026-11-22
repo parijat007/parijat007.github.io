@@ -1,11 +1,14 @@
 {% extends "base.html" %}{% from "macros.html" import tags %}
 {% block main %}
+{% macro draft(x) %}{% if x.confirm %} draft{% endif %}{% endmacro %}
+{% macro chip(x) %}{% if x.confirm %}<span class="confirm-chip">Confirm before publishing</span>{% endif %}{% endmacro %}
+{% if p.preview %}<p class="preview-banner" role="status">Preview build. Items outlined in amber are drafts and will not be published until confirmed.</p>{% endif %}
 <section class="intro" aria-labelledby="me">
   <div class="intro-text">
     <h1 id="me">{{ p.name }}</h1>
     <p class="role">{{ p.headline }}</p>
     <p class="lead">{{ p.intro }}</p>
-    <ul class="links" aria-label="Elsewhere">{% for l in p.links %}<li><a href="{{ (root ~ l.url) if not l.url.startswith('http') else (l.url | safe_url) }}" rel="me noopener">{{ l.label }}</a></li>{% endfor %}</ul>
+    <ul class="links" aria-label="Elsewhere">{% for l in p.links %}<li class="{% if l.confirm %}draft{% endif %}"><a href="{{ (root ~ l.url) if not l.url.startswith('http') else (l.url | safe_url) }}" rel="me noopener">{{ l.label }}</a></li>{% endfor %}</ul>
   </div>
   <aside class="live" aria-labelledby="live-h">
     <h2 id="live-h"><span class="dot" aria-hidden="true"></span>Live from Watchfloor</h2>
@@ -31,6 +34,24 @@
   <dl class="niches">{% for n in p.niches %}<div><dt>{{ n.title }}</dt><dd>{{ n.detail }}</dd></div>{% endfor %}</dl>
 </section>
 
+{% if p.frameworks %}
+<section class="block two" aria-labelledby="fw-h">
+  <h2 id="fw-h">Original frameworks</h2>
+  <ol class="frameworks">{% for f in p.frameworks %}
+    <li class="fw{{ draft(f) }}">
+      <p class="fw-short" aria-hidden="true">{{ f.short }}</p>
+      <div>
+        <h3 class="fw-name">{{ f.name }}</h3>{{ chip(f) }}
+        <p class="fw-sum">{{ f.summary }}</p>
+        {% if f.stages %}<ol class="stages" aria-label="{{ f.short }} stages, in order">{% for st in f.stages %}<li>{{ st }}</li>{% endfor %}</ol>{% endif %}
+        {% if f.dims %}<ul class="stages dims" aria-label="{{ f.short }} dimensions">{% for st in f.dims %}<li>{{ st }}</li>{% endfor %}</ul>{% endif %}
+        {% if f.paper %}<p class="fw-paper"><a href="{{ f.paper | safe_url }}" rel="noopener">Read the published paper</a></p>{% endif %}
+      </div>
+    </li>{% endfor %}
+  </ol>
+</section>
+{% endif %}
+
 <section class="block two" aria-labelledby="wf-h">
   <h2 id="wf-h">Watchfloor</h2>
   <div>
@@ -54,15 +75,65 @@
   </div>
 </section>
 {% endif %}
+{% if p.publications %}
+<section class="block two" aria-labelledby="pub-h">
+  <h2 id="pub-h">Research and publications</h2>
+  <ul class="pubs">{% for w in p.publications %}
+    <li class="{{ draft(w) }}">
+      <p class="pub-title">{% if w.url and w.url.startswith('http') %}<a class="plain" href="{{ w.url | safe_url }}" rel="noopener">{{ w.title }}</a>{% else %}{{ w.title }}{% endif %}</p>
+      <p class="pub-meta"><span class="pub-status s-{{ w.status | replace(' ', '-') }}">{{ w.status | capitalize }}</span> {{ w.venue }}, {{ w.year }}</p>{{ chip(w) }}
+    </li>{% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% if p.service %}
+<section class="block two" aria-labelledby="svc-h">
+  <h2 id="svc-h">Peer review and judging</h2>
+  <ul class="service">{% for s in p.service %}
+    <li class="{{ draft(s) }}">
+      <p class="svc-role">{{ s.role }} <span class="muted">{{ s.year }}</span></p>
+      <p class="svc-event">{% if s.url and s.url.startswith('http') %}<a class="plain" href="{{ s.url | safe_url }}" rel="noopener">{{ s.event }}</a>{% else %}{{ s.event }}{% endif %}</p>
+      <p class="svc-detail">{{ s.detail }}</p>{{ chip(s) }}
+    </li>{% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% if p.media %}
+<section class="block two" aria-labelledby="media-h">
+  <h2 id="media-h">In the press</h2>
+  <ul class="service">{% for m in p.media %}
+    <li class="{{ draft(m) }}">
+      <p class="svc-role">{{ m.outlet }} <span class="muted">{{ m.date }}</span></p>
+      <p class="svc-event">{% if m.url and m.url.startswith('http') %}<a class="plain" href="{{ m.url | safe_url }}" rel="noopener">{{ m.title }}</a>{% else %}{{ m.title }}{% endif %}</p>{{ chip(m) }}
+    </li>{% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% if p.awards %}
+<section class="block two" aria-labelledby="aw-h">
+  <h2 id="aw-h">Recognition</h2>
+  <ul class="creds">{% for a in p.awards %}<li class="{{ draft(a) }}"><b>{{ a.name }}</b><span>{{ a.result }}, {{ a.year }}</span>{{ chip(a) }}</li>{% endfor %}</ul>
+</section>
+{% endif %}
 <section class="block two" aria-labelledby="exp-h">
   <h2 id="exp-h">Experience</h2>
   <div class="exp">
-    <ol class="timeline">{% for x in p.experience %}<li><b>{{ x.role }}</b><span>{% if p.show_employers %}{{ x.org }}, {% endif %}{{ x.years }}</span></li>{% endfor %}</ol>
+    <div>
+      <ol class="timeline">{% for x in p.experience %}<li><b>{{ x.role }}</b><span>{% if p.show_employers %}{{ x.org }}, {% endif %}{{ x.years }}</span></li>{% endfor %}</ol>
+      {% if p.impact %}<h3 class="sub">Selected impact</h3>
+      <dl class="impact">{% for m in p.impact %}<div class="{{ draft(m) }}"><dt>{{ m.label }}{% if p.show_employers %}, {{ m.org }}{% endif %}</dt><dd>{{ m.figure }}</dd>{{ chip(m) }}</div>{% endfor %}</dl>{% endif %}
+    </div>
     <div>
       <h3 class="sub">Certifications</h3>
-      <ul class="creds">{% for c in p.certifications %}<li><b>{% if c.verify_url and c.verify_url.startswith('http') %}<a class="plain" href="{{ c.verify_url | safe_url }}" rel="noopener">{{ c.name }}</a>{% else %}{{ c.name }}{% endif %}</b><span>{{ c.issuer }}</span></li>{% endfor %}</ul>
+      <ul class="creds">{% for c in p.certifications %}<li class="{{ draft(c) }}"><b>{% if c.verify_url and c.verify_url.startswith('http') %}<a class="plain" href="{{ c.verify_url | safe_url }}" rel="noopener">{{ c.name }}</a>{% else %}{{ c.name }}{% endif %}</b><span>{{ c.issuer }}</span>{{ chip(c) }}</li>{% endfor %}</ul>
+      {% if p.earlier_certifications and p.earlier_certifications.names is string %}<p class="earlier{% if p.earlier_certifications.confirm %} draft{% endif %}"><span class="muted">Earlier:</span> {{ p.earlier_certifications.names }}{% if p.earlier_certifications.confirm %}<br><span class="confirm-chip">Confirm before publishing</span>{% endif %}</p>{% endif %}
       {% if p.training %}<h3 class="sub">Training</h3>
       <ul class="creds">{% for c in p.training %}<li><b>{{ c.name }}</b><span>{{ c.provider }}</span></li>{% endfor %}</ul>{% endif %}
+      {% if p.education %}<h3 class="sub">Education</h3>
+      <ul class="creds">{% for e in p.education %}<li><b>{{ e.degree }}</b><span>{{ e.school }}, {{ e.year }}</span></li>{% endfor %}</ul>{% endif %}
       {% if p.writing %}<h3 class="sub">Writing</h3>
       <ul class="plainlist">{% for w in p.writing %}<li>{% if w.url.startswith('http') %}<a href="{{ w.url | safe_url }}">{{ w.title }}</a>{% else %}{{ w.title }}{% endif %} <span class="muted">{{ w.year }}</span></li>{% endfor %}</ul>{% endif %}
     </div>
