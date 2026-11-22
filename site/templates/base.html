@@ -7,11 +7,12 @@
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>{% block title %}{{ p.site_title }}{% endblock %}</title>
 <meta name="description" content="{% block desc %}{{ p.headline }} Watchfloor: daily source-checked threat brief and hourly exploited-vulnerability watch.{% endblock %}">
-{% if p.site_url %}<meta property="og:type" content="profile">
+{% if p.site_url and path is not none %}<link rel="canonical" href="{{ p.site_url }}/{{ path }}">{% endif %}
+{% if p.site_url %}<meta property="og:type" content="{{ og_type | default('website') }}">
 <meta property="og:site_name" content="{{ p.name }} | {{ p.brand }}">
-<meta property="og:title" content="{% block og_title %}{{ p.site_title }}{% endblock %}">
-<meta property="og:description" content="{{ p.headline }}">
-<meta property="og:url" content="{{ p.site_url }}/">
+<meta property="og:title" content="{{ self.title() | trim }}">
+<meta property="og:description" content="{{ self.desc() | trim | truncate(300) }}">
+{% if path is not none %}<meta property="og:url" content="{{ p.site_url }}/{{ path }}">{% endif %}
 <meta property="og:image" content="{{ p.site_url }}/static/portrait-og.jpg">
 <meta property="og:image:width" content="600"><meta property="og:image:height" content="600">
 <meta property="og:image:alt" content="Portrait of {{ p.name }}">

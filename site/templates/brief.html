@@ -6,7 +6,7 @@
   <h1>Threat brief, {{ brief.run_date | longdate }}</h1>
   <p class="lede">{{ brief.executive_pulse }}</p>
 </section>
-{% if brief["items"] %}<ol class="entries">{% for e in brief["items"] %}{{ entry(e, p, brief.run_date) }}{% endfor %}</ol>
+{% if brief["items"] %}<h2 class="vh">Ranked items</h2><ol class="entries">{% for e in brief["items"] %}{{ entry(e, p, brief.run_date) }}{% endfor %}</ol>
 {% else %}<p class="empty">Quiet day: nothing met the bar for exploitation or exposure.</p>{% endif %}
 {% if brief.meta %}
 <section class="block prose"><h2>Run details</h2>

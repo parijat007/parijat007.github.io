@@ -120,3 +120,9 @@ watch:
   lookback_hours: 48
   retain_days: 7
   alert_on_stack_kev: true
+
+# LinkedIn agent (python -m digest.linkedin). Drafts only; publishing needs your explicit approval.
+linkedin:
+  api_version: "202608"          # LinkedIn-Version header (YYYYMM)
+  redirect_port: 8766            # must match the redirect URL in your LinkedIn app
+  never_name: [Hearst, Morgan Stanley, Merrill, "Johnson & Johnson", Ford, MTA]   # drafts naming these are blocked

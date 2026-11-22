@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import os
 import shutil
 import sys
@@ -134,7 +135,12 @@ def load_notes() -> list[dict]:
         meta["date"] = str(meta.get("date", f.stem[:10]))
         if meta.get("updated"):
             meta["updated"] = str(meta["updated"])
-        meta.update(slug=f.stem, html=Markup(MD.render(body)), tags=meta.get("tags", []), tlp=meta.get("tlp", "CLEAR"))
+        n_tab = iter(range(1, 1000))
+        rendered = re.sub(r"<table>", lambda _: f'<div class="scroll" tabindex="0" role="region" '
+                          f'aria-label="Table {next(n_tab)}"><table>', MD.render(body))
+        rendered = rendered.replace("</table>", "</table></div>").replace("<pre>", '<pre tabindex="0">')
+        # ^ keyboard users can scroll wide tables and code; each region gets a unique label
+        meta.update(slug=f.stem, html=Markup(rendered), tags=meta.get("tags", []), tlp=meta.get("tlp", "CLEAR"))
         notes.append(meta)
     return sorted(notes, key=lambda n: n["date"], reverse=True)
 
@@ -169,14 +175,19 @@ def build(out: Path) -> None:
     shutil.copytree(SITE / "static", out / "static")
     E = env()
 
-    def page(tpl: str, path: str, page_key: str, **ctx):
+    sitemap: list[tuple[str, str | None]] = []
+
+    def page(tpl: str, path: str, page_key: str, lastmod: str | None = None, **ctx):
+        if tpl != "404.html":
+            sitemap.append((path, lastmod))
         depth = path.count("/")
         root = "../" * depth if depth else "./"
         dest = out / path / "index.html" if path else out / "index.html"
         if tpl == "404.html":
             dest, root = out / "404.html", "/" if not base else base + "/"
         dest.parent.mkdir(parents=True, exist_ok=True)
-        dest.write_text(E.get_template(tpl).render(p=p, root=root, page=page_key, **ctx))
+        canon = None if tpl == "404.html" else path
+        dest.write_text(E.get_template(tpl).render(p=p, root=root, page=page_key, path=canon, **ctx))
 
     today = briefs[0] if briefs else None
     cells = hourly_cells(watch["entries"])
@@ -187,11 +198,11 @@ def build(out: Path) -> None:
         ld["image"] = base + "/static/portrait-og.jpg"
     if base:
         ld["url"] = base + "/"
-    page("home.html", "", "", brief=today, watch=watch, cells=cells, watch_due_soon=due_soon,
+    page("home.html", "", "", og_type="profile", brief=today, watch=watch, cells=cells, watch_due_soon=due_soon,
          brief_count=len(briefs), latest_note=(load_notes() or [None])[0], person_ld=Markup(json.dumps(ld).replace("</", "<\\/")))
     page("today.html", "today/", "today/", brief=today, watch=watch, cells=cells, watch_due_soon=due_soon)
     for b in briefs:
-        page("brief.html", f"brief/{b['run_date']}/", "archive/", brief=b)
+        page("brief.html", f"brief/{b['run_date']}/", "archive/", lastmod=b["run_date"], og_type="article", brief=b)
     page("archive.html", "archive/", "archive/", briefs=briefs)
     page("watch.html", "watch/", "watch/", watch=watch, retain_days=cfg.get("watch", {}).get("retain_days", 7))
     health = json.loads((DATA / "sources.json").read_text()) if (DATA / "sources.json").exists() else {}
@@ -200,15 +211,28 @@ def build(out: Path) -> None:
     notes = load_notes()
     page("notes.html", "notes/", "notes/", notes=notes)
     for n in notes:
-        page("note.html", f"notes/{n['slug']}/", "notes/", n=n)
+        page("note.html", f"notes/{n['slug']}/", "notes/", lastmod=str(n["date"]), og_type="article", n=n)
     page("404.html", "", "")
 
     (out / "api").mkdir()
     (out / "api" / "latest.json").write_text(json.dumps(today or {}, indent=1, ensure_ascii=False))
     (out / "api" / "watch.json").write_text(json.dumps(watch, indent=1, ensure_ascii=False))
     (out / "feed.xml").write_text(rss(briefs, p, base))
-    (out / "robots.txt").write_text("User-agent: *\nAllow: /\n")
+    robots = "User-agent: *\nAllow: /\n" + (f"Sitemap: {base}/sitemap.xml\n" if base else "")
+    (out / "robots.txt").write_text(robots)
+    if base:
+        urls = "".join(f"<url><loc>{base}/{pth}</loc>" + (f"<lastmod>{lm}</lastmod>" if lm else "") + "</url>\n"
+                       for pth, lm in sitemap)
+        (out / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n'
+                                         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls + "</urlset>\n")
     (out / ".nojekyll").write_text("")
+    if base and p.get("security_contact"):
+        # RFC 9116: tells researchers how to report a problem with this site
+        expires = (NOW + timedelta(days=330)).strftime("%Y-%m-%dT00:00:00Z")
+        (out / ".well-known").mkdir(exist_ok=True)
+        (out / ".well-known" / "security.txt").write_text(
+            f"Contact: {p['security_contact']}\nExpires: {expires}\nPreferred-Languages: en\n"
+            f"Canonical: {base}/.well-known/security.txt\nPolicy: {base}/method/\n")
     print(f"built {out} ({len(briefs)} briefs, {len(watch['entries'])} watch entries)")
 
 

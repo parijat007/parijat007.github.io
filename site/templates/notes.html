@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Analyst notes — {{ p.brand }}{% endblock %}
+{% block desc %}Analyst notes by {{ p.name }}: incident breakdowns that separate what is confirmed from what is claimed, with ATT&CK mapping and hunting queries.{% endblock %}
 {% block main %}
 <section class="page-head"><h1>Analyst notes</h1><p class="lede">Longer write-ups on incidents that matter to defenders: what is confirmed, what is only claimed, and how to hunt for it. Written by {{ p.name }}.</p></section>
 {% if notes %}<ul class="archive">

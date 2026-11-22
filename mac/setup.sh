@@ -26,6 +26,8 @@ store teams-webhook-url   "Teams Workflows webhook URL (optional)"
 store callmebot-phone     "CallMeBot phone (+1...)"
 store callmebot-apikey    "CallMeBot API key"
 store nvd-apikey          "NVD API key (optional)"
+store linkedin-client-id  "LinkedIn app Client ID (optional, for the LinkedIn agent; see mac/LINKEDIN.md)"
+store linkedin-client-secret "LinkedIn app Client Secret (optional)"
 store healthcheck-url-brief "Healthchecks.io ping URL (optional)"
 
 echo "3/4 launchd job"

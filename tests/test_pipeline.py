@@ -290,3 +290,43 @@ def test_profile_drafts_never_publish():
     live = sb.gate_profile(yaml.safe_load((HERE.parent / "site" / "profile.yaml").read_text()), False)
     import re
     assert not re.search(r"\[[a-z][^\]]*\]", yaml.safe_dump(live, allow_unicode=True)), "placeholder in published profile"
+
+
+def test_linkedin_little_text_and_checks(monkeypatch):
+    from digest import linkedin as L
+    t = L.little_text("Patch (now) #CloudSecurity see https://theparijat.com/notes/x_y/ a_b")
+    assert "\\(now\\)" in t and "{hashtag|\\#|CloudSecurity}" in t
+    assert "https://theparijat.com/notes/x_y/" in t and "a\\_b" in t
+    cfg = {"site": {"url": "https://theparijat.com"}, "linkedin": {"never_name": ["Hearst"]}}
+    src = {"link": "https://theparijat.com/notes/n/", "urls": ["https://www.cisa.gov/a"]}
+    good = "Finding.\n\n" + "Detail line. " * 30 + "\nhttps://www.cisa.gov/a\nhttps://theparijat.com/notes/n/\n#A #B"
+    assert L.check(good, src, cfg) == []
+    bad = good + "\nAt Hearst we delve into https://evil.example/x"
+    probs = " ".join(L.check(bad, src, cfg))
+    assert "Hearst" in probs and "delve" in probs and "evil.example" in probs
+
+
+def test_linkedin_publish_needs_approval_and_posts_once(monkeypatch, tmp_path):
+    from digest import linkedin as L
+    monkeypatch.setattr(L, "STORE", tmp_path)
+    cfg = {"site": {"url": "https://theparijat.com"}, "linkedin": {"never_name": []}}
+    text = "Finding.\n\n" + "Detail line. " * 30 + "\nhttps://theparijat.com/notes/n/"
+    (tmp_path / "d1.json").write_text(json.dumps({"id": "d1", "status": "draft", "text": text,
+        "source": {"kind": "note", "title": "t", "link": "https://theparijat.com/notes/n/"}}))
+    monkeypatch.setattr(L, "secret", lambda n: {"linkedin-access-token": "tok",
+                                                "linkedin-person-urn": "urn:li:person:abc"}.get(n))
+    sent = []
+
+    class R:
+        status_code, text, headers = 201, "", {"x-restli-id": "urn:li:share:1"}
+    monkeypatch.setattr(L.requests, "post", lambda url, **kw: sent.append((url, kw)) or R())
+    monkeypatch.setattr("builtins.input", lambda *_: "n")
+    L.publish(cfg, "d1")
+    assert sent == []                                   # declined: nothing posted
+    monkeypatch.setattr("builtins.input", lambda *_: "y")
+    L.publish(cfg, "d1")
+    url, kw = sent[0]
+    assert url.endswith("/rest/posts") and kw["json"]["author"] == "urn:li:person:abc"
+    assert kw["headers"]["LinkedIn-Version"] and kw["json"]["visibility"] == "PUBLIC"
+    with pytest.raises(SystemExit):
+        L.publish(cfg, "d1")                            # already published: refuses to repost

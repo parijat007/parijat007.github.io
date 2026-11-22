@@ -1,5 +1,6 @@
 {% extends "base.html" %}{% from "macros.html" import entry, tags %}
 {% block title %}Today's brief — {{ p.brand }}{% endblock %}
+{% block desc %}{% if brief %}{{ brief.executive_pulse }}{% else %}Today's source-checked threat brief from Watchfloor.{% endif %}{% endblock %}
 {% block main %}
 {% if brief and brief["items"] %}{% set top = brief["items"][0] %}
 <section class="hero" aria-labelledby="top-h">

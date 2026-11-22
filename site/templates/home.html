@@ -14,6 +14,7 @@
     </div>
     <p class="role">{{ p.headline }}</p>
     <p class="lead">{{ p.intro }}</p>
+    {% if p.open_to %}<p class="open-note"><a href="#open-to">Open to peer review, judging and community work</a></p>{% endif %}
     <ul class="links" aria-label="Elsewhere">{% for l in p.links %}<li class="{% if l.confirm %}draft{% endif %}"><a href="{{ (root ~ l.url) if not l.url.startswith('http') else (l.url | safe_url) }}" rel="me noopener">{{ l.label }}</a></li>{% endfor %}</ul>
   </div>
   <aside class="live" aria-labelledby="live-h">
@@ -31,6 +32,7 @@
     <div class="cells mini" role="img" aria-label="{{ cells | sum(attribute='n') }} new advisories and KEV entries in the last 24 hours">
       {% for c in cells %}<span class="cell{% if c.kev %} kev{% endif %}" data-n="{{ [c.n, 4] | min }}" title="{{ c.label }}: {{ c.n }} new"></span>{% endfor %}
     </div>
+    <div class="cell-scale" aria-hidden="true"><span>24 h ago</span><span>now</span></div>
     <p class="live-foot">Last 24 hours, updated {{ watch.updated | ago }}. <a href="{{ root }}today/">Read today's brief</a> or <a href="{{ root }}watch/">open the hourly watch</a>.</p>
   </aside>
 </section>
@@ -103,6 +105,17 @@
       <p class="svc-detail">{{ s.detail }}</p>{{ chip(s) }}
     </li>{% endfor %}
   </ul>
+</section>
+{% endif %}
+
+{% if p.open_to %}
+<section class="block two" aria-labelledby="open-h" id="open-to">
+  <h2 id="open-h">Open to community work</h2>
+  <div>
+    <p class="prose">{{ p.open_to.intro }}</p>
+    <dl class="niches open">{% for o in p.open_to["items"] %}<div><dt>{{ o.title }}</dt><dd>{{ o.detail }}</dd></div>{% endfor %}</dl>
+    {% if p.open_to.contact_url %}<p class="cta"><a class="button" href="{{ p.open_to.contact_url | safe_url }}" rel="noopener">{{ p.open_to.contact_label }}</a></p>{% endif %}
+  </div>
 </section>
 {% endif %}
 

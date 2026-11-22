@@ -126,6 +126,25 @@ media:
     url: "[paste the full Oneindia article link]"
     confirm: true      # article calls you "head of cybersecurity at Hearst" (not your title); section is branded content; URL to confirm
 
+# Community and service: what you are open to. Shown as an invitation with a contact route.
+open_to:
+  intro: >
+    I give time back to the security community. If your conference, journal, hackathon or
+    non-profit needs a practitioner who reads the code, checks the claims and writes a useful
+    review, get in touch.
+  items:
+    - {title: Peer review, detail: "Conference and journal submissions in detection engineering, cloud security, identity and agentic AI security."}
+    - {title: Judging, detail: "Hackathons, capture-the-flag events, student competitions and award panels."}
+    - {title: Programme committees, detail: "Technical and programme committee work for security and AI conferences and workshops."}
+    - {title: Mentoring, detail: "Early-career security engineers and students moving into detection, cloud or AI security."}
+    - {title: Community security, detail: "Pro bono security guidance for non-profits, schools and community organisations."}
+    - {title: Talks and panels, detail: "Detection lifecycle governance, telemetry engineering and guardrails for AI agents."}
+  contact_label: Message me on LinkedIn
+  contact_url: "https://www.linkedin.com/in/parijat-sharma-sec"
+
+# security.txt (RFC 9116). Enable GitHub private vulnerability reporting first, then uncomment:
+# security_contact: "https://github.com/parijat007/parijat007.github.io/security/advisories/new"
+
 # Awards: list wins, finalist or shortlist places. Self-nominations carry little weight publicly.
 awards:
   - {name: "Juniper Research Future Digital Awards 2026 — Identity Leader of the Year", result: "[nominated / shortlisted / winner]", year: 2026, confirm: true}
