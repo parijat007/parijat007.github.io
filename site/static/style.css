@@ -318,3 +318,14 @@ h3.sub + .creds + h3.sub { margin-top: 1.4rem; }
 .stages.dims li::before, .stages.dims li::after { content: none; }
 .fw-paper { margin: .7rem 0 0; font-size: .88rem; }
 .earlier { font-size: .88rem; margin: .2rem 0 1rem; color: #B8C2D1; }
+
+/* Portrait beside the name */
+.id-row { display: flex; align-items: center; gap: 1.6rem; margin-bottom: 1.1rem; }
+.id-row h1 { margin: 0; }
+.portrait { flex: 0 0 auto; }
+.portrait img { display: block; width: 136px; height: 136px; border-radius: 50%; object-fit: cover;
+                border: 2px solid var(--rule); box-shadow: 0 0 0 4px var(--base), 0 0 0 5px rgba(240,40,60,.55); }
+@media (max-width: 700px) {
+  .id-row { gap: 1rem; }
+  .portrait img { width: 88px; height: 88px; }
+}

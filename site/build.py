@@ -158,6 +158,7 @@ def build(out: Path) -> None:
     from digest.config import load_config  # noqa: PLC0415
     cfg = load_config()
     base = (cfg.get("site", {}).get("url") or "").rstrip("/")
+    p["site_url"] = base
     briefs = sorted((json.loads(f.read_text()) for f in (DATA / "briefs").glob("*.json")),
                     key=lambda b: b["run_date"], reverse=True) if (DATA / "briefs").exists() else []
     watch = json.loads((DATA / "watch.json").read_text()) if (DATA / "watch.json").exists() else {"entries": []}
@@ -182,6 +183,10 @@ def build(out: Path) -> None:
     ld = {"@context": "https://schema.org", "@type": "Person", "name": p["name"], "jobTitle": p["headline"],
           "sameAs": [l["url"] for l in p.get("links", []) if l["url"].startswith("http") and "[" not in l["url"]],
           "knowsAbout": [n["title"] for n in p.get("niches", [])]}
+    if p.get("photo") and base:
+        ld["image"] = base + "/static/portrait-og.jpg"
+    if base:
+        ld["url"] = base + "/"
     page("home.html", "", "", brief=today, watch=watch, cells=cells, watch_due_soon=due_soon,
          brief_count=len(briefs), latest_note=(load_notes() or [None])[0], person_ld=Markup(json.dumps(ld).replace("</", "<\\/")))
     page("today.html", "today/", "today/", brief=today, watch=watch, cells=cells, watch_due_soon=due_soon)

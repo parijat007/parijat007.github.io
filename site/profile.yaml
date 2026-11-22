@@ -6,6 +6,8 @@ brand: Watchfloor
 site_title: Parijat Sharma — Cloud Detection & Response | Watchfloor
 headline: Lead Cyber Security Architect. Cloud detection and response, identity-first Zero Trust, and security governance for agentic AI.
 location: New Jersey, USA
+photo:
+  alt: "Portrait of Parijat Sharma"
 intro: >
   I lead detection and response engineering for cloud-first enterprises: telemetry engineering,
   detection-as-code mapped to MITRE ATT&CK, incident response and adversary simulation, and

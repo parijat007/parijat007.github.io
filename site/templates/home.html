@@ -5,7 +5,13 @@
 {% if p.preview %}<p class="preview-banner" role="status">Preview build. Items outlined in amber are drafts and will not be published until confirmed.</p>{% endif %}
 <section class="intro" aria-labelledby="me">
   <div class="intro-text">
-    <h1 id="me">{{ p.name }}</h1>
+    <div class="id-row">
+      {% if p.photo %}<picture class="portrait">
+        <source type="image/webp" srcset="{{ root }}static/portrait-240.webp 1x, {{ root }}static/portrait-480.webp 2x">
+        <img src="{{ root }}static/portrait-240.jpg" srcset="{{ root }}static/portrait-480.jpg 2x" width="240" height="240" alt="{{ p.photo.alt }}" fetchpriority="high">
+      </picture>{% endif %}
+      <h1 id="me">{{ p.name }}</h1>
+    </div>
     <p class="role">{{ p.headline }}</p>
     <p class="lead">{{ p.intro }}</p>
     <ul class="links" aria-label="Elsewhere">{% for l in p.links %}<li class="{% if l.confirm %}draft{% endif %}"><a href="{{ (root ~ l.url) if not l.url.startswith('http') else (l.url | safe_url) }}" rel="me noopener">{{ l.label }}</a></li>{% endfor %}</ul>
