@@ -4,14 +4,14 @@
 name: Parijat Sharma
 brand: Watchfloor
 site_title: Parijat Sharma — Cloud Detection & Response | Watchfloor
-headline: Lead Cyber Security Architect. Cloud detection and response, identity-first Zero Trust, and security governance for agentic AI.
+headline: Lead Cyber Security, Detection and Response Engineering. Cloud detection and response, identity-first Zero Trust, and security governance for agentic AI.
 location: New Jersey, USA
 photo:
   alt: "Portrait of Parijat Sharma"
 intro: >
-  I lead detection and response engineering for cloud-first enterprises: telemetry engineering,
-  detection-as-code mapped to MITRE ATT&CK, incident response and adversary simulation, and
-  identity-first Zero Trust across AWS, Azure and GCP.
+  My work centres on detection and response engineering for large multi-cloud environments:
+  telemetry engineering, detection-as-code mapped to MITRE ATT&CK, incident response and adversary
+  simulation, and identity-first Zero Trust across AWS, Azure and GCP.
   My published frameworks treat detections as governed, testable assets and set guardrails for
   autonomous AI agents in the SOC. Twenty-plus years across financial services, media, healthcare,
   transportation and critical infrastructure.
@@ -129,17 +129,17 @@ media:
 # Community and service: what you are open to. Shown as an invitation with a contact route.
 open_to:
   intro: >
-    I give time back to the security community. If your conference, journal, hackathon or
-    non-profit needs a practitioner who reads the code, checks the claims and writes a useful
-    review, get in touch.
+    Outside my day job I volunteer time to the security research and education community.
+    This is unpaid, non-commercial service done on my own time, and it is separate from my
+    employment. Conference chairs, journal editors and event organisers are welcome to invite me.
   items:
     - {title: Peer review, detail: "Conference and journal submissions in detection engineering, cloud security, identity and agentic AI security."}
     - {title: Judging, detail: "Hackathons, capture-the-flag events, student competitions and award panels."}
-    - {title: Programme committees, detail: "Technical and programme committee work for security and AI conferences and workshops."}
+    - {title: Programme committees, detail: "Technical and programme committee service for security and AI conferences and workshops."}
     - {title: Mentoring, detail: "Early-career security engineers and students moving into detection, cloud or AI security."}
-    - {title: Community security, detail: "Pro bono security guidance for non-profits, schools and community organisations."}
-    - {title: Talks and panels, detail: "Detection lifecycle governance, telemetry engineering and guardrails for AI agents."}
-  contact_label: Message me on LinkedIn
+    - {title: Security education, detail: "Awareness sessions for students, schools and non-profit groups, using public material only."}
+    - {title: Talks and panels, detail: "Detection lifecycle governance, telemetry engineering and guardrails for AI agents, drawn from my published work."}
+  contact_label: Send an invitation on LinkedIn
   contact_url: "https://www.linkedin.com/in/parijat-sharma-sec"
 
 # security.txt (RFC 9116). Enable GitHub private vulnerability reporting first, then uncomment:
@@ -187,5 +187,5 @@ links:
   - {label: GitHub, url: "https://github.com/parijat007"}
   - {label: RSS, url: "feed.xml"}
 
-disclaimer: Personal project. Views are my own and do not represent any employer.
+disclaimer: Personal, non-commercial project run on my own time and equipment. It uses public sources only. Views are my own and do not represent any current or former employer.
 repo_url: "https://github.com/parijat007/parijat007.github.io"

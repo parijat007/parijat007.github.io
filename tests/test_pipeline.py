@@ -330,3 +330,14 @@ def test_linkedin_publish_needs_approval_and_posts_once(monkeypatch, tmp_path):
     assert kw["headers"]["LinkedIn-Version"] and kw["json"]["visibility"] == "PUBLIC"
     with pytest.raises(SystemExit):
         L.publish(cfg, "d1")                            # already published: refuses to repost
+
+
+def test_linkedin_blocks_employment_sensitive_wording():
+    from digest import linkedin as L
+    cfg = {"site": {"url": "https://theparijat.com"}, "linkedin": {"never_name": []}}
+    src = {"link": "https://theparijat.com/notes/n/", "urls": []}
+    base = "Finding.\n\n" + "Detail line. " * 30 + "\nhttps://theparijat.com/notes/n/"
+    for phrase in ["I am open to work.", "Available for consulting.", "At work we saw this.",
+                   "Our SOC blocked it.", "DM me for help."]:
+        assert any("employment-sensitive" in x for x in L.check(base + "\n" + phrase, src, cfg)), phrase
+    assert L.check(base, src, cfg) == []

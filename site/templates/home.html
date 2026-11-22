@@ -14,7 +14,7 @@
     </div>
     <p class="role">{{ p.headline }}</p>
     <p class="lead">{{ p.intro }}</p>
-    {% if p.open_to %}<p class="open-note"><a href="#open-to">Open to peer review, judging and community work</a></p>{% endif %}
+    {% if p.open_to %}<p class="open-note"><a href="#open-to">Community service: peer review, judging and mentoring</a></p>{% endif %}
     <ul class="links" aria-label="Elsewhere">{% for l in p.links %}<li class="{% if l.confirm %}draft{% endif %}"><a href="{{ (root ~ l.url) if not l.url.startswith('http') else (l.url | safe_url) }}" rel="me noopener">{{ l.label }}</a></li>{% endfor %}</ul>
   </div>
   <aside class="live" aria-labelledby="live-h">
@@ -110,7 +110,7 @@
 
 {% if p.open_to %}
 <section class="block two" aria-labelledby="open-h" id="open-to">
-  <h2 id="open-h">Open to community work</h2>
+  <h2 id="open-h">Community and service</h2>
   <div>
     <p class="prose">{{ p.open_to.intro }}</p>
     <dl class="niches open">{% for o in p.open_to["items"] %}<div><dt>{{ o.title }}</dt><dd>{{ o.detail }}</dd></div>{% endfor %}</dl>

@@ -46,6 +46,12 @@ BANNED = re.compile(r"\b(landscape|delve|elevate|paradigm|testament|substrate|fu
                     r"in conclusion|game[- ]changer|spearhead\w*|synerg\w*|thrilled|excited to share)\b", re.I)
 URL_RE = re.compile(r"https?://[^\s)>\]\"'<]+")
 KEYCHAIN_ACCOUNT = "watchfloor"
+# Wording that could read as job-seeking, outside consulting, or speaking for an employer
+EMPLOYMENT_RISK = re.compile(
+    r"\b(open to (work|new (roles|opportunities))|looking for (a )?(new )?(role|job|opportunit\w+)|hire me|"
+    r"for hire|freelanc\w*|consult(ing|ancy|ant)|my (services|clients?)|(dm|message) me for|"
+    r"(my|our) (employer|company|team|organi[sz]ation|firm|soc)|at work (we|I)|in my (day )?job|"
+    r"internal(ly)? (data|incident|tool)|on behalf of)\b", re.I)
 
 SYSTEM = """You write LinkedIn posts for {name}, {headline}
 Voice: a senior practitioner talking to other defenders. Confident, specific, plain. No hype,
@@ -56,6 +62,10 @@ Rules:
 - Use ONLY facts in <source>. Do not add numbers, names, CVEs or claims that are not there.
 - Keep "confirmed" and "reported/claimed" distinct exactly as the source does.
 - Never mention any employer or client, and never imply you speak for one.
+- Never describe incidents, systems, tools, metrics or decisions from your own workplace,
+  even without naming it. Write only about the public source.
+- No job-seeking or sales language: no "open to work", "hire me", "consulting", "services",
+  "DM me", "looking for opportunities". This is a practitioner sharing public analysis.
 - Structure: one-line opening that states the finding; a short paragraph of why it matters;
   three to five short lines a defender can act on; then the link {link} on its own line;
   then three to five relevant hashtags on the last line.
@@ -175,6 +185,8 @@ def check(text: str, src: dict, cfg: dict) -> list[str]:
     for org in cfg.get("linkedin", {}).get("never_name", []):
         if re.search(rf"\b{re.escape(org)}\b", text, re.I):
             problems.append(f"names {org!r}: posts must not mention employers or clients")
+    if (m := EMPLOYMENT_RISK.search(text)):
+        problems.append(f"employment-sensitive wording: {m.group(0)!r} (no job-seeking, consulting or workplace references)")
     if len(re.findall(r"(?<!\w)#\w+", text)) > 5:
         problems.append("more than five hashtags")
     return problems
