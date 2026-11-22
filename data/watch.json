@@ -1,11 +1,11 @@
 {
- "updated": "2026-11-22T22:52:28+00:00",
+ "updated": "2026-11-22T23:36:24+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
   "CISA Advisories": "ok (0)",
   "Microsoft MSRC": "ok (0)",
-  "Palo Alto PSIRT": "ok (1)",
+  "Palo Alto PSIRT": "ok (0)",
   "Fortinet PSIRT": "ok (0)",
   "Cisco PSIRT": "ok (1)",
   "AWS Security Bulletins": "ok (0)"
