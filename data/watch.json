@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-22T15:01:45+00:00",
+ "updated": "2026-11-22T16:17:02+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
@@ -7,7 +7,7 @@
   "Microsoft MSRC": "ok (0)",
   "Palo Alto PSIRT": "ok (2)",
   "Fortinet PSIRT": "ok (0)",
-  "Cisco PSIRT": "ok (3)",
+  "Cisco PSIRT": "ok (2)",
   "AWS Security Bulletins": "ok (0)"
  },
  "entries": [
