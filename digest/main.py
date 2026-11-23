@@ -110,13 +110,14 @@ def call_llm(cfg: dict, items: list[dict], ctx: dict) -> tuple[str, str]:
                  for k, v in it.items() if k not in ("source_tier",)} for it in items[:n]]
         user = ("<untrusted_items>\n" + json.dumps(slim, ensure_ascii=False) +
                 "\n</untrusted_items>\n\nProduce today's digest JSON.")
+        required = must_report(items[:n])
         for attempt in (1, 2):
             try:
                 text = complete(name, cfg["llm"], system, user)
                 parsed = parse_json(text)
                 if not isinstance(parsed.get("items"), list):
                     raise ValueError("no items array")
-                check_coverage(parsed, must_report(items[:n]))
+                check_coverage(parsed, required)
                 return text, name
             except Exception as e:  # noqa: BLE001  (network, quota, bad JSON: move on)
                 log.warning("provider %s attempt %d failed: %s", name, attempt, str(e)[:300])
@@ -125,8 +126,13 @@ def call_llm(cfg: dict, items: list[dict], ctx: dict) -> tuple[str, str]:
                 errors.append(f"{name}: {type(e).__name__}")
                 if "no API key" in str(e) or "Connection" in type(e).__name__:
                     break
-                if any(code in str(e) for code in ("HTTP 429", "HTTP 503", "HTTP 500")) and attempt == 1:
-                    time.sleep(30)   # overloaded or rate-limited: wait, then one more try
+                if "under-reported" in str(e):
+                    # one corrective retry: name what was left out
+                    user += ("\n\nYour previous answer left out these newly listed CISA KEV entries. They are "
+                             "confirmed exploited and must each appear as an item: " + ", ".join(sorted(required)))
+                    time.sleep(61 if name == "groq" else 5)   # Groq free tier: tokens per minute
+                elif any(code in str(e) for code in ("HTTP 429", "HTTP 503", "HTTP 500")) and attempt == 1:
+                    time.sleep(61 if "HTTP 429" in str(e) else 30)   # rate limit resets per minute
     raise RuntimeError("all model providers failed: " + "; ".join(errors))
 
 

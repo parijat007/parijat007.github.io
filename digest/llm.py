@@ -85,6 +85,7 @@ def _openai_compat(name: str, pc: dict, system: str, user: str) -> tuple[str, di
         body["reasoning_effort"] = pc["reasoning_effort"]
     if pc.get("no_think"):
         body["chat_template_kwargs"] = {"enable_thinking": False}   # Qwen3 family
+    body.update(pc.get("extra_body", {}))      # provider-specific options, e.g. OpenRouter's reasoning
     url = f"{base}/chat/completions"
     r = requests.post(url, json=body, headers=headers, timeout=pc.get("timeout_seconds", 180),
                       allow_redirects=False)   # a redirect turns POST into GET; surface it instead
