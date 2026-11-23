@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-23T01:40:26+00:00",
+ "updated": "2026-11-23T07:35:35+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
@@ -840,7 +840,7 @@
     "score": 0.2778,
     "percentile": 0.981
    },
-   "poc": 37,
+   "poc": 38,
    "kev_due": null,
    "ransomware": null,
    "stack_match": [
