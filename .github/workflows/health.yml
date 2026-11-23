@@ -1,0 +1,41 @@
+name: Health check
+
+# Hourly. Re-runs the brief if it is missing or facts-only after 14:00 UTC (9 AM EST),
+# re-runs the watch if it is more than 3 hours old, and alerts on Telegram.
+# Reads data only; the re-runs do the writing.
+on:
+  schedule:
+    - cron: "50 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write             # dispatch brief.yml / watch.yml
+
+concurrency:
+  group: health
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install -r requirements.txt
+      - id: h
+        name: Check brief and watch
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python -m digest.health
+      - name: Re-run brief
+        if: steps.h.outputs.rerun_brief == 'true'
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: gh api -X POST "repos/${{ github.repository }}/actions/workflows/brief.yml/dispatches" -f ref=main
+      - name: Re-run watch
+        if: steps.h.outputs.rerun_watch == 'true'
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: gh api -X POST "repos/${{ github.repository }}/actions/workflows/watch.yml/dispatches" -f ref=main

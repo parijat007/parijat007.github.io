@@ -410,3 +410,43 @@ def test_openrouter_free_model_discovery(monkeypatch):
                 {"id": "d/paid", "supported_parameters": ["response_format"], "context_length": 200000}]}
     monkeypatch.setattr(llm.requests, "get", lambda *a, **k: R())
     assert llm.discover_free_models({"base_url": "https://or.example/api/v1"}) == ["b/direct:free"]
+
+
+def test_skip_if_exists_upgrades_only_facts_only_briefs(tmp_path, monkeypatch):
+    import argparse
+    from datetime import datetime, timezone
+    from digest import main as m
+    monkeypatch.setattr(m, "ROOT", tmp_path)
+    today = datetime.now(timezone.utc).date().isoformat()
+    f = tmp_path / "data" / "briefs" / f"{today}.json"
+    f.parent.mkdir(parents=True)
+    here = Path(__file__).parent
+    args = lambda **k: argparse.Namespace(**{"skip_if_exists": True, "fallback": False, "dry_run": False,
+                                            "no_deliver": True, "items_fixture": str(here / "sample_items.json"),
+                                            "llm_fixture": str(here / "sample_llm.json"), **k})
+    f.write_text(json.dumps({"items": [], "meta": {"mode": "analyst"}}))
+    assert m.run(args()) == 0 and json.loads(f.read_text())["items"] == []        # analyst: left alone
+    f.write_text(json.dumps({"items": [], "meta": {"mode": "fallback"}}))
+    assert m.run(args(fallback=True)) == 0
+    assert json.loads(f.read_text())["meta"] == {"mode": "fallback"}             # models still down: kept, no resend
+    assert m.run(args()) == 0
+    meta = json.loads(f.read_text())["meta"]
+    assert meta["mode"] == "analyst" and meta["upgraded_from"] == "fallback"      # upgraded
+
+
+def test_health_reruns_and_alerts_without_spamming():
+    from datetime import datetime, timezone
+    from digest.health import evaluate
+    t = lambda h: datetime(2026, 11, 23, h, 50, tzinfo=timezone.utc)
+    assert evaluate(t(13), "missing", 0.5) == {"rerun_brief": False, "rerun_watch": False, "alerts": []}
+    r = evaluate(t(14), "fallback", 0.5)
+    assert r["rerun_brief"] and len(r["alerts"]) == 1 and "facts-only" in r["alerts"][0]
+    r = evaluate(t(15), "missing", 0.5)
+    assert r["rerun_brief"] and r["alerts"] == []                                 # retried quietly
+    assert evaluate(t(18), "analyst", 0.5)["alerts"] == []
+    r = evaluate(t(9), "analyst", 3.4)
+    assert r["rerun_watch"] and len(r["alerts"]) == 1                             # first time stale
+    r = evaluate(t(10), "analyst", 4.4)
+    assert r["rerun_watch"] and r["alerts"] == []                                 # still stale: no repeat
+    assert evaluate(t(14), "analyst", 8.0)["alerts"]                              # twice-daily reminder
+    assert evaluate(t(9), "analyst", None)["rerun_watch"]

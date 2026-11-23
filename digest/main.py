@@ -197,6 +197,17 @@ def write_brief(digest: dict, run_date: str, meta: dict) -> Path:
     return out
 
 
+def existing_mode(run_date: str) -> str | None:
+    """Mode of the brief already published for run_date ("analyst", "fallback"), or None."""
+    f = ROOT / "data" / "briefs" / f"{run_date}.json"
+    if not f.exists():
+        return None
+    try:
+        return (json.loads(f.read_text()).get("meta") or {}).get("mode") or "unknown"
+    except (OSError, ValueError):
+        return "unknown"
+
+
 def run(args) -> int:
     cfg = load_config()
     now = datetime.now(timezone.utc)
@@ -204,9 +215,12 @@ def run(args) -> int:
     since = now - timedelta(hours=hours)
     run_date = now.date().isoformat()
 
-    if args.skip_if_exists and (ROOT / "data" / "briefs" / f"{run_date}.json").exists():
-        log.info("brief for %s already published; nothing to do", run_date)
+    prior = existing_mode(run_date)
+    if args.skip_if_exists and prior == "analyst":
+        log.info("analyst brief for %s already published; nothing to do", run_date)
         return 0
+    if args.skip_if_exists and prior:
+        log.info("existing %s brief for %s is facts-only; trying to upgrade it", prior, run_date)
     if args.items_fixture:
         items, status = json.loads(Path(args.items_fixture).read_text()), {"fixture": "ok"}
     else:
@@ -261,6 +275,12 @@ def run(args) -> int:
             "provider": provider,
             "window_start": ctx["WINDOW_START"], "window_end": ctx["WINDOW_END"],
             "items_screened": len(items), "dropped": problems, "sources": status}
+    if prior and prior != "analyst" and mode != "analyst" and args.skip_if_exists:
+        log.info("upgrade failed: models still unavailable; keeping the existing facts-only brief")
+        return 0
+    if prior and mode == "analyst" and prior != "analyst":
+        meta["upgraded_from"] = prior
+        blocks[0] = "*Upgraded brief:* the analyst models are back; this replaces this morning's facts-only brief.\n\n" + blocks[0]
     if not args.dry_run:
         write_brief(digest, run_date, meta)
 
@@ -287,7 +307,7 @@ def main() -> None:
     ap.add_argument("--items-fixture")
     ap.add_argument("--fallback", action="store_true", help="deterministic brief, no LLM")
     ap.add_argument("--no-deliver", action="store_true", help="write data files only")
-    ap.add_argument("--skip-if-exists", action="store_true", help="exit if today's brief already exists")
+    ap.add_argument("--skip-if-exists", action="store_true", help="skip if an analyst brief exists today; retry if only a facts-only brief exists")
     args = ap.parse_args()
     try:
         sys.exit(run(args))
