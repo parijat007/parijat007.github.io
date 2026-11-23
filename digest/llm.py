@@ -123,22 +123,33 @@ def chain(cfg: dict) -> list[str]:
     return [c.strip() for c in env.split(",") if c.strip()] if env else cfg.get("chain", ["local"])
 
 
+RETRYABLE = ("HTTP 404", "HTTP 400", "not found", "does not exist", "HTTP 429", "HTTP 500", "HTTP 502",
+             "HTTP 503", "HTTP 504", "truncated", "no choices")
+
+
+def _retryable(msg: str) -> bool:
+    return any(k in msg for k in RETRYABLE)
+
+
 def complete(name: str, cfg: dict, system: str, user: str) -> str:
     pc = cfg["providers"][name]
     fn = _anthropic if pc.get("kind") == "anthropic" else _openai_compat
     models = pc.get("models") or [pc.get("model", "local")]
     last = None
-    for m in models:   # model ids get retired; fall through the list on 404/400 "model not found"
+    for m in models:
+        # Move to the next model when this one is retired (404/400), overloaded (429/5xx),
+        # slow (timeout) or cut off: one busy model must not take out the whole provider.
         try:
             text, usage = fn(name, {**pc, "model": m}, system, user)
             log.info("LLM provider=%s model=%s usage=%s", name, m, usage)
             pc["_used_model"] = m
             return text
-        except RuntimeError as e:
-            last = e
-            if not any(k in str(e) for k in ("HTTP 404", "HTTP 400", "not found", "does not exist")):
-                raise
-            log.warning("%s: model %s unavailable, trying next", name, m)
+        except (RuntimeError, requests.RequestException) as e:
+            last = e if isinstance(e, RuntimeError) else RuntimeError(f"{name}: {type(e).__name__} on {m}")
+            msg = str(e)
+            if "no API key" in msg or not (_retryable(msg) or isinstance(e, requests.RequestException)):
+                raise last from None
+            log.warning("%s: model %s failed (%s), trying next model", name, m, msg[:120])
     raise last or RuntimeError(f"{name}: no models configured")
 
 

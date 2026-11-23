@@ -369,3 +369,24 @@ def test_kev_cve_must_match_cisa_product():
     assert e["identifiers"] == ["CVE-2026-123890"] and "CVE-2026-123890" in e["headline"]
     assert "129448" not in e["headline"] + e["summary"]
     assert any("another product" in p for p in problems)
+
+
+def test_provider_falls_through_models_on_overload_and_timeout(monkeypatch):
+    import requests
+    from digest import llm
+    calls = []
+
+    def fake(name, pc, system, user):
+        calls.append(pc["model"])
+        if pc["model"] == "a":
+            raise RuntimeError("gemini: HTTP 503 overloaded")
+        if pc["model"] == "b":
+            raise requests.ReadTimeout("read timed out")
+        return '{"items": []}', {}
+    monkeypatch.setattr(llm, "_openai_compat", fake)
+    cfg = {"providers": {"gemini": {"models": ["a", "b", "c"]}}}
+    assert llm.complete("gemini", cfg, "s", "u") == '{"items": []}' and calls == ["a", "b", "c"]
+    # a missing key is not worth trying other models for
+    monkeypatch.setattr(llm, "_openai_compat", lambda *a: (_ for _ in ()).throw(RuntimeError("x: no API key in [K]")))
+    with pytest.raises(RuntimeError, match="no API key"):
+        llm.complete("gemini", cfg, "s", "u")
