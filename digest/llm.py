@@ -131,10 +131,36 @@ def _retryable(msg: str) -> bool:
     return any(k in msg for k in RETRYABLE)
 
 
+_DISCOVERED: dict[str, list[str]] = {}
+
+
+def discover_free_models(pc: dict, limit: int = 4) -> list[str]:
+    """OpenRouter: current free models that answer directly (no hidden reasoning) and do JSON.
+    The free router can land on a 'thinking' model that spends the whole budget before answering."""
+    key = pc["base_url"]
+    if key in _DISCOVERED:
+        return _DISCOVERED[key]
+    try:
+        data = requests.get(pc["base_url"].rstrip("/") + "/models", timeout=20).json().get("data", [])
+    except (requests.RequestException, ValueError):
+        return []
+    picks = []
+    for m in data:
+        sp = set(m.get("supported_parameters") or [])
+        if (m.get("id", "").endswith(":free") and "response_format" in sp and "reasoning" not in sp
+                and (m.get("context_length") or 0) >= 32000):
+            picks.append((m.get("context_length") or 0, m["id"]))
+    _DISCOVERED[key] = [i for _, i in sorted(picks, reverse=True)[:limit]]
+    log.info("%s: discovered free models %s", pc.get("label", key), _DISCOVERED[key])
+    return _DISCOVERED[key]
+
+
 def complete(name: str, cfg: dict, system: str, user: str) -> str:
     pc = cfg["providers"][name]
     fn = _anthropic if pc.get("kind") == "anthropic" else _openai_compat
     models = pc.get("models") or [pc.get("model", "local")]
+    if pc.get("discover_free"):
+        models = discover_free_models(pc) + [m for m in models if m not in _DISCOVERED.get(pc["base_url"], [])]
     last = None
     for m in models:
         # Move to the next model when this one is retired (404/400), overloaded (429/5xx),
@@ -145,8 +171,10 @@ def complete(name: str, cfg: dict, system: str, user: str) -> str:
             pc["_used_model"] = m
             return text
         except (RuntimeError, requests.RequestException) as e:
-            last = e if isinstance(e, RuntimeError) else RuntimeError(f"{name}: {type(e).__name__} on {m}")
+            err = e if isinstance(e, RuntimeError) else RuntimeError(f"{name}: {type(e).__name__} on {m}")
             msg = str(e)
+            if last is None or "HTTP 404" not in msg:     # a retired model says less than an overload
+                last = err
             if "no API key" in msg or not (_retryable(msg) or isinstance(e, requests.RequestException)):
                 raise last from None
             log.warning("%s: model %s failed (%s), trying next model", name, m, msg[:120])

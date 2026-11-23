@@ -25,7 +25,7 @@ llm:
       # First that answers wins. Busy or slow models are skipped (503/429/timeout), so keep a
       # lighter model near the end as the reliable floor. Run the Self-test workflow to see
       # which models this key can use today.
-      models: [gemini-flash-latest, gemini-3.5-flash, gemini-3.6-flash, gemini-3.8-flash, gemini-3.5-flash-lite, gemini-2.5-flash]
+      models: [gemini-flash-latest, gemini-3.5-flash, gemini-3.6-flash, gemini-3.8-flash, gemini-3.5-flash-lite]
       label: Gemini Flash (free tier)
       api_key_env: [GEMINI_API_KEY]
       json: object
@@ -47,7 +47,8 @@ llm:
       timeout_seconds: 120
     openrouter:     # OpenRouter free models (no card, ~50 requests/day). Key: openrouter.ai/keys
       base_url: https://openrouter.ai/api/v1
-      models: [openrouter/free]
+      models: [openrouter/free]          # last resort; discovered free models are tried first
+      discover_free: true                # pick current :free models with JSON output and no hidden reasoning
       label: OpenRouter free router
       api_key_env: [OPENROUTER_API_KEY]
       json: object

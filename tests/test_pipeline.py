@@ -395,3 +395,18 @@ def test_provider_falls_through_models_on_overload_and_timeout(monkeypatch):
     monkeypatch.setattr(llm, "_openai_compat", lambda *a: (_ for _ in ()).throw(RuntimeError("x: no API key in [K]")))
     with pytest.raises(RuntimeError, match="no API key"):
         llm.complete("gemini", cfg, "s", "u")
+
+
+def test_openrouter_free_model_discovery(monkeypatch):
+    from digest import llm
+    llm._DISCOVERED.clear()
+
+    class R:
+        def json(self):
+            return {"data": [
+                {"id": "a/think:free", "supported_parameters": ["response_format", "reasoning"], "context_length": 131072},
+                {"id": "b/direct:free", "supported_parameters": ["response_format"], "context_length": 131072},
+                {"id": "c/small:free", "supported_parameters": ["response_format"], "context_length": 8192},
+                {"id": "d/paid", "supported_parameters": ["response_format"], "context_length": 200000}]}
+    monkeypatch.setattr(llm.requests, "get", lambda *a, **k: R())
+    assert llm.discover_free_models({"base_url": "https://or.example/api/v1"}) == ["b/direct:free"]
