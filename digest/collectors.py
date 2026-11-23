@@ -69,6 +69,7 @@ def kev_items(kev: dict, since: datetime) -> list[dict]:
             "text": _clean(v.get("shortDescription")),
             "required_action": _clean(v.get("requiredAction"), 300),
             "product": f"{v.get('vendorProject', '')} {v.get('product', '')}".strip(),
+            "kev_product": v.get("product", ""),
             "cwes": v.get("cwes", []) or [],
             "url": f"https://nvd.nist.gov/vuln/detail/{cve}",
             "refs": ["https://www.cisa.gov/known-exploited-vulnerabilities-catalog", *refs],
@@ -278,6 +279,7 @@ def enrich(items: list[dict], kev: dict, watchlist: list[str]) -> None:
             v = kev[kev_hits[0].upper()]
             it["kev"] = {"listed": True, "cve": kev_hits[0], "dateAdded": v.get("dateAdded"),
                          "dueDate": v.get("dueDate"),
+                         "product": v.get("product", ""), "vendor": v.get("vendorProject", ""),
                          "ransomware": v.get("knownRansomwareCampaignUse")}
         scores = [epss[c.upper()] for c in it.get("cves", []) if c.upper() in epss]
         if scores:

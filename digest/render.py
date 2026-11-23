@@ -62,6 +62,47 @@ def _authority_index(items: list[dict], tiers: dict) -> dict:
     return {c: u for c, (_, u) in idx.items()}
 
 
+GENERIC = {"server", "series", "software", "platform", "suite", "application", "applications", "web",
+           "and", "the", "for", "multiple", "products", "management", "center", "client", "service"}
+
+
+def _product_tokens(product: str) -> set[str]:
+    return {t for t in re.findall(r"[a-z0-9]{4,}", product.lower()) if t not in GENERIC}
+
+
+def kev_product_map(items: list[dict]) -> dict[str, set[str]]:
+    """CVE -> distinctive words of the product CISA lists for it."""
+    m: dict[str, set[str]] = {}
+    for it in items:
+        if it.get("source_name") == "CISA KEV" and it.get("kev_product"):
+            m[it["id"].upper()] = _product_tokens(it["kev_product"])
+        k = it.get("kev") or {}
+        if k.get("cve") and k.get("product"):
+            m.setdefault(k["cve"].upper(), _product_tokens(k["product"]))
+    return {c: t for c, t in m.items() if t}
+
+
+def fix_cve_product(e: dict, kmap: dict[str, set[str]]) -> str | None:
+    """A KEV CVE must sit with CISA's product. Swap in the right CVE, or drop it. Returns a note."""
+    text = " ".join(str(e.get(f) or "") for f in ("headline", "target", "summary")).lower()
+    ids = {i.upper() for i in (e.get("identifiers") or [])} | {c.upper() for c in CVE_RE.findall(e.get("headline", ""))}
+    for cve in ids:
+        if cve not in kmap or kmap[cve] & set(re.findall(r"[a-z0-9]{4,}", text)):
+            continue
+        right = [c for c, t in kmap.items() if t & set(re.findall(r"[a-z0-9]{4,}", text))]
+        new = right[0] if len(right) == 1 else None
+
+        def swap(v):
+            return re.sub(re.escape(cve), new, v, flags=re.I) if new else re.sub(rf"\s*\(?{re.escape(cve)}\)?", "", v, flags=re.I)
+        for f in ("headline", "summary", "action"):
+            if isinstance(e.get(f), str):
+                e[f] = swap(e[f])
+        e["identifiers"] = [new if i.upper() == cve and new else i for i in (e.get("identifiers") or [])
+                            if new or i.upper() != cve]
+        return f"{cve} belongs to another product per CISA KEV; " + (f"replaced with {new}" if new else "removed")
+    return None
+
+
 def validate(digest: dict, items: list[dict], tiers: dict | None = None) -> tuple[dict, list[str]]:
     """Drop any entry whose URL was not collected; enforce caps; cap claims to what the sources can prove."""
     tiers = tiers or {}
@@ -73,12 +114,15 @@ def validate(digest: dict, items: list[dict], tiers: dict | None = None) -> tupl
     problems, kept = [], []
     threats = repos = 0
     official = _authority_index(items, tiers)
+    kmap = kev_product_map(items)
     for e in digest.get("items", []):
         for f in ("hunt", "fixed_versions", "action", "target", "kev_due_date"):
             e[f] = _nullish(e.get(f))
         if e.get("primary_source") not in allowed:
             problems.append(f"dropped (URL not in input): {e.get('headline', '?')[:60]}")
             continue
+        if (note := fix_cve_product(e, kmap)):
+            problems.append(note)
         e["corroborating_sources"] = [u for u in (e.get("corroborating_sources") or []) if u in allowed]
         # Cite the official record first when one was collected for the same CVE
         primary_tier = {tiers.get(it["source_name"], "press") for it in by_url.get(e["primary_source"], [])}

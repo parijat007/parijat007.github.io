@@ -353,3 +353,19 @@ def test_quiet_day_answer_rejected_when_kev_listed():
         check_coverage({"quiet_day": True, "items": []}, req)
     check_coverage({"items": [{"headline": "x", "identifiers": ["CVE-2026-1"]}]}, req)   # ok
     check_coverage({"quiet_day": True, "items": []}, set())                              # no KEV: quiet is fine
+
+
+def test_kev_cve_must_match_cisa_product():
+    kev = [{"source_name": "CISA KEV", "id": "CVE-2026-129448", "kev_product": "Roller",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-129448", "title": "Apache Roller"},
+           {"source_name": "CISA KEV", "id": "CVE-2026-123890", "kev_product": "vCenter Server",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-123890", "title": "VMware vCenter"}]
+    d = {"items": [{"headline": "CISA KEV: CVE-2026-129448 (VMware vCenter)", "category": "VULNERABILITY",
+                    "exploitation": "EXPLOITED_CONFIRMED", "identifiers": ["CVE-2026-129448"],
+                    "summary": "CISA added CVE-2026-129448 to KEV.",
+                    "primary_source": "https://nvd.nist.gov/vuln/detail/CVE-2026-123890"}]}
+    out, problems = validate(d, kev, {"CISA KEV": "authority"})
+    e = out["items"][0]
+    assert e["identifiers"] == ["CVE-2026-123890"] and "CVE-2026-123890" in e["headline"]
+    assert "129448" not in e["headline"] + e["summary"]
+    assert any("another product" in p for p in problems)
