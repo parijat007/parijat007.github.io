@@ -127,7 +127,7 @@ def chain(cfg: dict) -> list[str]:
     return [c.strip() for c in env.split(",") if c.strip()] if env else cfg.get("chain", ["local"])
 
 
-RETRYABLE = ("HTTP 404", "HTTP 400", "not found", "does not exist", "HTTP 429", "HTTP 500", "HTTP 502",
+RETRYABLE = ("HTTP 404", "HTTP 400", "HTTP 410", "deprecated", "not found", "does not exist", "HTTP 429", "HTTP 500", "HTTP 502",
              "HTTP 503", "HTTP 504", "truncated", "no choices")
 
 
