@@ -1,16 +1,368 @@
 {
- "updated": "2026-11-23T21:20:24+00:00",
+ "updated": "2026-11-23T22:03:51+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
-  "CISA Advisories": "ok (0)",
-  "Microsoft MSRC": "ok (0)",
+  "CISA Advisories": "ok (1)",
+  "Microsoft MSRC": "ok (10)",
   "Palo Alto PSIRT": "ok (0)",
   "Fortinet PSIRT": "ok (0)",
   "Cisco PSIRT": "ok (3)",
   "AWS Security Bulletins": "ok (0)"
  },
  "entries": [
+  {
+   "id": "/node/25838",
+   "kind": "ADVISORY",
+   "title": "CISA Adds Two Known Exploited Vulnerabilities to Catalog",
+   "summary": "CISA has added two new vulnerabilities to its Known Exploited Vulnerabilities (KEV) Catalog , based on evidence of active exploitation. CVE-2026-133968 Project MONAI MONAI Label Path Traversal Vulnerability CVE-2026-134624 N-able Mail Assure (SpamExperts) Server-Side Request Forg",
+   "source": "CISA Advisories",
+   "url": "https://www.cisa.gov/news-events/alerts/2026/11/23/cisa-adds-two-known-exploited-vulnerabilities-catalog",
+   "published": "2026-11-23T12:00:00+00:00",
+   "cves": [
+    "CVE-2026-133968",
+    "CVE-2026-134624"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0366,
+    "percentile": 0.899
+   },
+   "poc": 1,
+   "kev_due": "2026-11-26",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-23T22:03:51+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Path traversal",
+    "compensating_controls": [
+     "Block requests containing traversal sequences at the WAF or reverse proxy",
+     "Restrict the service account's file system permissions"
+    ],
+    "verify": "Search web logs for '../' and encoded variants against the affected paths"
+   }
+  },
+  {
+   "id": "CVE-2026-69291",
+   "kind": "ADVISORY",
+   "title": "CVE-2026-69291 Windows Volume Manager Extension Driver Remote Code Execution Vulnerability",
+   "summary": "Updated an acknowledgement. This is an informational change only.",
+   "source": "Microsoft MSRC",
+   "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69291",
+   "published": "2026-11-23T16:00:00+00:00",
+   "cves": [
+    "CVE-2026-69291"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0082,
+    "percentile": 0.582
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-23T22:03:51+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Restrict the device's management interface to an admin network; check for new admin accounts and config changes",
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
+   }
+  },
+  {
+   "id": "CVE-2026-78462",
+   "kind": "ADVISORY",
+   "title": "CVE-2026-78462 Visual Studio Code Security Feature Bypass Vulnerability",
+   "summary": "Updated an acknowledgement. This is an informational change only.",
+   "source": "Microsoft MSRC",
+   "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-78462",
+   "published": "2026-11-23T16:00:00+00:00",
+   "cves": [
+    "CVE-2026-78462"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0076,
+    "percentile": 0.561
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-23T22:03:51+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Restrict the device's management interface to an admin network; check for new admin accounts and config changes",
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
+  {
+   "id": "CVE-2026-72965",
+   "kind": "ADVISORY",
+   "title": "CVE-2026-72965 Windows WebClient Service Elevation of Privilege Vulnerability",
+   "summary": "Updated an acknowledgement. This is an informational change only.",
+   "source": "Microsoft MSRC",
+   "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-72965",
+   "published": "2026-11-23T16:00:00+00:00",
+   "cves": [
+    "CVE-2026-72965"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0033,
+    "percentile": 0.271
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-23T22:03:51+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Restrict the device's management interface to an admin network; check for new admin accounts and config changes",
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
+  {
+   "id": "CVE-2026-87697",
+   "kind": "ADVISORY",
+   "title": "CVE-2026-87697 .NET Remote Code Execution Vulnerability",
+   "summary": "Updated an acknowledgement. This is an informational change only.",
+   "source": "Microsoft MSRC",
+   "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-87697",
+   "published": "2026-11-23T16:00:00+00:00",
+   "cves": [
+    "CVE-2026-87697"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0084,
+    "percentile": 0.589
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-23T22:03:51+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Restrict the device's management interface to an admin network; check for new admin accounts and config changes",
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
+   }
+  },
+  {
+   "id": "CVE-2026-70175",
+   "kind": "ADVISORY",
+   "title": "CVE-2026-70175 ASP.NET Core Elevation of Privilege Vulnerability",
+   "summary": "Updated an acknowledgement. This is an informational change only.",
+   "source": "Microsoft MSRC",
+   "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-70175",
+   "published": "2026-11-23T16:00:00+00:00",
+   "cves": [
+    "CVE-2026-70175"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0073,
+    "percentile": 0.552
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-23T22:03:51+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Restrict the device's management interface to an admin network; check for new admin accounts and config changes",
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
+  {
+   "id": "CVE-2026-70197",
+   "kind": "ADVISORY",
+   "title": "CVE-2026-70197 .NET and Visual Studio Remote Code Execution Vulnerability",
+   "summary": "Updated an acknowledgement. This is an informational change only.",
+   "source": "Microsoft MSRC",
+   "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-70197",
+   "published": "2026-11-23T16:00:00+00:00",
+   "cves": [
+    "CVE-2026-70197"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0084,
+    "percentile": 0.59
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-23T22:03:51+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Restrict the device's management interface to an admin network; check for new admin accounts and config changes",
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
+   }
+  },
+  {
+   "id": "CVE-2026-96225",
+   "kind": "ADVISORY",
+   "title": "CVE-2026-96225 .NET Elevation of Privilege Vulnerability",
+   "summary": "Updated an acknowledgement. This is an informational change only.",
+   "source": "Microsoft MSRC",
+   "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96225",
+   "published": "2026-11-23T16:00:00+00:00",
+   "cves": [
+    "CVE-2026-96225"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0041,
+    "percentile": 0.361
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-23T22:03:51+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Restrict the device's management interface to an admin network; check for new admin accounts and config changes",
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
+  {
+   "id": "CVE-2026-96233",
+   "kind": "ADVISORY",
+   "title": "CVE-2026-96233 ASP.NET Core Denial of Service Vulnerability",
+   "summary": "Updated an acknowledgement. This is an informational change only.",
+   "source": "Microsoft MSRC",
+   "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96233",
+   "published": "2026-11-23T16:00:00+00:00",
+   "cves": [
+    "CVE-2026-96233"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0099,
+    "percentile": 0.634
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-23T22:03:51+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Restrict the device's management interface to an admin network; check for new admin accounts and config changes",
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
+  {
+   "id": "CVE-2026-109481",
+   "kind": "ADVISORY",
+   "title": "CVE-2026-109481 ASP.NET Core Elevation of Privilege Vulnerability",
+   "summary": "Updated an acknowledgement. This is an informational change only.",
+   "source": "Microsoft MSRC",
+   "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-109481",
+   "published": "2026-11-23T16:00:00+00:00",
+   "cves": [
+    "CVE-2026-109481"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0034,
+    "percentile": 0.285
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-23T22:03:51+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Restrict the device's management interface to an admin network; check for new admin accounts and config changes",
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
+  {
+   "id": "CVE-2026-119848",
+   "kind": "ADVISORY",
+   "title": "CVE-2026-119848 Windows Message Queuing Denial of Service Vulnerability",
+   "summary": "Updated an acknowledgement. This is an informational change only.",
+   "source": "Microsoft MSRC",
+   "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-119848",
+   "published": "2026-11-23T16:00:00+00:00",
+   "cves": [
+    "CVE-2026-119848"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0082,
+    "percentile": 0.583
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-23T22:03:51+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Restrict the device's management interface to an admin network; check for new admin accounts and config changes",
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
   {
    "id": "CVE-2026-133968",
    "kind": "KEV",
