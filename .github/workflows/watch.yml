@@ -38,7 +38,9 @@ jobs:
           git add data/watch.json
           git diff --cached --quiet && exit 0
           git commit -m "watch: $(date -u +%FT%H:%MZ)"
-          git pull --rebase --autostash && git push
+          # watch.json is rebuilt in full on every run, so if another run pushed first,
+          # keep this run's newer copy instead of failing on a merge conflict
+          git pull --rebase --autostash -X theirs && git push
       - name: Dead-man's switch
         if: success() && env.HC_URL != ''
         env: { HC_URL: "${{ secrets.HEALTHCHECK_URL_WATCH }}" }
