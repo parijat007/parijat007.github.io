@@ -114,7 +114,12 @@ def main() -> int:
             out.append("| local | — | — | not running here | — |")
             continue
         status, offered = list_models(pc)
-        for m in pc.get("models") or [pc.get("model")]:
+        models = list(pc.get("models") or [pc.get("model")])
+        if pc.get("discover_free"):
+            found = llm.discover_free_models(pc)
+            out.append(f"| {name} | discovered: {', '.join(f'`{m}`' for m in found) or 'none'} | — | — | — |")
+            models = found + models
+        for m in models:
             listed = "yes" if m in offered else ("unknown" if status != "ok" else "**no**")
             res, secs = ping(name, pc, m)
             out.append(f"| {name} | `{m}` | {listed} | {res} | {secs:.1f} |")
