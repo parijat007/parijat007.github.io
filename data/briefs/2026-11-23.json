@@ -1,0 +1,177 @@
+{
+ "run_date": "2026-11-23",
+ "quiet_day": false,
+ "items": [
+  {
+   "rank": 1,
+   "headline": "VMWare vCenter Authentication Bypass Using an Alternate Path or Channel Vulnerability",
+   "category": "VULNERABILITY",
+   "severity": "CRITICAL",
+   "exploitation": "EXPLOITED_CONFIRMED",
+   "is_update": false,
+   "stack_match": [
+    "VMware"
+   ],
+   "target": "Broadcom VMware vCenter",
+   "identifiers": [
+    "CVE-2026-123890"
+   ],
+   "kev_due_date": "2026-11-23",
+   "summary": "Broadcom VMware vCenter contains an authentication bypass using an alternate path or channel vulnerability in the VMware Directory Service that allows an unauthenticated attacker with network access to vCenter to bypass authentication and gain unauthorized access to the system.",
+   "action": "Apply the vendor's fix or mitigation before the CISA KEV due date (2026-11-23); if no fix exists, isolate or discontinue the affected product.",
+   "hunt": null,
+   "fixed_versions": null,
+   "confidence": "HIGH",
+   "primary_source": "https://nvd.nist.gov/vuln/detail/CVE-2026-123890",
+   "corroborating_sources": [],
+   "source_tiers": [
+    "authority"
+   ],
+   "remediation": {
+    "weakness": "Authentication bypass",
+    "compensating_controls": [
+     "Restrict management and admin interfaces to a dedicated admin network or VPN; block them from the internet",
+     "Require phishing-resistant MFA for administrative access where the product supports it",
+     "Rotate admin credentials and API keys, and remove unknown admin accounts"
+    ],
+    "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event",
+    "fixed_versions": null
+   }
+  },
+  {
+   "rank": 2,
+   "headline": "Cisco Expressway Series Use of Hard-coded Credentials Vulnerability",
+   "category": "VULNERABILITY",
+   "severity": "CRITICAL",
+   "exploitation": "EXPLOITED_CONFIRMED",
+   "is_update": false,
+   "stack_match": [
+    "Cisco"
+   ],
+   "target": "Cisco Expressway Series",
+   "identifiers": [
+    "CVE-2026-76466"
+   ],
+   "kev_due_date": "2026-11-23",
+   "summary": "Cisco Expressway Series contains a use of hard-coded credentials vulnerability that allows an unauthenticated, remote attacker with persistent cookies and network access to execute commands as root on a clustered device via the database service.",
+   "action": "Apply the vendor's fix or mitigation before the CISA KEV due date (2026-11-23); if no fix exists, isolate or discontinue the affected product.",
+   "hunt": null,
+   "fixed_versions": null,
+   "confidence": "HIGH",
+   "primary_source": "https://nvd.nist.gov/vuln/detail/CVE-2026-76466",
+   "corroborating_sources": [],
+   "source_tiers": [
+    "authority"
+   ],
+   "remediation": {
+    "weakness": "Hard-coded credentials",
+    "compensating_controls": [
+     "Restrict the device's management interface to an admin network; check for new admin accounts and config changes",
+     "Restrict network access to the affected service to known management hosts",
+     "Change any credentials the vendor allows you to change and monitor for logins by built-in accounts"
+    ],
+    "verify": "Search authentication logs for logins by built-in or service accounts from unexpected sources",
+    "fixed_versions": null
+   }
+  },
+  {
+   "rank": 3,
+   "headline": "Apache Roller Deserialization of Untrusted Data Vulnerability",
+   "category": "VULNERABILITY",
+   "severity": "CRITICAL",
+   "exploitation": "EXPLOITED_CONFIRMED",
+   "is_update": false,
+   "stack_match": [],
+   "target": "Apache Roller",
+   "identifiers": [
+    "CVE-2026-129448"
+   ],
+   "kev_due_date": "2026-11-23",
+   "summary": "Apache Roller contains a deserialization of untrusted data vulnerability that allows an unauthenticated remote attacker to execute arbitrary code via the XML-RPC endpoint, which accepts and deserializes vendor extension types before authentication.",
+   "action": "Apply the vendor's fix or mitigation before the CISA KEV due date (2026-11-23); if no fix exists, isolate or discontinue the affected product.",
+   "hunt": null,
+   "fixed_versions": null,
+   "confidence": "HIGH",
+   "primary_source": "https://nvd.nist.gov/vuln/detail/CVE-2026-129448",
+   "corroborating_sources": [],
+   "source_tiers": [
+    "authority"
+   ],
+   "remediation": {
+    "weakness": "Unsafe deserialization",
+    "compensating_controls": [
+     "Block or filter untrusted network access to the affected endpoint (WAF rule or network ACL)",
+     "Run the service with least privilege and no outbound internet access where possible"
+    ],
+    "verify": "Hunt for unexpected child processes spawned by the application server process",
+    "fixed_versions": null
+   }
+  },
+  {
+   "rank": 4,
+   "headline": "SAP NetWeaver Improper Neutralization of Special Elements in Data Query Logic Vulnerability",
+   "category": "VULNERABILITY",
+   "severity": "CRITICAL",
+   "exploitation": "EXPLOITED_CONFIRMED",
+   "is_update": false,
+   "stack_match": [],
+   "target": "SAP NetWeaver",
+   "identifiers": [
+    "CVE-2025-42884"
+   ],
+   "kev_due_date": "2026-11-23",
+   "summary": "SAP NetWeaver Enterprise Portal contains an improper neutralization of special elements in data query logic vulnerability that allows an unauthenticated attacker to disclose or modify server information via injected JNDI environment properties or a URL used during JNDI lookup operations.",
+   "action": "Apply the vendor's fix or mitigation before the CISA KEV due date (2026-11-23); if no fix exists, isolate or discontinue the affected product.",
+   "hunt": null,
+   "fixed_versions": null,
+   "confidence": "HIGH",
+   "primary_source": "https://nvd.nist.gov/vuln/detail/CVE-2025-42884",
+   "corroborating_sources": [],
+   "source_tiers": [
+    "authority"
+   ],
+   "remediation": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching",
+    "fixed_versions": null
+   }
+  }
+ ],
+ "notes": "automated fallback",
+ "executive_pulse": "Automated brief: the analyst model was offline, so this lists the highest-signal confirmed items without commentary.",
+ "meta": {
+  "generated_at": "2026-11-23T12:15:02+00:00",
+  "mode": "fallback",
+  "prompt_version": "v2.1",
+  "model": null,
+  "provider": null,
+  "window_start": "2026-11-20 06:15 UTC",
+  "window_end": "2026-11-23 12:15 UTC",
+  "items_screened": 40,
+  "dropped": [],
+  "sources": {
+   "CISA KEV": "ok (4 new)",
+   "NVD": "ok (9)",
+   "GitHub Advisory": "ok (37)",
+   "GitHub": "ok (11)",
+   "CISA Advisories": "ok (1)",
+   "Microsoft MSRC": "ok (2)",
+   "Microsoft Security": "ok (1)",
+   "Palo Alto PSIRT": "ok (2)",
+   "Fortinet PSIRT": "ok (1)",
+   "Cisco PSIRT": "ok (3)",
+   "AWS Security Bulletins": "ok (2)",
+   "Unit 42": "ok (1)",
+   "Google Threat Intel": "ok (0)",
+   "BleepingComputer": "ok (15)",
+   "The Hacker News": "ok (15)",
+   "SecurityWeek": "ok (10)",
+   "The Record": "ok (5)",
+   "Krebs on Security": "ok (1)"
+  }
+ }
+}
