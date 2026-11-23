@@ -1,12 +1,12 @@
 {
   "run_date": "2026-11-22",
   "quiet_day": false,
-  "executive_pulse": "CISA added CVE-2026-129448 to KEV; Cisco nginx RCEs remain unpatched in production. Rackspace Spot breach exposed Kubernetes secrets; AI agent TTPs and detection tooling are the primary new signals.",
-  "notes": "CVE-2026-129448 status changed: added to KEV. CVE-2026-113425 is an update: Cisco PSIRT advisory published with fixed versions.",
+  "executive_pulse": "CISA added CVE-2026-123890 (VMware vCenter) to KEV; Cisco nginx RCEs remain unpatched in production. Rackspace Spot breach exposed Kubernetes secrets; AI agent TTPs and detection tooling are the primary new signals.",
+  "notes": "CVE-2026-123890 (VMware vCenter) status changed: added to KEV. CVE-2026-113425 is an update: Cisco PSIRT advisory published with fixed versions.",
   "items": [
     {
       "rank": 1,
-      "headline": "CISA KEV: CVE-2026-129448 (VMware vCenter)",
+      "headline": "CISA KEV: CVE-2026-123890 (VMware vCenter)",
       "category": "VULNERABILITY",
       "severity": "CRITICAL",
       "exploitation": "EXPLOITED_CONFIRMED",
@@ -16,10 +16,10 @@
       ],
       "target": "Broadcom VMware vCenter",
       "identifiers": [
-        "CVE-2026-129448"
+        "CVE-2026-123890"
       ],
       "kev_due_date": "2026-11-23",
-      "summary": "CISA added CVE-2026-129448 to KEV on 2026-11-20. CVSS 9.8. Deserialization of untrusted data. Active exploitation confirmed.",
+      "summary": "CISA added CVE-2026-123890, an authentication bypass in VMware vCenter, to KEV on 2026-11-20. Active exploitation confirmed. Correction (Nov 23): an earlier version gave CVE-2026-129448, which is an Apache Roller deserialization flaw.",
       "action": "Patch VMware vCenter immediately. Due date 2026-11-23.",
       "hunt": null,
       "fixed_versions": null,
@@ -295,5 +295,12 @@
       "The Record": "ok (0)",
       "Krebs on Security": "ok (0)"
     }
-  }
+  },
+  "corrections": [
+    {
+      "date": "2026-11-23",
+      "item": 1,
+      "note": "VMware vCenter is CVE-2026-123890 per CISA KEV; CVE-2026-129448 (Apache Roller) was listed in error."
+    }
+  ]
 }
