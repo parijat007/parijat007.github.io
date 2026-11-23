@@ -450,3 +450,25 @@ def test_health_reruns_and_alerts_without_spamming():
     assert r["rerun_watch"] and r["alerts"] == []                                 # still stale: no repeat
     assert evaluate(t(14), "analyst", 8.0)["alerts"]                              # twice-daily reminder
     assert evaluate(t(9), "analyst", None)["rerun_watch"]
+
+
+def test_cloudflare_account_id_is_filled_from_env(monkeypatch):
+    seen = {}
+    class R:
+        status_code = 200
+        def json(self): return {"choices": [{"message": {"content": "{}"}, "finish_reason": "stop"}]}
+        text = ""
+    def post(url, **kw):
+        seen["url"], seen["auth"] = url, kw["headers"]["Authorization"]
+        return R()
+    monkeypatch.setattr(llm.requests, "post", post)
+    pc = {"base_url": "https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/v1",
+          "model": "@cf/openai/gpt-oss-120b", "api_key_env": ["CLOUDFLARE_API_TOKEN"], "json": "object"}
+    monkeypatch.setenv("CLOUDFLARE_API_TOKEN", "t")
+    monkeypatch.delenv("CLOUDFLARE_ACCOUNT_ID", raising=False)
+    with pytest.raises(RuntimeError, match="no API key"):
+        llm._openai_compat("cloudflare", pc, "s", "u")
+    monkeypatch.setenv("CLOUDFLARE_ACCOUNT_ID", "abc123")
+    llm._openai_compat("cloudflare", pc, "s", "u")
+    assert seen["url"] == "https://api.cloudflare.com/client/v4/accounts/abc123/ai/v1/chat/completions"
+    assert seen["auth"] == "Bearer t"

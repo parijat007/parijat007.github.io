@@ -9,7 +9,7 @@ max_items_to_llm: 40        # pre-ranked cap on items sent to the model (token c
 # Analyst model chain. First provider that answers wins; if all fail, a facts-only brief is published.
 # On the Mac: local -> gemini -> groq -> openrouter.  In GitHub Actions: WF_LLM_CHAIN=gemini,groq,openrouter
 llm:
-  chain: [local, gemini, groq, openrouter]
+  chain: [local, gemini, groq, mistral, cloudflare, openrouter]
   providers:
     local:          # llama.cpp llama-server on the M1 Max. $0, nothing leaves the machine.
       base_url: http://127.0.0.1:8080/v1
@@ -45,6 +45,28 @@ llm:
       max_output_tokens: 2500
       reasoning_effort: low   # gpt-oss otherwise spends most of the budget on hidden reasoning
       timeout_seconds: 120
+    mistral:        # Mistral free mode (no card, phone check). Key: admin.mistral.ai -> API keys.
+      # Free mode may use requests for training: turn it off in Admin -> Privacy. Inputs are public advisories only.
+      base_url: https://api.mistral.ai/v1
+      models: [mistral-medium-latest, mistral-small-latest]
+      label: Mistral (free mode)
+      api_key_env: [MISTRAL_API_KEY]
+      json: object
+      max_items: 40
+      max_text_chars: 400
+      max_output_tokens: 8000
+      timeout_seconds: 120
+    cloudflare:     # Cloudflare Workers AI free allocation: 10,000 neurons/day (~10 briefs), no card, no training.
+      base_url: https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/v1
+      models: ["@cf/openai/gpt-oss-120b", "@cf/qwen/qwen3-30b-a3b-fp8"]
+      label: Cloudflare Workers AI (free allocation)
+      api_key_env: [CLOUDFLARE_API_TOKEN]
+      json: object
+      reasoning_effort: low
+      max_items: 30
+      max_text_chars: 300
+      max_output_tokens: 6000
+      timeout_seconds: 150
     openrouter:     # OpenRouter free models (no card, ~50 requests/day). Key: openrouter.ai/keys
       base_url: https://openrouter.ai/api/v1
       models: [openrouter/free]          # last resort; discovered free models are tried first

@@ -62,6 +62,10 @@ THINK_RE = re.compile(r"<think>.*?</think>", re.S)
 def _openai_compat(name: str, pc: dict, system: str, user: str) -> tuple[str, dict]:
     """One code path for every provider: llama-server, Gemini, Groq, OpenRouter..."""
     base = os.environ.get(f"WF_{name.upper()}_BASE_URL", pc["base_url"]).rstrip("/")
+    for var in re.findall(r"\{([A-Z0-9_]+)\}", base):    # e.g. Cloudflare's {CLOUDFLARE_ACCOUNT_ID}
+        if not os.environ.get(var):
+            raise RuntimeError(f"{name}: no API key in [{var}]")
+        base = base.replace("{" + var + "}", os.environ[var])
     headers = {"Content-Type": "application/json"}
     key = next((os.environ[k] for k in pc.get("api_key_env", []) if os.environ.get(k)), None)
     if pc.get("api_key_env") and not key:
