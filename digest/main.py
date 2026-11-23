@@ -82,14 +82,16 @@ def must_report(items: list[dict]) -> set[str]:
     return out
 
 
-def check_coverage(parsed: dict, required: set[str]) -> None:
-    """Reject an answer that skips every confirmed-exploited item (e.g. a false 'quiet day')."""
+def check_coverage(parsed: dict, required: set[str], cap: int = 5) -> None:
+    """Every newly listed KEV entry must be in the answer (up to the brief's threat cap).
+    Rejects a false 'quiet day' and briefs that drop exploited items for weaker news."""
     if not required:
         return
     blob = json.dumps(parsed.get("items") or []).upper()
-    if not any(c in blob for c in required):
-        raise ValueError(f"under-reported: {len(required)} new KEV entries in input, none in the answer "
-                         f"(quiet_day={parsed.get('quiet_day')}, items={len(parsed.get('items') or [])})")
+    missing = sorted(c for c in required if c not in blob)
+    if len(required) - len(missing) < min(len(required), cap):
+        raise ValueError(f"under-reported: {len(missing)} of {len(required)} new KEV entries missing "
+                         f"({', '.join(missing[:6])}); quiet_day={parsed.get('quiet_day')}")
 
 
 def call_llm(cfg: dict, items: list[dict], ctx: dict) -> tuple[str, str]:
@@ -128,7 +130,7 @@ def call_llm(cfg: dict, items: list[dict], ctx: dict) -> tuple[str, str]:
                     break
                 if "under-reported" in str(e):
                     # one corrective retry: name what was left out
-                    user += ("\n\nYour previous answer left out these newly listed CISA KEV entries. They are "
+                    user += ("\n\nYour previous answer left out newly listed CISA KEV entries. They are "
                              "confirmed exploited and must each appear as an item: " + ", ".join(sorted(required)))
                     time.sleep(61 if name == "groq" else 5)   # Groq free tier: tokens per minute
                 elif any(code in str(e) for code in ("HTTP 429", "HTTP 503", "HTTP 500")) and attempt == 1:

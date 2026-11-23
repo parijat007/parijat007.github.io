@@ -22,7 +22,10 @@ llm:
       timeout_seconds: 1800
     gemini:         # Google AI Studio free tier (no card). Key: aistudio.google.com/apikey
       base_url: https://generativelanguage.googleapis.com/v1beta/openai
-      models: [gemini-flash-latest, gemini-3.8-flash, gemini-3.6-flash, gemini-3.5-flash-lite]   # first that answers wins
+      # First that answers wins. Busy or slow models are skipped (503/429/timeout), so keep a
+      # lighter model near the end as the reliable floor. Run the Self-test workflow to see
+      # which models this key can use today.
+      models: [gemini-flash-latest, gemini-3.5-flash, gemini-3.6-flash, gemini-3.8-flash, gemini-3.5-flash-lite, gemini-2.5-flash]
       label: Gemini Flash (free tier)
       api_key_env: [GEMINI_API_KEY]
       json: object
@@ -30,7 +33,7 @@ llm:
       max_output_tokens: 12000
       max_items: 40
       max_text_chars: 400
-      timeout_seconds: 180
+      timeout_seconds: 75         # per model; a healthy Gemini Flash answers in ~15 s
     groq:           # Groq free tier (no card). Key: console.groq.com/keys. ~8K tokens/min, so a smaller input
       base_url: https://api.groq.com/openai/v1
       models: [openai/gpt-oss-120b]

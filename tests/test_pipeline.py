@@ -352,6 +352,11 @@ def test_quiet_day_answer_rejected_when_kev_listed():
     with pytest.raises(ValueError, match="under-reported"):
         check_coverage({"quiet_day": True, "items": []}, req)
     check_coverage({"items": [{"headline": "x", "identifiers": ["CVE-2026-1"]}]}, req)   # ok
+    two = {"CVE-2026-1", "CVE-2026-2"}
+    with pytest.raises(ValueError, match="1 of 2"):
+        check_coverage({"items": [{"identifiers": ["CVE-2026-1"]}]}, two)         # partial: rejected
+    six = {f"CVE-2026-{i}" for i in range(1, 7)}
+    check_coverage({"items": [{"identifiers": [f"CVE-2026-{i}" for i in range(1, 6)]}]}, six)  # cap of 5: ok
     check_coverage({"quiet_day": True, "items": []}, set())                              # no KEV: quiet is fine
 
 
