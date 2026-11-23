@@ -73,6 +73,25 @@ def collect(cfg: dict, since: datetime, until: datetime) -> tuple[list[dict], di
 PROMPT_VERSION = "v2.1"
 
 
+def must_report(items: list[dict]) -> set[str]:
+    """CVE ids of newly listed CISA KEV entries: a brief that mentions none of them is wrong."""
+    out = set()
+    for it in items:
+        if it.get("source_name") == "CISA KEV":
+            out |= {c.upper() for c in (it.get("cves") or [it.get("id", "")]) if str(c).upper().startswith("CVE-")}
+    return out
+
+
+def check_coverage(parsed: dict, required: set[str]) -> None:
+    """Reject an answer that skips every confirmed-exploited item (e.g. a false 'quiet day')."""
+    if not required:
+        return
+    blob = json.dumps(parsed.get("items") or []).upper()
+    if not any(c in blob for c in required):
+        raise ValueError(f"under-reported: {len(required)} new KEV entries in input, none in the answer "
+                         f"(quiet_day={parsed.get('quiet_day')}, items={len(parsed.get('items') or [])})")
+
+
 def call_llm(cfg: dict, items: list[dict], ctx: dict) -> tuple[str, str]:
     """Try each provider in order (local first). Returns (json_text, provider_name)."""
     from .llm import chain, complete
@@ -97,6 +116,7 @@ def call_llm(cfg: dict, items: list[dict], ctx: dict) -> tuple[str, str]:
                 parsed = parse_json(text)
                 if not isinstance(parsed.get("items"), list):
                     raise ValueError("no items array")
+                check_coverage(parsed, must_report(items[:n]))
                 return text, name
             except Exception as e:  # noqa: BLE001  (network, quota, bad JSON: move on)
                 log.warning("provider %s attempt %d failed: %s", name, attempt, str(e)[:300])

@@ -40,6 +40,7 @@ llm:
       max_items: 12
       max_text_chars: 200
       max_output_tokens: 2500
+      reasoning_effort: low   # gpt-oss otherwise spends most of the budget on hidden reasoning
       timeout_seconds: 120
     openrouter:     # OpenRouter free models (no card, ~50 requests/day). Key: openrouter.ai/keys
       base_url: https://openrouter.ai/api/v1

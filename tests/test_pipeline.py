@@ -341,3 +341,15 @@ def test_linkedin_blocks_employment_sensitive_wording():
                    "Our SOC blocked it.", "DM me for help."]:
         assert any("employment-sensitive" in x for x in L.check(base + "\n" + phrase, src, cfg)), phrase
     assert L.check(base, src, cfg) == []
+
+
+def test_quiet_day_answer_rejected_when_kev_listed():
+    from digest.main import must_report, check_coverage
+    items = [{"source_name": "CISA KEV", "id": "CVE-2026-1", "cves": ["CVE-2026-1"]},
+             {"source_name": "BleepingComputer", "id": "x"}]
+    req = must_report(items)
+    assert req == {"CVE-2026-1"}
+    with pytest.raises(ValueError, match="under-reported"):
+        check_coverage({"quiet_day": True, "items": []}, req)
+    check_coverage({"items": [{"headline": "x", "identifiers": ["CVE-2026-1"]}]}, req)   # ok
+    check_coverage({"quiet_day": True, "items": []}, set())                              # no KEV: quiet is fine
