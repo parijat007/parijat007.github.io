@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-23T20:20:22+00:00",
+ "updated": "2026-11-23T21:03:45+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
@@ -7,7 +7,7 @@
   "Microsoft MSRC": "ok (0)",
   "Palo Alto PSIRT": "ok (0)",
   "Fortinet PSIRT": "ok (0)",
-  "Cisco PSIRT": "ok (2)",
+  "Cisco PSIRT": "ok (3)",
   "AWS Security Bulletins": "ok (0)"
  },
  "entries": [
@@ -988,14 +988,14 @@
    "summary": "On November 17, 2026, Oracle announced the availability of fixes for a vulnerability in OpenJDK that could lead to remote code execution identified by CVE-2026-114938. The vulnerability affects OpenJDK Java 17.0.6 and later on x86-64 platforms when processing Base64 encoded conte",
    "source": "Cisco PSIRT",
    "url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nov2026-java-rce-eCa6ss9z",
-   "published": "2026-11-20T20:37:16+00:00",
+   "published": "2026-11-23T20:32:33+00:00",
    "cves": [
     "CVE-2026-114938"
    ],
    "cvss": null,
    "epss": {
-    "score": 0.4564,
-    "percentile": 0.988
+    "score": 0.5732,
+    "percentile": 0.991
    },
    "poc": 79,
    "kev_due": null,
