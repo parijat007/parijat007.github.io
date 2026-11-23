@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-23T17:15:25+00:00",
+ "updated": "2026-11-23T17:30:25+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
@@ -11,6 +11,37 @@
   "AWS Security Bulletins": "ok (0)"
  },
  "entries": [
+  {
+   "id": "GHSA-2r3w-c2vx-fv5g",
+   "kind": "GHSA",
+   "title": "Xen Orchestra: Empty-object login token",
+   "summary": "Packages: npm:xo-server. ### Summary REST cookie parsing turns `authenticationToken=j:%7B%7D` into `{}`. REST authentication passes that object to the XO token provider without requiring a string. The token collection treats `{}` as an unfiltered lookup and returns its first toke",
+   "source": "GitHub Advisory",
+   "url": "https://github.com/advisories/GHSA-2r3w-c2vx-fv5g",
+   "published": "2026-11-23T17:29:29Z",
+   "cves": [
+    "CVE-2026-133469"
+   ],
+   "cvss": 9.8,
+   "epss": null,
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [
+    "npm"
+   ],
+   "first_seen": "2026-11-23T17:30:25+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Authentication bypass",
+    "compensating_controls": [
+     "Restrict management and admin interfaces to a dedicated admin network or VPN; block them from the internet",
+     "Require phishing-resistant MFA for administrative access where the product supports it",
+     "Rotate admin credentials and API keys, and remove unknown admin accounts"
+    ],
+    "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event"
+   }
+  },
   {
    "id": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-vcs-static-cred-hr7EWZ8t",
    "kind": "ADVISORY",
