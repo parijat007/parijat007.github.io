@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-23T20:12:56+00:00",
+ "updated": "2026-11-23T20:20:22+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
@@ -7,10 +7,73 @@
   "Microsoft MSRC": "ok (0)",
   "Palo Alto PSIRT": "ok (0)",
   "Fortinet PSIRT": "ok (0)",
-  "Cisco PSIRT": "ok (1)",
+  "Cisco PSIRT": "ok (2)",
   "AWS Security Bulletins": "ok (0)"
  },
  "entries": [
+  {
+   "id": "CVE-2026-133968",
+   "kind": "KEV",
+   "title": "Project MONAI MONAI Label Path Traversal Vulnerability",
+   "summary": "Project MONAI MONAI Label contains a path traversal vulnerability that allows an unauthenticated remote attacker to write arbitrary files outside the intended datastore directory, potentially resulting in remote code execution.",
+   "source": "CISA KEV",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-133968",
+   "published": "2026-11-23",
+   "cves": [
+    "CVE-2026-133968"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0366,
+    "percentile": 0.899
+   },
+   "poc": 1,
+   "kev_due": "2026-11-26",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-23T20:20:22+00:00",
+   "required_action": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discon",
+   "fix": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode",
+     "Run the service as a non-privileged user and restrict outbound connections"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
+   }
+  },
+  {
+   "id": "CVE-2026-134624",
+   "kind": "KEV",
+   "title": "N-able MailAssure (SpamExperts) Server-Side Request Forgery (SSRF) Vulnerability",
+   "summary": "N-able MailAssure (SpamExperts) contains a server-side request forgery vulnerability in the LDAP synchronization connection check that allows an authenticated API user to connect to arbitrary internal hosts and ports, determine which are reachable, and send crafted data to intern",
+   "source": "CISA KEV",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-134624",
+   "published": "2026-11-23",
+   "cves": [
+    "CVE-2026-134624"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0035,
+    "percentile": 0.297
+   },
+   "poc": 0,
+   "kev_due": "2026-11-26",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-23T20:20:22+00:00",
+   "required_action": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discon",
+   "fix": {
+    "weakness": "Server-side request forgery",
+    "compensating_controls": [
+     "Restrict the server's outbound traffic to required destinations only",
+     "Block access to cloud instance metadata from the application (for example IMDSv2 with hop limit 1 on AWS)"
+    ],
+    "verify": "Review egress and metadata-service access logs from the affected host"
+   }
+  },
   {
    "id": "GHSA-2r3w-c2vx-fv5g",
    "kind": "GHSA",
@@ -888,7 +951,7 @@
    "summary": "On November 18, 2026, nginx announced the availability of a fix for multiple critical vulnerabilities in nginx that could lead to remote code execution. These vulnerabilities affect nginx releases 1.9.5 through 1.31.8 and is fixed in releases 1.31.9 (mainline) and 1.30.7 (stable)",
    "source": "Cisco PSIRT",
    "url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nginx-nov-2026-e8jska2s",
-   "published": "2026-11-21T17:52:10+00:00",
+   "published": "2026-11-23T20:14:39+00:00",
    "cves": [
     "CVE-2026-113425",
     "CVE-2026-121810",
@@ -900,7 +963,7 @@
     "score": 0.2778,
     "percentile": 0.981
    },
-   "poc": 36,
+   "poc": 38,
    "kev_due": null,
    "ransomware": null,
    "stack_match": [
