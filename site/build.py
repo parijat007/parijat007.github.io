@@ -208,6 +208,8 @@ def build(out: Path) -> None:
     health = json.loads((DATA / "sources.json").read_text()) if (DATA / "sources.json").exists() else {}
     page("method.html", "method/", "method/", sources=cfg["sources"]["apis"] + cfg["sources"]["feeds"],
          health={k: v.get("status", "–") if isinstance(v, dict) else v for k, v in health.get("status", {}).items()})
+    perf = json.loads((DATA / "perf.json").read_text()) if (DATA / "perf.json").exists() else None
+    page("status.html", "status/", "status/", perf=perf)
     notes = load_notes()
     page("notes.html", "notes/", "notes/", notes=notes)
     for n in notes:

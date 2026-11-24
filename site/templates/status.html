@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Status — {{ p.name }}{% endblock %}
+{% block desc %}How fast this site loads and how reliably the threat brief and hourly watch run, measured daily.{% endblock %}
+{% block main %}
+<section class="page-head"><h1>Status</h1>
+<p class="lede">{% if perf %}Measured {{ perf.updated | ago }}. {% if perf.alerts %}{{ perf.alerts | length }} item(s) need attention.{% else %}Everything is within its targets.{% endif %}{% else %}No measurements yet.{% endif %}</p></section>
+{% if perf %}
+{% if perf.alerts %}<section class="block prose"><h2>Needs attention</h2><ul>{% for a in perf.alerts %}<li>{{ a }}</li>{% endfor %}</ul></section>{% endif %}
+
+<section class="block"><h2>Site speed</h2>
+<p class="note">Lighthouse, run daily against the live site. Scores are out of 100; targets are 90 or more (95 for accessibility).</p>
+<div class="table-scroll" role="region" aria-label="Site speed" tabindex="0"><table class="watch">
+<thead><tr><th scope="col">Page</th><th scope="col" class="num">Performance</th><th scope="col" class="num">Accessibility</th><th scope="col" class="num">Best practices</th><th scope="col" class="num">SEO</th><th scope="col" class="num">Largest paint</th><th scope="col" class="num">Page weight</th></tr></thead>
+<tbody>{% for name, v in perf.site.items() %}<tr><th scope="row">{{ name | title }}</th>
+{% for c in ["performance", "accessibility", "best-practices", "seo"] %}<td class="num">{{ "%.0f" | format((v.scores[c] or 0) * 100) }}</td>{% endfor %}
+<td class="num">{{ "%.1f" | format(v.lcp_ms / 1000) }} s</td><td class="num">{{ v.bytes // 1024 }} KB</td></tr>{% endfor %}</tbody>
+</table></div></section>
+
+<section class="block"><h2>Pipeline, last 7 days</h2>
+<p class="note">GitHub Actions runs. "Late start" is how long after its scheduled time GitHub began a scheduled run; an external scheduler now starts the important runs on time.</p>
+<div class="table-scroll" role="region" aria-label="Pipeline runs" tabindex="0"><table class="watch">
+<thead><tr><th scope="col">Job</th><th scope="col" class="num">Runs</th><th scope="col" class="num">Succeeded</th><th scope="col" class="num">Typical run</th><th scope="col" class="num">Late start, typical / worst</th></tr></thead>
+<tbody>{% for name, v in perf.pipeline.items() %}<tr><th scope="row">{{ {"brief": "Daily brief", "watch": "Hourly watch", "health": "Health check"}.get(name, name) }}</th>
+<td class="num">{{ v.runs }}</td><td class="num">{{ "%.0f" | format(v.success_rate * 100) }}%</td><td class="num">{{ v.p50_s }} s</td>
+<td class="num">{% if v.schedule_delay_p50_min is not none %}{{ v.schedule_delay_p50_min }} / {{ v.schedule_delay_max_min }} min{% else %}–{% endif %}</td></tr>{% endfor %}</tbody>
+</table></div></section>
+
+<section class="block prose"><h2>Who wrote the briefs, last 30 days</h2>
+<p>{{ perf.models.briefs }} briefs; {{ "%.0f" | format((perf.models.analyst_rate or 0) * 100) }}% by an analyst model, the rest facts-only.
+{% for k, n in perf.models.written_by.items() %}{{ {"local": "Local model", "gemini": "Gemini", "groq": "Groq", "cloudflare": "Cloudflare", "openrouter": "OpenRouter"}.get(k, k | title) }}: {{ n }}{% if not loop.last %} · {% endif %}{% endfor %}.</p>
+</section>
+{% endif %}
+{% endblock %}
