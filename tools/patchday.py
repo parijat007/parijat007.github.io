@@ -100,6 +100,7 @@ def main() -> int:
     ap.add_argument("--month", help="CVRF id such as 2026-Nov (default: this month)")
     ap.add_argument("--fixture")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--inspect", action="store_true", help="print the note/tag structure, then stop")
     args = ap.parse_args()
     now = datetime.now(timezone.utc)
     month_id = args.month or now.strftime("%Y-%b")
@@ -123,6 +124,14 @@ def main() -> int:
         r.raise_for_status()
         doc = r.json()
 
+    if args.inspect:
+        from collections import Counter
+        vs = doc.get("Vulnerability", [])
+        print("vulns", len(vs), "first keys", sorted(vs[0].keys()) if vs else None)
+        print("note titles/types", Counter((n.get("Title"), n.get("Type")) for v in vs for n in v.get("Notes", []) or []).most_common(15))
+        print("tag values", Counter(_val(n) if isinstance(n, dict) and "Value" in n else n.get("Value") for v in vs for n in v.get("Notes", []) or [] if n.get("Type") == 7).most_common(25))
+        print("sample notes", json.dumps((vs[0].get("Notes") or [])[:6])[:1500])
+        return 0
     s = summarize(doc, month_id)
     text = message(s)
     print(text)

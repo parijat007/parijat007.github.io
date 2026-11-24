@@ -12,6 +12,10 @@ on:
         description: "Month id, e.g. 2026-Nov (blank = this month, only on Patch Tuesday)"
         type: string
         default: ""
+      inspect:
+        description: "Print the record's structure only"
+        type: boolean
+        default: false
       dry_run:
         description: "Print only: no Telegram, no commit"
         type: boolean
@@ -41,10 +45,12 @@ jobs:
           TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
           MONTH: ${{ inputs.month }}
           DRY: ${{ inputs.dry_run }}
+          INSPECT: ${{ inputs.inspect }}
         run: |
           args=()
           [ -n "$MONTH" ] && args+=(--month "$MONTH")
           [ "$DRY" = "true" ] && args+=(--dry-run)
+          [ "$INSPECT" = "true" ] && args+=(--inspect)
           python tools/patchday.py "${args[@]}"
       - name: Commit
         if: ${{ !inputs.dry_run }}
