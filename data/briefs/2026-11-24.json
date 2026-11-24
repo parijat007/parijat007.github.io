@@ -1,0 +1,223 @@
+{
+ "run_date": "2026-11-24",
+ "quiet_day": false,
+ "executive_pulse": "CISA added N-able MailAssure (SSRF) and Project MONAI MONAI Label (path traversal) to KEV following confirmed active exploitation. ConnectWise ScreenConnect client exploitation targeting MSP technicians has also been reported.",
+ "items": [
+  {
+   "rank": 1,
+   "headline": "CISA Adds N-able MailAssure SSRF (CVE-2026-134624) to KEV Following Breach",
+   "category": "ACTIVE_ATTACK",
+   "severity": "CRITICAL",
+   "exploitation": "EXPLOITED_CONFIRMED",
+   "is_update": false,
+   "stack_match": [],
+   "target": "N-able MailAssure / SpamExperts Hosted Cloud",
+   "identifiers": [
+    "CVE-2026-134624",
+    "CWE-918"
+   ],
+   "kev_due_date": "2026-11-26",
+   "summary": "N-able disclosed a critical SSRF vulnerability in the LDAP synchronization connection check of MailAssure and SpamExperts Hosted Cloud. Discovered during a breach investigation, the flaw allows an authenticated API user to connect to arbitrary internal hosts/ports and relay data.",
+   "action": "Apply vendor mitigations and follow CISA BOD 26-04 cloud service directives by November 26, 2026.",
+   "hunt": "MailAssure API logs: unexpected internal IP addresses or internal port scans initiated via LDAP sync connection checks.",
+   "fixed_versions": null,
+   "confidence": "HIGH",
+   "primary_source": "https://www.cisa.gov/news-events/alerts/2026/11/23/cisa-adds-two-known-exploited-vulnerabilities-catalog",
+   "corroborating_sources": [
+    "https://thehackernews.com/2026/11/n-able-discloses-critical-mail-assure.html",
+    "https://nvd.nist.gov/vuln/detail/CVE-2026-134624"
+   ],
+   "source_tiers": [
+    "authority",
+    "press"
+   ],
+   "remediation": {
+    "weakness": "Server-side request forgery",
+    "compensating_controls": [
+     "Restrict the server's outbound traffic to required destinations only",
+     "Block access to cloud instance metadata from the application (for example IMDSv2 with hop limit 1 on AWS)"
+    ],
+    "verify": "Review egress and metadata-service access logs from the affected host",
+    "fixed_versions": null
+   }
+  },
+  {
+   "rank": 2,
+   "headline": "CISA KEV Addition: Project MONAI MONAI Label Path Traversal (CVE-2026-133968)",
+   "category": "ACTIVE_ATTACK",
+   "severity": "HIGH",
+   "exploitation": "EXPLOITED_CONFIRMED",
+   "is_update": false,
+   "stack_match": [],
+   "target": "Project MONAI MONAI Label",
+   "identifiers": [
+    "CVE-2026-133968",
+    "CWE-24"
+   ],
+   "kev_due_date": "2026-11-26",
+   "summary": "Project MONAI MONAI Label contains a path traversal vulnerability that allows unauthenticated remote attackers to write arbitrary files outside the designated datastore directory, potentially leading to arbitrary remote code execution.",
+   "action": "Apply mitigations per vendor advisory instructions and ensure compliance with CISA BOD 26-04 guidance.",
+   "hunt": "Web application logs: HTTP request parameters to MONAI Label endpoints containing directory traversal sequences (../) targeting write operations.",
+   "fixed_versions": null,
+   "confidence": "HIGH",
+   "primary_source": "https://www.cisa.gov/news-events/alerts/2026/11/23/cisa-adds-two-known-exploited-vulnerabilities-catalog",
+   "corroborating_sources": [
+    "https://nvd.nist.gov/vuln/detail/CVE-2026-133968"
+   ],
+   "source_tiers": [
+    "authority"
+   ],
+   "remediation": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode",
+     "Run the service as a non-privileged user and restrict outbound connections"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries",
+    "fixed_versions": null
+   }
+  },
+  {
+   "rank": 3,
+   "headline": "Active Exploitation of ConnectWise ScreenConnect Client Vulnerability (CVE-2026-84869)",
+   "category": "ACTIVE_ATTACK",
+   "severity": "CRITICAL",
+   "exploitation": "EXPLOITED_REPORTED",
+   "is_update": false,
+   "stack_match": [],
+   "target": "ConnectWise ScreenConnect",
+   "identifiers": [
+    "CVE-2026-84869"
+   ],
+   "kev_due_date": "2026-09-14",
+   "summary": "Threat actors are actively exploiting a critical ConnectWise ScreenConnect client vulnerability (CVSS 9.9) targeting MSP servers. The flaw enables a guest to transfer and execute arbitrary payloads directly onto a connecting technician's host machine.",
+   "action": "Update all ConnectWise ScreenConnect server and client components to patched releases immediately.",
+   "hunt": "EDR telemetry: unexpected child process execution or file creation under ScreenConnect client processes on technician endpoints.",
+   "fixed_versions": null,
+   "confidence": "MEDIUM",
+   "primary_source": "https://thehackernews.com/2026/11/hackers-exploit-critical-screenconnect.html",
+   "corroborating_sources": [],
+   "source_tiers": [
+    "press"
+   ],
+   "remediation": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching",
+    "fixed_versions": null
+   }
+  },
+  {
+   "rank": 4,
+   "headline": "Critical Azure Event Grid Privilege Escalation (CVE-2026-62841)",
+   "category": "VULNERABILITY",
+   "severity": "CRITICAL",
+   "exploitation": "NO_KNOWN_EXPLOIT",
+   "is_update": false,
+   "stack_match": [
+    "Azure"
+   ],
+   "target": "Microsoft Azure Event Grid",
+   "identifiers": [
+    "CVE-2026-62841",
+    "CWE-287"
+   ],
+   "kev_due_date": null,
+   "summary": "Improper authentication in Azure Event Grid allows an unauthorized remote attacker to elevate privileges across the network (CVSS 10.0).",
+   "action": "Verify Microsoft cloud service security updates are applied automatically or updated per MSRC deployment notes.",
+   "hunt": null,
+   "fixed_versions": null,
+   "confidence": "MEDIUM",
+   "primary_source": "https://nvd.nist.gov/vuln/detail/CVE-2026-62841",
+   "corroborating_sources": [],
+   "source_tiers": [
+    "authority"
+   ],
+   "remediation": {
+    "weakness": "Authentication bypass",
+    "compensating_controls": [
+     "Restrict management and admin interfaces to a dedicated admin network or VPN; block them from the internet",
+     "Require phishing-resistant MFA for administrative access where the product supports it",
+     "Rotate admin credentials and API keys, and remove unknown admin accounts"
+    ],
+    "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event",
+    "fixed_versions": null
+   }
+  },
+  {
+   "rank": 5,
+   "headline": "Xen Orchestra xo-server REST Token Authentication Bypass (CVE-2026-133469)",
+   "category": "VULNERABILITY",
+   "severity": "CRITICAL",
+   "exploitation": "NO_KNOWN_EXPLOIT",
+   "is_update": false,
+   "stack_match": [
+    "npm"
+   ],
+   "target": "npm: xo-server",
+   "identifiers": [
+    "CVE-2026-133469",
+    "GHSA-2r3w-c2vx-fv5g",
+    "CWE-287",
+    "CWE-1287"
+   ],
+   "kev_due_date": null,
+   "summary": "Parsing REST cookies converts empty JSON objects into token queries that xo-server treats as unfiltered lookups, authenticating remote attackers as the owner of the first active token (CVSS 9.8).",
+   "action": "Update xo-server npm package to patched versions resolving GHSA-2r3w-c2vx-fv5g.",
+   "hunt": "Web server logs: HTTP request Cookie headers containing authenticationToken=j:%7B%7D.",
+   "fixed_versions": null,
+   "confidence": "HIGH",
+   "primary_source": "https://github.com/advisories/GHSA-2r3w-c2vx-fv5g",
+   "corroborating_sources": [],
+   "source_tiers": [
+    "authority"
+   ],
+   "remediation": {
+    "weakness": "Authentication bypass",
+    "compensating_controls": [
+     "Restrict management and admin interfaces to a dedicated admin network or VPN; block them from the internet",
+     "Require phishing-resistant MFA for administrative access where the product supports it",
+     "Rotate admin credentials and API keys, and remove unknown admin accounts"
+    ],
+    "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event",
+    "fixed_versions": null
+   }
+  }
+ ],
+ "notes": "",
+ "meta": {
+  "generated_at": "2026-11-24T00:05:04+00:00",
+  "mode": "analyst",
+  "prompt_version": "v2.1",
+  "model": "Gemini Flash (free tier)",
+  "provider": "gemini",
+  "window_start": "2026-11-22 18:05 UTC",
+  "window_end": "2026-11-24 00:05 UTC",
+  "items_screened": 40,
+  "dropped": [],
+  "sources": {
+   "CISA KEV": "ok (2 new)",
+   "NVD": "ok (13)",
+   "GitHub Advisory": "ok (6)",
+   "GitHub": "ok (10)",
+   "CISA Advisories": "ok (1)",
+   "Microsoft MSRC": "ok (10)",
+   "Microsoft Security": "ok (0)",
+   "Palo Alto PSIRT": "ok (0)",
+   "Fortinet PSIRT": "ok (0)",
+   "Cisco PSIRT": "ok (4)",
+   "AWS Security Bulletins": "ok (2)",
+   "Unit 42": "ok (0)",
+   "Google Threat Intel": "ok (0)",
+   "BleepingComputer": "ok (11)",
+   "The Hacker News": "ok (8)",
+   "SecurityWeek": "ok (8)",
+   "The Record": "ok (5)",
+   "Krebs on Security": "ok (0)"
+  }
+ }
+}
