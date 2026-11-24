@@ -45,7 +45,8 @@ jobs:
         with: { persist-credentials: false }
       - run: pip install actionlint-py==1.7.12.25 && actionlint -color
 
-  live-site:
+  live-site:                 # daily / by hand only: on a push it would race the deploy
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
