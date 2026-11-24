@@ -94,6 +94,30 @@ def check_coverage(parsed: dict, required: set[str], cap: int = 5) -> None:
                          f"({', '.join(missing[:6])}); quiet_day={parsed.get('quiet_day')}")
 
 
+PERF: list[dict] = []   # one entry per model attempt in this run, saved in the brief's meta
+
+
+def _short_error(e: Exception) -> str:
+    m = str(e)
+    for key in ("PerDay", "HTTP 429", "HTTP 503", "HTTP 500", "HTTP 404", "HTTP 410", "truncated",
+                "under-reported", "no API key", "Timeout", "no items"):
+        if key in m or key in type(e).__name__:
+            return key
+    return type(e).__name__
+
+
+def schedule_delay_min(cron: str, now) -> int | None:
+    """Minutes between the cron slot GitHub was asked for (WF_SCHEDULE) and when the run started."""
+    try:
+        minute, hour = (int(x) for x in cron.split()[:2])
+    except (ValueError, AttributeError):
+        return None
+    slot = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+    if slot > now:
+        slot -= timedelta(days=1)
+    return int((now - slot).total_seconds() // 60)
+
+
 def call_llm(cfg: dict, items: list[dict], ctx: dict) -> tuple[str, str]:
     """Try each provider in order (local first). Returns (json_text, provider_name)."""
     from .llm import chain, complete
@@ -115,14 +139,20 @@ def call_llm(cfg: dict, items: list[dict], ctx: dict) -> tuple[str, str]:
                 "\n</untrusted_items>\n\nProduce today's digest JSON.")
         required = must_report(items[:n])
         for attempt in (1, 2):
+            t0 = time.monotonic()
             try:
                 text = complete(name, cfg["llm"], system, user)
                 parsed = parse_json(text)
                 if not isinstance(parsed.get("items"), list):
                     raise ValueError("no items array")
                 check_coverage(parsed, required)
+                PERF.append({"provider": name, "model": pc.get("_used_model"), "attempt": attempt,
+                             "seconds": round(time.monotonic() - t0, 1), "ok": True})
                 return text, name
             except Exception as e:  # noqa: BLE001  (network, quota, bad JSON: move on)
+                PERF.append({"provider": name, "model": pc.get("_used_model"), "attempt": attempt,
+                             "seconds": round(time.monotonic() - t0, 1), "ok": False,
+                             "error": _short_error(e)})
                 log.warning("provider %s attempt %d failed: %s", name, attempt, str(e)[:300])
                 if isinstance(e, ValueError) and "text" in locals():
                     log.warning("provider %s returned (first 300 chars): %r", name, text[:300])
@@ -248,10 +278,12 @@ def run(args) -> int:
         log.info("existing brief for %s was written outside the morning window; replacing it", run_date)
     elif args.skip_if_exists and prior:
         log.info("existing %s brief for %s is facts-only; trying to upgrade it", prior, run_date)
+    t_start = time.monotonic()
     if args.items_fixture:
         items, status = json.loads(Path(args.items_fixture).read_text()), {"fixture": "ok"}
     else:
         items, status = collect(cfg, since, now)
+    t_collected = time.monotonic()
     log.info("collected %d items for the model", len(items))
     if not getattr(locals().get("args"), "items_fixture", None):
         _src = ROOT / "data" / "sources.json"
@@ -285,6 +317,7 @@ def run(args) -> int:
         except Exception as e:  # noqa: BLE001
             log.error("analyst models unavailable (%s); publishing facts-only brief", e)
             mode, provider = "fallback", None
+    t_llm = time.monotonic()
     if digest is None:
         digest, problems = validate(fallback_digest(items, run_date), items, sources_by_name(cfg))
     for p in problems:
@@ -302,7 +335,11 @@ def run(args) -> int:
             "model": (cfg["llm"]["providers"].get(provider, {}).get("label") if provider else None),
             "provider": provider,
             "window_start": ctx["WINDOW_START"], "window_end": ctx["WINDOW_END"],
-            "items_screened": len(items), "dropped": problems, "sources": status}
+            "items_screened": len(items), "dropped": problems, "sources": status,
+            "perf": {"collect_s": round(t_collected - t_start, 1), "llm_s": round(t_llm - t_collected, 1),
+                     "total_s": round(time.monotonic() - t_start, 1), "attempts": PERF,
+                     "runner": "github" if os.environ.get("GITHUB_ACTIONS") else "mac",
+                     "schedule_delay_min": schedule_delay_min(os.environ.get("WF_SCHEDULE", ""), now)}}
     if prior and prior != "analyst" and mode != "analyst" and args.skip_if_exists:
         log.info("upgrade failed: models still unavailable; keeping the existing facts-only brief")
         return 0

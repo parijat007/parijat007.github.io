@@ -542,3 +542,20 @@ def test_feed_text_cannot_hide_or_close_the_data_block():
     assert "​" not in out and "‮" not in out and "\U000E0041" not in out
     assert injection_suspect(out)
     assert _clean("Fixed in 2.4.1 — upgrade") == "Fixed in 2.4.1 — upgrade"
+
+
+def test_schedule_delay_and_perf_are_recorded(tmp_path, monkeypatch):
+    import argparse
+    from datetime import datetime, timezone
+    from digest import main as m
+    assert m.schedule_delay_min("20 12 * * *", datetime(2026, 11, 24, 12, 41, tzinfo=timezone.utc)) == 21
+    assert m.schedule_delay_min("20 13 * * *", datetime(2026, 11, 24, 0, 4, tzinfo=timezone.utc)) == 644
+    assert m.schedule_delay_min("", datetime(2026, 11, 24, 0, 4, tzinfo=timezone.utc)) is None
+    monkeypatch.setattr(m, "ROOT", tmp_path)
+    here = Path(__file__).parent
+    args = argparse.Namespace(skip_if_exists=False, fallback=False, dry_run=False, no_deliver=True,
+                              items_fixture=str(here / "sample_items.json"), llm_fixture=str(here / "sample_llm.json"))
+    m.run(args)
+    today = datetime.now(timezone.utc).date().isoformat()
+    perf = json.loads((tmp_path / "data" / "briefs" / f"{today}.json").read_text())["meta"]["perf"]
+    assert set(perf) >= {"collect_s", "llm_s", "total_s", "attempts", "runner", "schedule_delay_min"}
