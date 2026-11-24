@@ -472,3 +472,29 @@ def test_cloudflare_account_id_is_filled_from_env(monkeypatch):
     llm._openai_compat("cloudflare", pc, "s", "u")
     assert seen["url"] == "https://api.cloudflare.com/client/v4/accounts/abc123/ai/v1/chat/completions"
     assert seen["auth"] == "Bearer t"
+
+
+def test_google_quota_error_names_the_limit_and_daily_quota_is_not_retried(monkeypatch):
+    body = [{"error": {"code": 429, "message": "You exceeded your current quota",
+             "details": [{"@type": "type.googleapis.com/google.rpc.QuotaFailure",
+                          "violations": [{"quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+                                          "quotaValue": "20"}]},
+                         {"@type": "type.googleapis.com/google.rpc.RetryInfo", "retryDelay": "41s"}]}}]
+    class R:
+        status_code = 429
+        text = json.dumps(body)
+        headers = {}
+        def json(self): return body
+    calls = []
+    def post(url, json=None, **kw):
+        calls.append(json["model"]); return R()
+    monkeypatch.setattr(llm.requests, "post", post)
+    monkeypatch.setenv("GEMINI_API_KEY", "k")
+    llm._EXHAUSTED.clear()
+    cfg = {"providers": {"gemini": {"base_url": "https://x/v1", "models": ["a", "b"], "api_key_env": ["GEMINI_API_KEY"]}}}
+    with pytest.raises(RuntimeError, match="PerDay.*limit=20.*retry_after=41s"):
+        llm.complete("gemini", cfg, "s", "u")
+    with pytest.raises(RuntimeError):
+        llm.complete("gemini", cfg, "s", "u")
+    assert calls == ["a", "b"]          # second call skipped both exhausted models
+    llm._EXHAUSTED.clear()

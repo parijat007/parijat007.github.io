@@ -96,7 +96,7 @@ def _openai_compat(name: str, pc: dict, system: str, user: str) -> tuple[str, di
     if 300 <= r.status_code < 400:
         raise RuntimeError(f"{name}: redirected HTTP {r.status_code} from {url} to {r.headers.get('location')}")
     if r.status_code >= 400:
-        raise RuntimeError(f"{name}: HTTP {r.status_code} {r.text[:300]}")
+        raise RuntimeError(f"{name}: HTTP {r.status_code} {_error_detail(r)}")
     try:
         data = r.json()
     except ValueError:
@@ -109,6 +109,27 @@ def _openai_compat(name: str, pc: dict, system: str, user: str) -> tuple[str, di
     if choice.get("finish_reason") == "length":
         raise RuntimeError(f"{name}: output truncated at max_tokens ({len(text)} chars); raise max_output_tokens")
     return text, data.get("usage", {})
+
+
+def _error_detail(r) -> str:
+    """Short, useful error text. For Google quota errors, name the exact limit that was hit."""
+    try:
+        body = r.json()
+        body = body[0] if isinstance(body, list) else body
+        err = body.get("error", body)
+        parts = [str(err.get("message", ""))[:160]]
+        for d in err.get("details", []) or []:
+            for v in d.get("violations", []) or []:
+                if v.get("quotaId"):
+                    parts.append(f"quota={v['quotaId']} limit={v.get('quotaValue', '?')}")
+            if d.get("retryDelay"):
+                parts.append(f"retry_after={d['retryDelay']}")
+        return " | ".join(p for p in parts if p)
+    except (ValueError, AttributeError, TypeError):
+        return r.text[:300]
+
+
+_EXHAUSTED: set[str] = set()   # "provider/model" that hit a per-day quota in this run
 
 
 def _anthropic(name: str, pc: dict, system: str, user: str) -> tuple[str, dict]:
@@ -167,6 +188,8 @@ def complete(name: str, cfg: dict, system: str, user: str) -> str:
         models = discover_free_models(pc) + [m for m in models if m not in _DISCOVERED.get(pc["base_url"], [])]
     last = None
     for m in models:
+        if f"{name}/{m}" in _EXHAUSTED:
+            continue
         # Move to the next model when this one is retired (404/400), overloaded (429/5xx),
         # slow (timeout) or cut off: one busy model must not take out the whole provider.
         try:
@@ -177,12 +200,14 @@ def complete(name: str, cfg: dict, system: str, user: str) -> str:
         except (RuntimeError, requests.RequestException) as e:
             err = e if isinstance(e, RuntimeError) else RuntimeError(f"{name}: {type(e).__name__} on {m}")
             msg = str(e)
+            if "PerDay" in msg:                          # daily quota gone: don't spend retries on it
+                _EXHAUSTED.add(f"{name}/{m}")
             if last is None or "HTTP 404" not in msg:     # a retired model says less than an overload
                 last = err
             if "no API key" in msg or not (_retryable(msg) or isinstance(e, requests.RequestException)):
                 raise last from None
-            log.warning("%s: model %s failed (%s), trying next model", name, m, msg[:120])
-    raise last or RuntimeError(f"{name}: no models configured")
+            log.warning("%s: model %s failed (%s), trying next model", name, m, msg[:260])
+    raise last or RuntimeError(f"{name}: every model is out of daily quota (HTTP 429 PerDay)" if models else f"{name}: no models configured")
 
 
 def local_up(cfg: dict) -> bool:
