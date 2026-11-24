@@ -143,6 +143,9 @@ def main() -> int:
         print("vulns", len(vs), "first keys", sorted(vs[0].keys()) if vs else None)
         print("note titles/types", Counter((n.get("Title"), n.get("Type")) for v in vs for n in v.get("Notes", []) or []).most_common(15))
         print("tag values", Counter(_val(n) if isinstance(n, dict) and "Value" in n else n.get("Value") for v in vs for n in v.get("Notes", []) or [] if n.get("Type") == 7).most_common(25))
+        ms = [v for v in vs if any(n.get("Type") == 8 and n.get("Title") == "Microsoft" for n in v.get("Notes", []) or [])]
+        print("ms release dates", Counter((v.get("ReleaseDate") or "")[:10] for v in ms).most_common(8))
+        print("ms revisions", Counter(len(v.get("RevisionHistory") or []) for v in ms).most_common(5))
         print("sample notes", json.dumps((vs[0].get("Notes") or [])[:6])[:1500])
         return 0
     s = summarize(doc, month_id)
