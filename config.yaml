@@ -25,7 +25,9 @@ llm:
       # First that answers wins. Busy or slow models are skipped (503/429/timeout), so keep a
       # lighter model near the end as the reliable floor. Run the Self-test workflow to see
       # which models this key can use today.
-      models: [gemini-flash-latest, gemini-3.5-flash, gemini-3.6-flash, gemini-3.8-flash, gemini-3.5-flash-lite]
+      # Free tier: 20 requests/day per model per project (resets midnight Pacific), so each model is
+      # its own small budget. Alias gemini-flash-latest last: it shares quota with a model above.
+      models: [gemini-3.8-flash, gemini-3.6-flash, gemini-3.5-flash, gemini-3.5-flash-lite, gemini-flash-latest]
       label: Gemini Flash (free tier)
       api_key_env: [GEMINI_API_KEY]
       json: object

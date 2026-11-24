@@ -15,7 +15,7 @@ on:
         type: string
         default: "gemini,groq,mistral,cloudflare,openrouter"
   schedule:
-    - cron: "40 11 * * 1"    # Mondays 11:40 UTC, before the cloud brief
+    - cron: "40 16 * * 1"    # Mondays 16:40 UTC, after the morning brief; pings only (saves Gemini quota)
 
 permissions:
   contents: read
@@ -44,6 +44,6 @@ jobs:
           TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
           CALLMEBOT_APIKEY:   ${{ secrets.CALLMEBOT_APIKEY }}
           TEAMS_WEBHOOK_URL:  ${{ secrets.TEAMS_WEBHOOK_URL }}
-          QUICK:              ${{ inputs.quick }}
+          QUICK:              ${{ inputs.quick || github.event_name == 'schedule' }}
         run: |
           if [ "$QUICK" = "true" ]; then python -m digest.selftest --quick; else python -m digest.selftest; fi
