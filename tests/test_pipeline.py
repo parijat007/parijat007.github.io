@@ -571,6 +571,8 @@ def test_patch_tuesday_summary_from_microsoft_record():
     assert [v["cve"] for v in s["exploited"]] == ["CVE-2026-60001"]
     assert [v["cve"] for v in s["disclosed"]] == ["CVE-2026-60003"]
     msg = P.message(s)
-    assert "3 CVEs fixed · 1 critical · 1 exploited · 1 publicly disclosed" in msg
+    assert "3 Microsoft CVEs · 2 need you to install or configure something · 1 critical · 1 exploited · 1 publicly disclosed" in msg
+    assert "CVE-2026-1234" not in msg                     # another CNA's package CVE
+    assert "CVE-2026-60002" not in msg                    # critical, but fixed in Microsoft's cloud: no action
     assert "*Spoofing*" not in msg and "releaseNote/2026-Nov" in msg
     assert P.is_patch_tuesday(datetime(2026, 12, 8)) and not P.is_patch_tuesday(datetime(2026, 12, 1))

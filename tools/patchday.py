@@ -24,6 +24,7 @@ sys.path.insert(0, str(ROOT))
 API = "https://api.msrc.microsoft.com/cvrf/v3.0"
 HDR = {"Accept": "application/json", "User-Agent": "watchfloor (+https://theparijat.com/method/)"}
 THREAT_IMPACT, THREAT_EXPLOIT, THREAT_SEVERITY = 0, 1, 3
+NOTE_ACTION, NOTE_CNA = 6, 8     # "Customer Action Required" Yes/No; the CNA that assigned the CVE
 
 
 def is_patch_tuesday(d: datetime) -> bool:
@@ -39,7 +40,12 @@ def summarize(doc: dict, month_id: str) -> dict:
     for v in doc.get("Vulnerability", []) or []:
         cve = v.get("CVE", "")
         if not cve.startswith("CVE-"):
-            continue                        # skip advisories (ADV...) and Chromium-only notes
+            continue                        # skip advisories (ADV...)
+        notes = v.get("Notes", []) or []
+        cna = [n.get("Title") for n in notes if n.get("Type") == NOTE_CNA]
+        if cna and "Microsoft" not in cna:
+            continue                        # Azure Linux packages, Chromium, other CNAs: not Microsoft's own fixes
+        action = next((n.get("Value") for n in notes if n.get("Type") == NOTE_ACTION), None)
         threats = v.get("Threats", []) or []
         desc = lambda t: [_val(x.get("Description")) for x in threats if x.get("Type") == t]  # noqa: E731
         exploit = ";".join(desc(THREAT_EXPLOIT))
@@ -52,26 +58,32 @@ def summarize(doc: dict, month_id: str) -> dict:
             "cvss": max(scores) if scores else None,
             "exploited": "Exploited:Yes" in exploit,
             "disclosed": "Publicly Disclosed:Yes" in exploit,
+            "action": None if action is None else action != "No",   # None: this entry does not say
         })
     by_cve: dict[str, dict] = {}                # a CVE can repeat (per product): merge, never overwrite
     for v in vulns:
         m = by_cve.setdefault(v["cve"], dict(v))
         m["exploited"] |= v["exploited"]
         m["disclosed"] |= v["disclosed"]
+        if v["action"] is not None:
+            m["action"] = v["action"] or bool(m["action"])
         m["cvss"] = max(filter(None, (m["cvss"], v["cvss"])), default=None)
         if v["severity"] == "Critical" or not m["severity"]:
             m["severity"] = v["severity"] or m["severity"]
         m["impact"] = m["impact"] or v["impact"]
         m["title"] = m["title"] or v["title"]
+    for m in by_cve.values():
+        m["action"] = True if m["action"] is None else m["action"]   # unstated: assume you must act
     vulns = sorted(by_cve.values(), key=lambda v: (-(v["cvss"] or 0), v["cve"]))
     return {
         "month": month_id, "title": _val(doc.get("DocumentTitle")),
         "release_notes": f"https://msrc.microsoft.com/update-guide/releaseNote/{month_id}",
         "total": len(vulns),
         "critical": sum(v["severity"] == "Critical" for v in vulns),
+        "action_required": sum(v["action"] for v in vulns),
         "exploited": [v for v in vulns if v["exploited"]],
         "disclosed": [v for v in vulns if v["disclosed"] and not v["exploited"]],
-        "critical_list": [v for v in vulns if v["severity"] == "Critical" and not v["exploited"]][:8],
+        "critical_list": [v for v in vulns if v["severity"] == "Critical" and not v["exploited"] and v["action"]][:8],
     }
 
 
@@ -83,8 +95,9 @@ def message(s: dict) -> str:
         bits = [b for b in (v["impact"], f"CVSS {v['cvss']}" if v["cvss"] else "") if b]
         return f"• {v['cve']} {safe(v['title'][:80])}" + (f" ({', '.join(bits)})" if bits else "")
     out = [f"*🩹 Microsoft Patch Tuesday, {s['month']}*",
-           f"{s['total']} CVEs fixed · {s['critical']} critical · {len(s['exploited'])} exploited · "
-           f"{len(s['disclosed'])} publicly disclosed before the fix"]
+           f"{s['total']} Microsoft CVEs · {s['action_required']} need you to install or configure something · "
+           f"{s['critical']} critical · {len(s['exploited'])} exploited · {len(s['disclosed'])} publicly disclosed before the fix",
+           "Fixes Microsoft applied to its own cloud services are counted but need no action."]
     if s["exploited"]:
         out += ["", "*Exploited now (patch first):*", *[line(v) for v in s["exploited"]]]
     if s["disclosed"]:

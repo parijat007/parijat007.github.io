@@ -1,19 +1,154 @@
-{"DocumentTitle": {"Value": "November 2026 Security Updates"},
+{
+ "DocumentTitle": {
+  "Value": "November 2026 Security Updates"
+ },
  "Vulnerability": [
-  {"CVE": "CVE-2026-60001", "Title": {"Value": "Windows Kernel Elevation of Privilege Vulnerability"},
-   "Threats": [{"Type": 0, "Description": {"Value": "Elevation of Privilege"}},
-               {"Type": 1, "Description": {"Value": "Publicly Disclosed:No;Exploited:Yes;Latest Software Release:Exploitation Detected"}},
-               {"Type": 3, "Description": {"Value": "Important"}}],
-   "CVSSScoreSets": [{"BaseScore": 7.8}]},
-  {"CVE": "CVE-2026-60002", "Title": {"Value": "Windows SMB Remote Code Execution Vulnerability"},
-   "Threats": [{"Type": 0, "Description": {"Value": "Remote Code Execution"}},
-               {"Type": 1, "Description": {"Value": "Publicly Disclosed:No;Exploited:No"}},
-               {"Type": 3, "Description": {"Value": "Critical"}}],
-   "CVSSScoreSets": [{"BaseScore": 9.8}, {"BaseScore": 9.8}]},
-  {"CVE": "CVE-2026-60003", "Title": {"Value": "Office *Spoofing* Vulnerability"},
-   "Threats": [{"Type": 1, "Description": {"Value": "Publicly Disclosed:Yes;Exploited:No"}},
-               {"Type": 3, "Description": {"Value": "Moderate"}}],
-   "CVSSScoreSets": []},
-  {"CVE": "ADV260001", "Title": {"Value": "Defense in depth"}, "Threats": []},
-  {"CVE": "CVE-2026-60002", "Title": {"Value": "Windows SMB Remote Code Execution Vulnerability"}, "Threats": []}
- ]}
+  {
+   "CVE": "CVE-2026-60001",
+   "Title": {
+    "Value": "Windows Kernel Elevation of Privilege Vulnerability"
+   },
+   "Threats": [
+    {
+     "Type": 0,
+     "Description": {
+      "Value": "Elevation of Privilege"
+     }
+    },
+    {
+     "Type": 1,
+     "Description": {
+      "Value": "Publicly Disclosed:No;Exploited:Yes;Latest Software Release:Exploitation Detected"
+     }
+    },
+    {
+     "Type": 3,
+     "Description": {
+      "Value": "Important"
+     }
+    }
+   ],
+   "CVSSScoreSets": [
+    {
+     "BaseScore": 7.8
+    }
+   ],
+   "Notes": [
+    {
+     "Title": "Microsoft",
+     "Type": 8
+    },
+    {
+     "Title": "Customer Action Required",
+     "Type": 6,
+     "Value": "Yes"
+    }
+   ]
+  },
+  {
+   "CVE": "CVE-2026-60002",
+   "Title": {
+    "Value": "Windows SMB Remote Code Execution Vulnerability"
+   },
+   "Threats": [
+    {
+     "Type": 0,
+     "Description": {
+      "Value": "Remote Code Execution"
+     }
+    },
+    {
+     "Type": 1,
+     "Description": {
+      "Value": "Publicly Disclosed:No;Exploited:No"
+     }
+    },
+    {
+     "Type": 3,
+     "Description": {
+      "Value": "Critical"
+     }
+    }
+   ],
+   "CVSSScoreSets": [
+    {
+     "BaseScore": 9.8
+    },
+    {
+     "BaseScore": 9.8
+    }
+   ],
+   "Notes": [
+    {
+     "Title": "Microsoft",
+     "Type": 8
+    },
+    {
+     "Title": "Customer Action Required",
+     "Type": 6,
+     "Value": "No"
+    }
+   ]
+  },
+  {
+   "CVE": "CVE-2026-60003",
+   "Title": {
+    "Value": "Office *Spoofing* Vulnerability"
+   },
+   "Threats": [
+    {
+     "Type": 1,
+     "Description": {
+      "Value": "Publicly Disclosed:Yes;Exploited:No"
+     }
+    },
+    {
+     "Type": 3,
+     "Description": {
+      "Value": "Moderate"
+     }
+    }
+   ],
+   "CVSSScoreSets": []
+  },
+  {
+   "CVE": "ADV260001",
+   "Title": {
+    "Value": "Defense in depth"
+   },
+   "Threats": []
+  },
+  {
+   "CVE": "CVE-2026-60002",
+   "Title": {
+    "Value": "Windows SMB Remote Code Execution Vulnerability"
+   },
+   "Threats": []
+  },
+  {
+   "CVE": "CVE-2026-1234",
+   "Title": {
+    "Value": "curl buffer overflow"
+   },
+   "Notes": [
+    {
+     "Title": "Mariner",
+     "Type": 7,
+     "Value": "Mariner"
+    },
+    {
+     "Title": "curl",
+     "Type": 8
+    }
+   ],
+   "Threats": [
+    {
+     "Type": 3,
+     "Description": {
+      "Value": "Critical"
+     }
+    }
+   ]
+  }
+ ]
+}
