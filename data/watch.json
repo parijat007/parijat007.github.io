@@ -1,12 +1,12 @@
 {
- "updated": "2026-11-24T18:20:23+00:00",
+ "updated": "2026-11-24T19:20:24+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
   "CISA Advisories": "ok (4)",
   "Microsoft MSRC": "ok (10)",
-  "Palo Alto PSIRT": "ok (0)",
-  "Fortinet PSIRT": "error: ReadTimeout",
+  "Palo Alto PSIRT": "ok (1)",
+  "Fortinet PSIRT": "ok (0)",
   "Cisco PSIRT": "ok (5)",
   "AWS Security Bulletins": "ok (0)"
  },
@@ -1443,17 +1443,17 @@
    "summary": "",
    "source": "Palo Alto PSIRT",
    "url": "https://security.paloaltonetworks.com/CVE-2026-123633",
-   "published": "2026-11-20T23:00:00+00:00",
+   "published": "2026-11-24T19:00:00+00:00",
    "cves": [
     "CVE-2026-123007",
     "CVE-2026-123633"
    ],
    "cvss": null,
    "epss": {
-    "score": 0.2778,
-    "percentile": 0.981
+    "score": 0.447,
+    "percentile": 0.988
    },
-   "poc": 37,
+   "poc": 38,
    "kev_due": null,
    "ransomware": null,
    "stack_match": [
