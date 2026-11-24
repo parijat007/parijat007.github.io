@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-24T13:20:21+00:00",
+ "updated": "2026-11-24T14:20:26+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
@@ -7,10 +7,38 @@
   "Microsoft MSRC": "ok (10)",
   "Palo Alto PSIRT": "ok (0)",
   "Fortinet PSIRT": "ok (0)",
-  "Cisco PSIRT": "ok (4)",
+  "Cisco PSIRT": "ok (5)",
   "AWS Security Bulletins": "ok (0)"
  },
  "entries": [
+  {
+   "id": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-clamav-multi-e93M3vdA",
+   "kind": "ADVISORY",
+   "title": "ClamAV Vulnerabilities Affecting Cisco Products: November 2026",
+   "summary": "Multiple vulnerabilities in ClamAV could allow a remote attacker to bypass configured file and scan time limits and cause a denial of service (DoS) condition, interrupting scanning operations. For more information about these vulnerabilities, see the Details section of this advis",
+   "source": "Cisco PSIRT",
+   "url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-clamav-multi-e93M3vdA",
+   "published": "2026-11-24T13:44:57+00:00",
+   "cves": [],
+   "cvss": null,
+   "epss": null,
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [
+    "Cisco"
+   ],
+   "first_seen": "2026-11-24T14:20:26+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
   {
    "id": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-phpaftershell-nov-2026-kT9pL4Xe",
    "kind": "ADVISORY",
@@ -27,7 +55,7 @@
     "score": 0.133,
     "percentile": 0.965
    },
-   "poc": 5,
+   "poc": 6,
    "kev_due": null,
    "ransomware": null,
    "stack_match": [
@@ -63,7 +91,7 @@
     "score": 0.0366,
     "percentile": 0.899
    },
-   "poc": 2,
+   "poc": 3,
    "kev_due": "2026-11-26",
    "ransomware": "Unknown",
    "stack_match": [],
@@ -414,7 +442,7 @@
     "score": 0.0366,
     "percentile": 0.899
    },
-   "poc": 2,
+   "poc": 3,
    "kev_due": "2026-11-26",
    "ransomware": "Unknown",
    "stack_match": [],
@@ -1384,7 +1412,7 @@
     "score": 0.5732,
     "percentile": 0.991
    },
-   "poc": 79,
+   "poc": 82,
    "kev_due": null,
    "ransomware": null,
    "stack_match": [
