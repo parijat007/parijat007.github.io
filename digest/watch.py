@@ -1,7 +1,7 @@
 """Hourly Watch: deterministic, no LLM. Facts from authoritative sources only.
 
 Writes data/watch.json (rolling window) and sends an immediate alert when a newly
-KEV-listed CVE touches your stack watchlist.
+KEV-listed CVE matches a watchlist vendor.
 
   python -m digest.watch            # run
   python -m digest.watch --no-alert # update data only
@@ -88,7 +88,7 @@ def run(no_alert: bool = False) -> int:
 
     hot = [e for e in fresh if e["kind"] == "KEV" and e["stack_match"]]
     if hot and not no_alert and w.get("alert_on_stack_kev", True):
-        lines = [f"*🚨 New KEV touching your stack*"]
+        lines = [f"*🚨 New KEV on your watchlist*"]
         for e in hot[:5]:
             lines.append(f"{', '.join(e['cves'])} {e['title'][:90]}\n📌 {', '.join(e['stack_match'])} · due {e['kev_due']}\n🔗 {e['url']}")
         send(["\n\n".join(lines)], cfg, "KEV alert")

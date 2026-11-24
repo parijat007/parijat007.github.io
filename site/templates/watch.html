@@ -22,7 +22,7 @@
   <td><span class="kind {{ e.kind }}">{{ e.kind | kindlabel }}</span></td>
   <td><a href="{{ e.url | safe_url }}" rel="noopener nofollow">{{ e.title }}</a>
     {% if e.cves %}<div class="ids">{% for c in e.cves %}<span class="id">{{ c }}</span>{% endfor %}</div>{% endif %}
-    {% if e.stack_match %}<ul class="tags mt-s">{% for s in e.stack_match %}<li class="tag stack">{{ s }}</li>{% endfor %}</ul>{% endif %}
+    {% if e.stack_match %}<ul class="tags mt-s">{% for s in e.stack_match %}<li class="tag stack" title="On my watchlist">{{ s }}</li>{% endfor %}</ul>{% endif %}
     {% if e.fix %}<details class="wfix"><summary>How to fix</summary>
       <p>{% if e.required_action and e.kind == "KEV" %}{{ e.required_action }}{% else %}Apply the fix in the <a href="{{ e.url | safe_url }}" rel="noopener nofollow">advisory</a>.{% endif %}</p>
       <p class="muted">Until patched ({{ e.fix.weakness | lower }}):</p>

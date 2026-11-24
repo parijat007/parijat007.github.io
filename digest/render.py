@@ -243,7 +243,7 @@ def render_item(e: dict) -> str:
     if e.get("identifiers"):
         lines.append(f"🆔 {', '.join(map(_wa_safe, e['identifiers'][:5]))}")
     if e.get("stack_match"):
-        lines.append(f"📌 Your stack: {', '.join(map(_wa_safe, e['stack_match']))}")
+        lines.append(f"📌 Watchlist: {', '.join(map(_wa_safe, e['stack_match']))}")
     if (rl := risk_line(e.get("risk"))):
         lines.append(f"⚖️ Risk: {rl}")
     lines += [_wa_safe(e.get("summary")),

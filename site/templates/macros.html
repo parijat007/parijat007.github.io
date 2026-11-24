@@ -7,7 +7,7 @@
   {% if e.risk and e.risk.epss and e.risk.epss.percentile >= 0.9 %}<li class="tag epss" title="FIRST EPSS: chance of exploitation in the next 30 days">EPSS {{ "%.0f" | format(e.risk.epss.score * 100) }}%</li>{% endif %}
   {% if e.risk and e.risk.ssvc and e.risk.ssvc.automatable == "yes" %}<li class="tag ssvc" title="CISA SSVC: exploitation can be automated">Automatable</li>{% endif %}
   {% if e.risk and e.risk.vulncheck_kev %}<li class="tag vck" title="Listed in VulnCheck KEV, not yet in CISA KEV">VulnCheck KEV</li>{% endif %}
-  {% for s in e.stack_match %}<li class="tag stack">{{ s }}</li>{% endfor %}
+  {% for s in e.stack_match %}<li class="tag stack" title="On my watchlist">{{ s }}</li>{% endfor %}
   {% if e.is_update %}<li class="tag">Update</li>{% endif %}
 </ul>
 {%- endmacro %}
