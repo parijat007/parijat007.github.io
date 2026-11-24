@@ -30,7 +30,14 @@ if [[ -n "$GH_TOKEN" ]]; then
   REMOTE="https://github.com/${GITHUB_REPO}.git"
 fi
 SELF_SUM="$(shasum "$0")"
-git pull --rebase --autostash --quiet "$REMOTE" main
+# A run interrupted mid-rebase would block every later run: clear it first.
+[[ -d .git/rebase-merge || -d .git/rebase-apply ]] && { echo "clearing an unfinished rebase"; git rebase --abort || true; }
+# -X ours: during a rebase "ours" is the published copy. When the cloud already published a brief or
+# state file, the published version wins and the Mac's own copy of that file is dropped.
+git pull --rebase --autostash -X ours --quiet "$REMOTE" main || {
+  echo "pull failed; aborting the rebase and continuing on the published copy"
+  git rebase --abort 2>/dev/null || true
+}
 # If the pull changed this script, run the new version (once) instead of finishing the old one.
 if [[ -z "${WF_REEXEC:-}" && "$(shasum "$0")" != "$SELF_SUM" ]]; then
   echo "run_brief.sh was updated by the pull; restarting with the new version"
@@ -69,7 +76,11 @@ caffeinate -i "$REPO_DIR/.venv/bin/python" -m digest.main --skip-if-exists
 git add data/ state/
 if ! git diff --cached --quiet; then
   git -c user.name="watchfloor-bot" -c user.email="watchfloor-bot@users.noreply.github.com" commit -qm "brief: $(date +%F)"
-  git push --quiet "$REMOTE" HEAD:main
+  if ! git push --quiet "$REMOTE" HEAD:main; then
+    # The cloud pushed first (e.g. the watch or a cloud brief): replay on top, published copy wins, retry once.
+    git pull --rebase -X ours --quiet "$REMOTE" main || { git rebase --abort 2>/dev/null || true; }
+    git push --quiet "$REMOTE" HEAD:main || echo "push failed twice; the cloud brief covers today"
+  fi
   echo "pushed; GitHub Pages deploy starts automatically"
 fi
 [[ -n "$HC_URL" ]] && curl -fsS -m 10 "$HC_URL" >/dev/null || true
