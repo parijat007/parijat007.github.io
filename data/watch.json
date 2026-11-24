@@ -1,9 +1,9 @@
 {
- "updated": "2026-11-24T15:20:23+00:00",
+ "updated": "2026-11-24T15:52:23+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
-  "CISA Advisories": "ok (1)",
+  "CISA Advisories": "ok (4)",
   "Microsoft MSRC": "ok (10)",
   "Palo Alto PSIRT": "ok (0)",
   "Fortinet PSIRT": "ok (0)",
@@ -11,6 +11,90 @@
   "AWS Security Bulletins": "ok (0)"
  },
  "entries": [
+  {
+   "id": "/node/25841",
+   "kind": "ADVISORY",
+   "title": "Schneider Electric EcoStruxure Power Build Rapsody software",
+   "summary": "View CSAF Summary Schneider Electric is aware of a vulnerability in its EcoStruxure™ Power Build Rapsody product. The EcoStruxure™ Power Build Rapsody is used to enter or import the single line diagram, to get the extensive bill of material of your switchboard, including all devi",
+   "source": "CISA Advisories",
+   "url": "https://www.cisa.gov/news-events/ics-advisories/icsa-26-328-02",
+   "published": "2026-11-24T12:00:00+00:00",
+   "cves": [],
+   "cvss": null,
+   "epss": null,
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-24T15:52:23+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Memory corruption",
+    "compensating_controls": [
+     "Remove internet exposure of the affected service until patched",
+     "Enable platform exploit mitigations and restart the service after patching"
+    ],
+    "verify": "Monitor for crashes or unexpected restarts of the affected service"
+   }
+  },
+  {
+   "id": "/node/25842",
+   "kind": "ADVISORY",
+   "title": "Danfoss AK-SM 8xxA Series",
+   "summary": "View CSAF Summary Successful exploitation of this vulnerability could allow an attacker to execute arbitrary code with webserver privileges. The following versions of Danfoss AK-SM 8xxA Series are affected: AK-SM8xxA CVSS Vendor Equipment v3 9.8 Danfoss AK-SM8xxA 1 Vulnerability ",
+   "source": "CISA Advisories",
+   "url": "https://www.cisa.gov/news-events/ics-advisories/icsa-26-328-03",
+   "published": "2026-11-24T12:00:00+00:00",
+   "cves": [
+    "CVE-2026-129713"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0096,
+    "percentile": 0.624
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-24T15:52:23+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Memory corruption",
+    "compensating_controls": [
+     "Remove internet exposure of the affected service until patched",
+     "Enable platform exploit mitigations and restart the service after patching"
+    ],
+    "verify": "Monitor for crashes or unexpected restarts of the affected service"
+   }
+  },
+  {
+   "id": "/node/25840",
+   "kind": "ADVISORY",
+   "title": "AutomationDirect C-More EA9 Programming Software",
+   "summary": "View CSAF Summary Successful exploitation of this vulnerability could allow attackers to corrupt application memory and cause instability or a crash, potentially leading to arbitrary code execution, if a user is convinced to open a malicious file. The following versions of Automa",
+   "source": "CISA Advisories",
+   "url": "https://www.cisa.gov/news-events/ics-advisories/icsa-26-328-01",
+   "published": "2026-11-24T12:00:00+00:00",
+   "cves": [],
+   "cvss": null,
+   "epss": null,
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-24T15:52:23+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode",
+     "Run the service as a non-privileged user and restrict outbound connections"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
+   }
+  },
   {
    "id": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-clamav-multi-e93M3vdA",
    "kind": "ADVISORY",
