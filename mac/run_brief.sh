@@ -85,3 +85,11 @@ if ! git diff --cached --quiet; then
 fi
 [[ -n "$HC_URL" ]] && curl -fsS -m 10 "$HC_URL" >/dev/null || true
 echo "=== $(date '+%F %T') brief run done ==="
+
+# Sundays: a full git bundle outside GitHub (an off-site copy if the repo or account is ever lost). Keeps 8.
+if [[ "$(date +%u)" == "7" ]]; then
+  mkdir -p "$HOME/watchfloor-backups"
+  b="$HOME/watchfloor-backups/watchfloor-$(date +%F).bundle"
+  git bundle create "$b" --all --quiet && git bundle verify "$b" >/dev/null && echo "backup written: $b"
+  ls -1t "$HOME"/watchfloor-backups/watchfloor-*.bundle 2>/dev/null | tail -n +9 | while read -r old; do rm -f "$old"; done
+fi
