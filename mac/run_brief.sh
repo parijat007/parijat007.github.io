@@ -20,9 +20,23 @@ export GROQ_API_KEY="$(kc groq-apikey)" OPENROUTER_API_KEY="$(kc openrouter-apik
 HC_URL="$(kc healthcheck-url-brief)"
 
 cd "$REPO_DIR"
-# Use a Keychain token if one was stored; otherwise the gh CLI sign-in (gh auth setup-git) handles auth
-if [[ -n "$GH_TOKEN" ]]; then REMOTE="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPO}.git"; else REMOTE="origin"; fi
+# Use a Keychain token if one was stored; otherwise the gh CLI sign-in (gh auth setup-git) handles auth.
+# The token goes in an HTTP header through environment config, never in the URL: a URL with a token
+# is written in plain text to .git/logs (the reflog) and shows in the process list.
+REMOTE="origin"
+if [[ -n "$GH_TOKEN" ]]; then
+  export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0="http.https://github.com/.extraheader"
+  export GIT_CONFIG_VALUE_0="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 | tr -d '\n')"
+  REMOTE="https://github.com/${GITHUB_REPO}.git"
+fi
+SELF_SUM="$(shasum "$0")"
 git pull --rebase --autostash --quiet "$REMOTE" main
+# If the pull changed this script, run the new version (once) instead of finishing the old one.
+if [[ -z "${WF_REEXEC:-}" && "$(shasum "$0")" != "$SELF_SUM" ]]; then
+  echo "run_brief.sh was updated by the pull; restarting with the new version"
+  export WF_REEXEC=1
+  exec /bin/zsh "$0" "$@"
+fi
 
 STARTED=0
 cleanup() { if [[ $STARTED == 1 ]]; then kill "$LLAMA_PID" 2>/dev/null || true; echo "llama-server stopped"; fi; }
@@ -31,12 +45,12 @@ trap cleanup EXIT
 if pgrep -x llama-server >/dev/null && ! curl -fsS -m 3 "http://127.0.0.1:${LLAMA_PORT}/health" >/dev/null 2>&1; then
   # Another model is loaded (e.g. SEC545 generator or 70B judge). Two models can exceed 64 GB: use cloud.
   echo "another llama-server is running; not loading a second model. Using free cloud models."
-  export WF_LLM_CHAIN="gemini,groq,openrouter"
+  export WF_LLM_CHAIN="gemini,groq,cloudflare,openrouter"
 elif curl -fsS -m 3 "http://127.0.0.1:${LLAMA_PORT}/health" >/dev/null 2>&1; then
   # Something is already serving (e.g. an overnight SEC545 batch). Don't hijack it.
   if ! curl -fsS -m 3 "http://127.0.0.1:${LLAMA_PORT}/v1/models" | grep -qi "$(basename "$MODEL_PATH" .gguf)"; then
     echo "port ${LLAMA_PORT} busy with another model (e.g. SEC545 batch); using free cloud models instead"
-    export WF_LLM_CHAIN="gemini,groq,openrouter"
+    export WF_LLM_CHAIN="gemini,groq,cloudflare,openrouter"
   fi
 else
   echo "starting llama-server"
@@ -45,7 +59,7 @@ else
     -ctk q8_0 -ctv q8_0 --jinja --host 127.0.0.1 >>"$HOME/Library/Logs/watchfloor-llama.log" 2>&1 &
   LLAMA_PID=$!; STARTED=1
   for i in {1..90}; do curl -fsS -m 2 "http://127.0.0.1:${LLAMA_PORT}/health" >/dev/null 2>&1 && break; sleep 2; done
-  curl -fsS -m 2 "http://127.0.0.1:${LLAMA_PORT}/health" >/dev/null 2>&1 || { echo "llama-server failed to start; using cloud models"; export WF_LLM_CHAIN="gemini,groq,openrouter"; }
+  curl -fsS -m 2 "http://127.0.0.1:${LLAMA_PORT}/health" >/dev/null 2>&1 || { echo "llama-server failed to start; using cloud models"; export WF_LLM_CHAIN="gemini,groq,cloudflare,openrouter"; }
 fi
 
 # caffeinate keeps the Mac awake for the duration of the run only
