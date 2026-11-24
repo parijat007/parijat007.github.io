@@ -3,7 +3,7 @@
 {% block desc %}How fast this site loads and how reliably the threat brief and hourly watch run, measured daily.{% endblock %}
 {% block main %}
 <section class="page-head"><h1>Status</h1>
-<p class="lede">{% if perf %}Measured {{ perf.updated | ago }}. {% if perf.alerts %}{{ perf.alerts | length }} item(s) need attention.{% else %}Everything is within its targets.{% endif %}{% else %}No measurements yet.{% endif %}</p></section>
+<p class="lede">{% if perf %}Measured {{ perf.updated | ago }}. {% if perf.alerts %}{{ perf.alerts | length }} {{ "item needs" if perf.alerts | length == 1 else "items need" }} attention.{% else %}Everything is within its targets.{% endif %}{% else %}No measurements yet.{% endif %}</p></section>
 {% if perf %}
 {% if perf.alerts %}<section class="block prose"><h2>Needs attention</h2><ul>{% for a in perf.alerts %}<li>{{ a }}</li>{% endfor %}</ul></section>{% endif %}
 
