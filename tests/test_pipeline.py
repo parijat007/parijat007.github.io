@@ -559,3 +559,18 @@ def test_schedule_delay_and_perf_are_recorded(tmp_path, monkeypatch):
     today = datetime.now(timezone.utc).date().isoformat()
     perf = json.loads((tmp_path / "data" / "briefs" / f"{today}.json").read_text())["meta"]["perf"]
     assert set(perf) >= {"collect_s", "llm_s", "total_s", "attempts", "runner", "schedule_delay_min"}
+
+
+def test_patch_tuesday_summary_from_microsoft_record():
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
+    from datetime import datetime
+    import patchday as P
+    s = P.summarize(json.loads((Path(__file__).parent / "msrc_sample.json").read_text()), "2026-Nov")
+    assert s["total"] == 3 and s["critical"] == 1
+    assert [v["cve"] for v in s["exploited"]] == ["CVE-2026-60001"]
+    assert [v["cve"] for v in s["disclosed"]] == ["CVE-2026-60003"]
+    msg = P.message(s)
+    assert "3 CVEs fixed · 1 critical · 1 exploited · 1 publicly disclosed" in msg
+    assert "*Spoofing*" not in msg and "releaseNote/2026-Nov" in msg
+    assert P.is_patch_tuesday(datetime(2026, 12, 8)) and not P.is_patch_tuesday(datetime(2026, 12, 1))
