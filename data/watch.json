@@ -1,16 +1,83 @@
 {
- "updated": "2026-11-24T21:20:24+00:00",
+ "updated": "2026-11-24T22:20:24+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
-  "CISA Advisories": "ok (4)",
+  "CISA Advisories": "ok (5)",
   "Microsoft MSRC": "ok (10)",
   "Palo Alto PSIRT": "ok (1)",
   "Fortinet PSIRT": "ok (0)",
-  "Cisco PSIRT": "ok (5)",
+  "Cisco PSIRT": "ok (6)",
   "AWS Security Bulletins": "ok (2)"
  },
  "entries": [
+  {
+   "id": "/node/25848",
+   "kind": "ADVISORY",
+   "title": "CISA Adds Three Known Exploited Vulnerabilities to Catalog",
+   "summary": "CISA has added three new vulnerabilities to its Known Exploited Vulnerabilities (KEV) Catalog , based on evidence of active exploitation. CVE-2026-131914 Idunno AntiCsrf Deserialization of Untrusted Data Vulnerability CVE-2026-132165 Drupal Core Remote Code Execution Vulnerabilit",
+   "source": "CISA Advisories",
+   "url": "https://www.cisa.gov/news-events/alerts/2026/11/24/cisa-adds-three-known-exploited-vulnerabilities-catalog",
+   "published": "2026-11-24T12:00:00+00:00",
+   "cves": [
+    "CVE-2026-131914",
+    "CVE-2026-132165",
+    "CVE-2026-132224"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0061,
+    "percentile": 0.502
+   },
+   "poc": 4,
+   "kev_due": "2026-11-27",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-24T22:20:24+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Unsafe deserialization",
+    "compensating_controls": [
+     "Block or filter untrusted network access to the affected endpoint (WAF rule or network ACL)",
+     "Run the service with least privilege and no outbound internet access where possible"
+    ],
+    "verify": "Hunt for unexpected child processes spawned by the application server process"
+   }
+  },
+  {
+   "id": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-oct2026-node-js-Jj3SQ19u",
+   "kind": "ADVISORY",
+   "title": "Vulnerabilities in Node.js and Brotli Affecting Cisco Products: October 2026",
+   "summary": "On October 21, 2026, Node.js announced the availability of fixes for multiple vulnerabilities across the following supported release lines: 22.x, 24.x, and 26.x. These vulnerabilities impact critical operations such as the Brotli decoder, DNS resolution, and TLS certificate valid",
+   "source": "Cisco PSIRT",
+   "url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-oct2026-node-js-Jj3SQ19u",
+   "published": "2026-11-24T21:17:47+00:00",
+   "cves": [
+    "CVE-2026-111497"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.9999,
+    "percentile": 1.0
+   },
+   "poc": 94,
+   "kev_due": "2026-11-10",
+   "ransomware": "Unknown",
+   "stack_match": [
+    "Cisco"
+   ],
+   "first_seen": "2026-11-24T22:20:24+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode",
+     "Run the service as a non-privileged user and restrict outbound connections"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
+   }
+  },
   {
    "id": "GHSA-c4hm-4h84-2cf3",
    "kind": "GHSA",
@@ -1674,7 +1741,7 @@
    "summary": "On November 18, 2026, nginx announced the availability of a fix for multiple critical vulnerabilities in nginx that could lead to remote code execution. These vulnerabilities affect nginx releases 1.9.5 through 1.31.8 and is fixed in releases 1.31.9 (mainline) and 1.30.7 (stable)",
    "source": "Cisco PSIRT",
    "url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nginx-nov-2026-e8jska2s",
-   "published": "2026-11-23T20:14:39+00:00",
+   "published": "2026-11-24T22:15:16+00:00",
    "cves": [
     "CVE-2026-113425",
     "CVE-2026-121810",
