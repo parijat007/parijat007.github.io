@@ -46,6 +46,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN:  ${{ secrets.CLOUDFLARE_API_TOKEN }}
           NVD_API_KEY:        ${{ secrets.NVD_API_KEY }}
+          VULNCHECK_API_KEY:  ${{ secrets.VULNCHECK_API_KEY }}
           CALLMEBOT_PHONE:    ${{ secrets.CALLMEBOT_PHONE }}
           CALLMEBOT_APIKEY:   ${{ secrets.CALLMEBOT_APIKEY }}
           TEAMS_WEBHOOK_URL:  ${{ secrets.TEAMS_WEBHOOK_URL }}
