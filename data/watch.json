@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-24T14:20:26+00:00",
+ "updated": "2026-11-24T15:20:23+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
@@ -88,8 +88,8 @@
    ],
    "cvss": null,
    "epss": {
-    "score": 0.0366,
-    "percentile": 0.899
+    "score": 0.498,
+    "percentile": 0.989
    },
    "poc": 3,
    "kev_due": "2026-11-26",
@@ -120,7 +120,7 @@
    "cvss": null,
    "epss": {
     "score": 0.0082,
-    "percentile": 0.582
+    "percentile": 0.58
    },
    "poc": 0,
    "kev_due": null,
@@ -152,7 +152,7 @@
    "cvss": null,
    "epss": {
     "score": 0.0076,
-    "percentile": 0.561
+    "percentile": 0.559
    },
    "poc": 0,
    "kev_due": null,
@@ -184,7 +184,7 @@
    "cvss": null,
    "epss": {
     "score": 0.0033,
-    "percentile": 0.271
+    "percentile": 0.269
    },
    "poc": 0,
    "kev_due": null,
@@ -216,7 +216,7 @@
    "cvss": null,
    "epss": {
     "score": 0.0084,
-    "percentile": 0.589
+    "percentile": 0.587
    },
    "poc": 0,
    "kev_due": null,
@@ -248,7 +248,7 @@
    "cvss": null,
    "epss": {
     "score": 0.0073,
-    "percentile": 0.552
+    "percentile": 0.55
    },
    "poc": 0,
    "kev_due": null,
@@ -280,7 +280,7 @@
    "cvss": null,
    "epss": {
     "score": 0.0084,
-    "percentile": 0.59
+    "percentile": 0.588
    },
    "poc": 0,
    "kev_due": null,
@@ -312,7 +312,7 @@
    "cvss": null,
    "epss": {
     "score": 0.0041,
-    "percentile": 0.361
+    "percentile": 0.358
    },
    "poc": 0,
    "kev_due": null,
@@ -344,7 +344,7 @@
    "cvss": null,
    "epss": {
     "score": 0.0099,
-    "percentile": 0.634
+    "percentile": 0.632
    },
    "poc": 0,
    "kev_due": null,
@@ -376,7 +376,7 @@
    "cvss": null,
    "epss": {
     "score": 0.0034,
-    "percentile": 0.285
+    "percentile": 0.283
    },
    "poc": 0,
    "kev_due": null,
@@ -408,7 +408,7 @@
    "cvss": null,
    "epss": {
     "score": 0.0082,
-    "percentile": 0.583
+    "percentile": 0.581
    },
    "poc": 0,
    "kev_due": null,
@@ -439,8 +439,8 @@
    ],
    "cvss": null,
    "epss": {
-    "score": 0.0366,
-    "percentile": 0.899
+    "score": 0.498,
+    "percentile": 0.989
    },
    "poc": 3,
    "kev_due": "2026-11-26",
@@ -471,8 +471,8 @@
    ],
    "cvss": null,
    "epss": {
-    "score": 0.0035,
-    "percentile": 0.297
+    "score": 0.0062,
+    "percentile": 0.503
    },
    "poc": 0,
    "kev_due": "2026-11-26",
@@ -501,7 +501,10 @@
     "CVE-2026-133469"
    ],
    "cvss": 9.8,
-   "epss": null,
+   "epss": {
+    "score": 0.0078,
+    "percentile": 0.567
+   },
    "poc": 0,
    "kev_due": null,
    "ransomware": null,
@@ -1375,8 +1378,8 @@
    ],
    "cvss": null,
    "epss": {
-    "score": 0.2778,
-    "percentile": 0.981
+    "score": 0.447,
+    "percentile": 0.988
    },
    "poc": 38,
    "kev_due": null,
@@ -1409,7 +1412,7 @@
    ],
    "cvss": null,
    "epss": {
-    "score": 0.5732,
+    "score": 0.5927,
     "percentile": 0.991
    },
    "poc": 82,
