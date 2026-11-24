@@ -1,31 +1,67 @@
 {
  "run_date": "2026-11-24",
  "quiet_day": false,
- "executive_pulse": "CISA added N-able MailAssure (SSRF) and Project MONAI MONAI Label (path traversal) to KEV following confirmed active exploitation. ConnectWise ScreenConnect client exploitation targeting MSP technicians has also been reported.",
+ "executive_pulse": "Active exploitation campaigns target Azure API Management and Cisco Expressway, with threat actors extracting customer API secrets and obtaining root access. CISA added N-able MailAssure and Project MONAI flaws to KEV following confirmed zero-day abuse.",
  "items": [
   {
    "rank": 1,
-   "headline": "CISA Adds N-able MailAssure SSRF (CVE-2026-134624) to KEV Following Breach",
+   "headline": "Azure API Management Flaw Exploited to Exfiltrate Customer API Credentials",
+   "category": "ACTIVE_ATTACK",
+   "severity": "CRITICAL",
+   "exploitation": "EXPLOITED_REPORTED",
+   "is_update": false,
+   "stack_match": [
+    "Azure"
+   ],
+   "target": "Microsoft / Azure API Management / Classic Tiers",
+   "identifiers": [],
+   "kev_due_date": null,
+   "summary": "Threat actors actively exploited a security vulnerability in Microsoft Azure API Management (APIM) Classic tiers to steal stored API credentials, access tokens, and named values, impacting European critical infrastructure and energy sector entities.",
+   "action": "Audit APIM Classic instances, immediately rotate all stored API keys, certificates, and secrets, and upgrade to managed APIM tiers.",
+   "hunt": "Azure Activity Logs: anomalous calls to APIM access token generation, export operations, or unexpected modifications of named values.",
+   "fixed_versions": null,
+   "confidence": "MEDIUM",
+   "primary_source": "https://www.bleepingcomputer.com/news/security/microsoft-azure-flaw-exploited-to-steal-customers-api-credentials/",
+   "corroborating_sources": [
+    "https://thehackernews.com/2026/11/microsoft-fixes-azure-api-management.html",
+    "https://www.securityweek.com/azure-flaw-exploited-to-target-secrets-at-norwegian-energy-firms/"
+   ],
+   "source_tiers": [
+    "press"
+   ],
+   "remediation": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching",
+    "fixed_versions": null
+   }
+  },
+  {
+   "rank": 2,
+   "headline": "N-able MailAssure LDAP SSRF Added to CISA KEV Following Cloud Breach",
    "category": "ACTIVE_ATTACK",
    "severity": "CRITICAL",
    "exploitation": "EXPLOITED_CONFIRMED",
    "is_update": false,
    "stack_match": [],
-   "target": "N-able MailAssure / SpamExperts Hosted Cloud",
+   "target": "N-able / MailAssure / Hosted Cloud API",
    "identifiers": [
     "CVE-2026-134624",
     "CWE-918"
    ],
    "kev_due_date": "2026-11-26",
-   "summary": "N-able disclosed a critical SSRF vulnerability in the LDAP synchronization connection check of MailAssure and SpamExperts Hosted Cloud. Discovered during a breach investigation, the flaw allows an authenticated API user to connect to arbitrary internal hosts/ports and relay data.",
-   "action": "Apply vendor mitigations and follow CISA BOD 26-04 cloud service directives by November 26, 2026.",
-   "hunt": "MailAssure API logs: unexpected internal IP addresses or internal port scans initiated via LDAP sync connection checks.",
+   "summary": "A server-side request forgery (SSRF) in N-able MailAssure LDAP synchronization allowed authenticated API users to probe internal network topology and send payload data to internal services. Discovered during an investigation into an MSP cloud service breach.",
+   "action": "Apply vendor updates for MailAssure, isolate API endpoints, and audit internal network connections originated by MailAssure hosts.",
+   "hunt": "MailAssure API logs: LDAP sync connection requests targeting RFC1918 internal IPs, loopback addresses, or non-standard internal ports.",
    "fixed_versions": null,
    "confidence": "HIGH",
    "primary_source": "https://www.cisa.gov/news-events/alerts/2026/11/23/cisa-adds-two-known-exploited-vulnerabilities-catalog",
    "corroborating_sources": [
-    "https://thehackernews.com/2026/11/n-able-discloses-critical-mail-assure.html",
-    "https://nvd.nist.gov/vuln/detail/CVE-2026-134624"
+    "https://nvd.nist.gov/vuln/detail/CVE-2026-134624",
+    "https://thehackernews.com/2026/11/n-able-discloses-critical-mail-assure.html"
    ],
    "source_tiers": [
     "authority",
@@ -42,27 +78,28 @@
    }
   },
   {
-   "rank": 2,
-   "headline": "CISA KEV Addition: Project MONAI MONAI Label Path Traversal (CVE-2026-133968)",
+   "rank": 3,
+   "headline": "Project MONAI MONAI Label Unauthenticated Arbitrary File Write Exploited",
    "category": "ACTIVE_ATTACK",
    "severity": "HIGH",
    "exploitation": "EXPLOITED_CONFIRMED",
    "is_update": false,
    "stack_match": [],
-   "target": "Project MONAI MONAI Label",
+   "target": "Project MONAI / MONAI Label",
    "identifiers": [
     "CVE-2026-133968",
-    "CWE-24"
+    "CWE-24",
+    "GHSA-qc22-rmgc-vg94"
    ],
    "kev_due_date": "2026-11-26",
-   "summary": "Project MONAI MONAI Label contains a path traversal vulnerability that allows unauthenticated remote attackers to write arbitrary files outside the designated datastore directory, potentially leading to arbitrary remote code execution.",
-   "action": "Apply mitigations per vendor advisory instructions and ensure compliance with CISA BOD 26-04 guidance.",
-   "hunt": "Web application logs: HTTP request parameters to MONAI Label endpoints containing directory traversal sequences (../) targeting write operations.",
+   "summary": "Path traversal vulnerability in Project MONAI MONAI Label allows unauthenticated remote attackers to write arbitrary files outside the datastore directory, enabling remote code execution. Added to CISA KEV due to active exploitation.",
+   "action": "Apply pull request #1915 or security advisories for MONAILabel and restrict network access to labeling server instances.",
+   "hunt": "MONAI Label HTTP server logs: requests containing directory traversal patterns (../ or encoded variants) targeting file upload endpoints.",
    "fixed_versions": null,
    "confidence": "HIGH",
-   "primary_source": "https://www.cisa.gov/news-events/alerts/2026/11/23/cisa-adds-two-known-exploited-vulnerabilities-catalog",
+   "primary_source": "https://nvd.nist.gov/vuln/detail/CVE-2026-133968",
    "corroborating_sources": [
-    "https://nvd.nist.gov/vuln/detail/CVE-2026-133968"
+    "https://www.cisa.gov/news-events/alerts/2026/11/23/cisa-adds-two-known-exploited-vulnerabilities-catalog"
    ],
    "source_tiers": [
     "authority"
@@ -79,131 +116,51 @@
    }
   },
   {
-   "rank": 3,
-   "headline": "Active Exploitation of ConnectWise ScreenConnect Client Vulnerability (CVE-2026-84869)",
-   "category": "ACTIVE_ATTACK",
-   "severity": "CRITICAL",
-   "exploitation": "EXPLOITED_REPORTED",
-   "is_update": false,
-   "stack_match": [],
-   "target": "ConnectWise ScreenConnect",
-   "identifiers": [
-    "CVE-2026-84869"
-   ],
-   "kev_due_date": "2026-09-14",
-   "summary": "Threat actors are actively exploiting a critical ConnectWise ScreenConnect client vulnerability (CVSS 9.9) targeting MSP servers. The flaw enables a guest to transfer and execute arbitrary payloads directly onto a connecting technician's host machine.",
-   "action": "Update all ConnectWise ScreenConnect server and client components to patched releases immediately.",
-   "hunt": "EDR telemetry: unexpected child process execution or file creation under ScreenConnect client processes on technician endpoints.",
-   "fixed_versions": null,
-   "confidence": "MEDIUM",
-   "primary_source": "https://thehackernews.com/2026/11/hackers-exploit-critical-screenconnect.html",
-   "corroborating_sources": [],
-   "source_tiers": [
-    "press"
-   ],
-   "remediation": {
-    "weakness": "Vulnerability",
-    "compensating_controls": [
-     "Reduce exposure: remove internet access to the affected service or interface until patched",
-     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
-    ],
-    "verify": "Confirm the installed version on every instance after patching",
-    "fixed_versions": null
-   }
-  },
-  {
    "rank": 4,
-   "headline": "Critical Azure Event Grid Privilege Escalation (CVE-2026-62841)",
-   "category": "VULNERABILITY",
-   "severity": "CRITICAL",
-   "exploitation": "NO_KNOWN_EXPLOIT",
+   "headline": "OpenMind-Jailbreak-Lab: LLM Security Testing Framework",
+   "category": "GITHUB_REPO",
+   "severity": "INFO",
+   "exploitation": "N/A",
    "is_update": false,
    "stack_match": [
-    "Azure"
+    "LLM"
    ],
-   "target": "Microsoft Azure Event Grid",
+   "target": "tjcrims0nx / OpenMind-Jailbreak-Lab",
    "identifiers": [
-    "CVE-2026-62841",
-    "CWE-287"
+    "tjcrims0nx/OpenMind-Jailbreak-Lab"
    ],
    "kev_due_date": null,
-   "summary": "Improper authentication in Azure Event Grid allows an unauthorized remote attacker to elevate privileges across the network (CVSS 10.0).",
-   "action": "Verify Microsoft cloud service security updates are applied automatically or updated per MSRC deployment notes.",
+   "summary": "An open-source AI security lab designed for reproducible adversarial testing, jailbreak resistance evaluation, and LLM guardrail validation across multiple AI model providers.",
+   "action": "Review source code and execute jailbreak evaluation suites in isolated test environments to benchmark LLM guardrail resilience.",
    "hunt": null,
    "fixed_versions": null,
-   "confidence": "MEDIUM",
-   "primary_source": "https://nvd.nist.gov/vuln/detail/CVE-2026-62841",
-   "corroborating_sources": [],
-   "source_tiers": [
-    "authority"
-   ],
-   "remediation": {
-    "weakness": "Authentication bypass",
-    "compensating_controls": [
-     "Restrict management and admin interfaces to a dedicated admin network or VPN; block them from the internet",
-     "Require phishing-resistant MFA for administrative access where the product supports it",
-     "Rotate admin credentials and API keys, and remove unknown admin accounts"
-    ],
-    "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event",
-    "fixed_versions": null
-   }
-  },
-  {
-   "rank": 5,
-   "headline": "Xen Orchestra xo-server REST Token Authentication Bypass (CVE-2026-133469)",
-   "category": "VULNERABILITY",
-   "severity": "CRITICAL",
-   "exploitation": "NO_KNOWN_EXPLOIT",
-   "is_update": false,
-   "stack_match": [
-    "npm"
-   ],
-   "target": "npm: xo-server",
-   "identifiers": [
-    "CVE-2026-133469",
-    "GHSA-2r3w-c2vx-fv5g",
-    "CWE-287",
-    "CWE-1287"
-   ],
-   "kev_due_date": null,
-   "summary": "Parsing REST cookies converts empty JSON objects into token queries that xo-server treats as unfiltered lookups, authenticating remote attackers as the owner of the first active token (CVSS 9.8).",
-   "action": "Update xo-server npm package to patched versions resolving GHSA-2r3w-c2vx-fv5g.",
-   "hunt": "Web server logs: HTTP request Cookie headers containing authenticationToken=j:%7B%7D.",
-   "fixed_versions": null,
    "confidence": "HIGH",
-   "primary_source": "https://github.com/advisories/GHSA-2r3w-c2vx-fv5g",
+   "primary_source": "https://github.com/tjcrims0nx/OpenMind-Jailbreak-Lab",
    "corroborating_sources": [],
    "source_tiers": [
-    "authority"
-   ],
-   "remediation": {
-    "weakness": "Authentication bypass",
-    "compensating_controls": [
-     "Restrict management and admin interfaces to a dedicated admin network or VPN; block them from the internet",
-     "Require phishing-resistant MFA for administrative access where the product supports it",
-     "Rotate admin credentials and API keys, and remove unknown admin accounts"
-    ],
-    "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event",
-    "fixed_versions": null
-   }
+    "data"
+   ]
   }
  ],
  "notes": "",
  "meta": {
-  "generated_at": "2026-11-24T00:05:04+00:00",
+  "generated_at": "2026-11-24T11:45:03+00:00",
   "mode": "analyst",
   "prompt_version": "v2.1",
   "model": "Gemini Flash (free tier)",
   "provider": "gemini",
-  "window_start": "2026-11-22 18:05 UTC",
-  "window_end": "2026-11-24 00:05 UTC",
+  "window_start": "2026-11-23 05:45 UTC",
+  "window_end": "2026-11-24 11:45 UTC",
   "items_screened": 40,
-  "dropped": [],
+  "dropped": [
+   "downgraded to reported (no authority/vendor/KEV source): Azure API Management Flaw Exploited to Exfiltrate ",
+   "dropped (URL not in input): Cisco Expressway Series Unauthenticated RCE Exploited in the"
+  ],
   "sources": {
    "CISA KEV": "ok (2 new)",
-   "NVD": "ok (13)",
+   "NVD": "error: ReadTimeout",
    "GitHub Advisory": "ok (6)",
-   "GitHub": "ok (10)",
+   "GitHub": "ok (9)",
    "CISA Advisories": "ok (1)",
    "Microsoft MSRC": "ok (10)",
    "Microsoft Security": "ok (0)",
@@ -213,11 +170,27 @@
    "AWS Security Bulletins": "ok (2)",
    "Unit 42": "ok (0)",
    "Google Threat Intel": "ok (0)",
-   "BleepingComputer": "ok (11)",
-   "The Hacker News": "ok (8)",
-   "SecurityWeek": "ok (8)",
+   "BleepingComputer": "ok (10)",
+   "The Hacker News": "ok (12)",
+   "SecurityWeek": "ok (10)",
    "The Record": "ok (5)",
    "Krebs on Security": "ok (0)"
+  },
+  "perf": {
+   "collect_s": 46.4,
+   "llm_s": 27.3,
+   "total_s": 73.7,
+   "attempts": [
+    {
+     "provider": "gemini",
+     "model": "gemini-3.6-flash",
+     "attempt": 1,
+     "seconds": 27.3,
+     "ok": true
+    }
+   ],
+   "runner": "github",
+   "schedule_delay_min": null
   }
  }
 }
