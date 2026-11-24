@@ -84,6 +84,12 @@ def safe_url(u: str | None) -> str:
     return u if urlparse(u).scheme in ("http", "https") else "#"
 
 
+def _riskline(r):
+    sys.path.insert(0, str(ROOT))
+    from digest.render import risk_line
+    return risk_line(r)
+
+
 def env() -> Environment:
     e = Environment(loader=FileSystemLoader(SITE / "templates"), autoescape=select_autoescape(["html", "xml"]),
                     trim_blocks=True, lstrip_blocks=True)
@@ -91,7 +97,7 @@ def env() -> Environment:
         sev=lambda v: LABELS["sev"].get(v, v), xlabel=lambda v: LABELS["x"].get(v, v),
         cat=lambda v: LABELS["cat"].get(v, v), kindlabel=lambda v: LABELS["kind"].get(v, v),
         host=lambda u: urlparse(u).netloc.removeprefix("www.") or u, safe_url=safe_url,
-        ago=ago, longdate=longdate, nicedate=nicedate, days_left=days_left,
+        ago=ago, longdate=longdate, nicedate=nicedate, days_left=days_left, riskline=_riskline,
     )
     return e
 

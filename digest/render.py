@@ -170,6 +170,7 @@ def validate(digest: dict, items: list[dict], tiers: dict | None = None) -> tupl
             continue
         repos += is_repo
         threats += not is_repo
+        e["risk"] = risk_for(e, cited, items)
         e["primary_source"] = clean_url(e["primary_source"])
         e["corroborating_sources"] = [clean_url(u) for u in e["corroborating_sources"]]
         kept.append(e)
@@ -180,6 +181,45 @@ def validate(digest: dict, items: list[dict], tiers: dict | None = None) -> tupl
         if BANNED.search(digest.get(field, "")):
             problems.append("banned word in pulse")
     return digest, problems
+
+
+def risk_for(e: dict, cited: list[dict], items: list[dict]) -> dict | None:
+    """Deterministic risk facts for an entry, from the collected data only (never from the model):
+    CISA KEV, EPSS, CISA SSVC, VulnCheck KEV. Matched by the entry's CVEs, else by its cited items."""
+    ids = {str(i).upper() for i in e.get("identifiers") or []} | {c.upper() for c in CVE_RE.findall(e.get("headline", ""))}
+    related = [it for it in items if ids & {c.upper() for c in it.get("cves", [])}] or cited
+    r = {}
+    if any(it.get("kev") for it in related):
+        r["kev"] = True
+    epss = [it["epss"] for it in related if it.get("epss")]
+    if epss:
+        r["epss"] = max(epss, key=lambda x: x["score"])
+    if (ss := next((it["ssvc"] for it in related if it.get("ssvc")), None)):
+        r["ssvc"] = ss
+    if not r.get("kev") and any(it.get("vulncheck_kev") for it in related):
+        r["vulncheck_kev"] = True
+    return r or None
+
+
+def risk_line(r: dict | None) -> str:
+    """One plain line, e.g. "CISA KEV · EPSS 94% (top 1%) · SSVC: active, automatable, total impact"."""
+    if not r:
+        return ""
+    parts = []
+    if r.get("kev"):
+        parts.append("CISA KEV")
+    elif r.get("vulncheck_kev"):
+        parts.append("Exploited per VulnCheck (not yet in CISA KEV)")
+    if r.get("epss"):
+        top = max(1, round((1 - r["epss"]["percentile"]) * 100))
+        parts.append(f"EPSS {r['epss']['score'] * 100:.0f}% (top {top}%)" if top <= 10
+                     else f"EPSS {r['epss']['score'] * 100:.1f}%")
+    if r.get("ssvc"):
+        ss = r["ssvc"]
+        words = [ss.get("exploitation"), "automatable" if ss.get("automatable") == "yes" else None,
+                 f"{ss['technical_impact']} impact" if ss.get("technical_impact") else None]
+        parts.append("SSVC: " + ", ".join(w for w in words if w))
+    return " · ".join(parts)
 
 
 def _wa_safe(s: str) -> str:
@@ -204,6 +244,8 @@ def render_item(e: dict) -> str:
         lines.append(f"🆔 {', '.join(map(_wa_safe, e['identifiers'][:5]))}")
     if e.get("stack_match"):
         lines.append(f"📌 Your stack: {', '.join(map(_wa_safe, e['stack_match']))}")
+    if (rl := risk_line(e.get("risk"))):
+        lines.append(f"⚖️ Risk: {rl}")
     lines += [_wa_safe(e.get("summary")),
               f"➡️ _{_wa_safe(e.get('action'))}_",
               *([f"🩹 Patch: {_wa_safe(e['remediation']['fixed_versions'] or 'no fixed version in source; see vendor advisory')}",
@@ -253,6 +295,7 @@ def to_markdown(digest: dict, run_date: str) -> str:
                 f"**Exploitation:** {e.get('exploitation')} | **Confidence:** {e.get('confidence')}",
                 f"- **Target:** {e.get('target')}",
                 f"- **Identifiers:** {', '.join(e.get('identifiers', []))}",
+                *([f"- **Risk:** {risk_line(e['risk'])}"] if e.get("risk") else []),
                 f"- **Summary:** {e.get('summary')}",
                 f"- **Action:** {e.get('action')}"]
         if e.get("hunt"):

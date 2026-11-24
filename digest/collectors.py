@@ -252,6 +252,53 @@ def epss_scores(cves: list[str]) -> dict:
     return out
 
 
+def ssvc_scores(cves: list[str], limit: int = 30) -> dict:
+    """CISA Vulnrichment SSVC decision points (exploitation, automatable, technical impact)
+    from the public cisagov/vulnrichment repo. No key needed."""
+    out = {}
+    for cve in sorted(set(cves))[:limit]:
+        try:
+            _, year, num = cve.split("-")
+            url = (f"https://raw.githubusercontent.com/cisagov/vulnrichment/develop/"
+                   f"{year}/{int(num) // 1000}xxx/{cve}.json")
+            r = requests.get(url, headers=UA, timeout=15)
+            if r.status_code != 200:
+                continue
+            for adp in r.json().get("containers", {}).get("adp", []):
+                for m in adp.get("metrics", []):
+                    other = m.get("other") or {}
+                    if other.get("type") != "ssvc":
+                        continue
+                    opts = {k.lower().replace(" ", "_"): str(v).lower()
+                            for o in other.get("content", {}).get("options", []) for k, v in o.items()}
+                    if opts:
+                        out[cve] = {k: opts[k] for k in ("exploitation", "automatable", "technical_impact") if k in opts}
+        except Exception as e:  # noqa: BLE001
+            log.warning("SSVC lookup failed for %s: %s", cve, e)
+    return out
+
+
+def vulncheck_kev(cves: list[str], limit: int = 30) -> dict:
+    """VulnCheck KEV (free Community key, attribution required). Empty without VULNCHECK_API_KEY."""
+    key = os.environ.get("VULNCHECK_API_KEY")
+    if not key:
+        return {}
+    out = {}
+    for cve in sorted(set(cves))[:limit]:
+        try:
+            r = requests.get("https://api.vulncheck.com/v3/index/vulncheck-kev", params={"cve": cve},
+                             headers={**UA, "Authorization": f"Bearer {key}"}, timeout=15)
+            if r.status_code == 200 and r.json().get("data"):
+                d = r.json()["data"][0]
+                out[cve] = {"listed": True, "date_added": (d.get("date_added") or "")[:10]}
+            elif r.status_code in (401, 403):
+                log.warning("VulnCheck key refused (HTTP %s); skipping", r.status_code)
+                return out
+        except Exception as e:  # noqa: BLE001
+            log.warning("VulnCheck lookup failed for %s: %s", cve, e)
+    return out
+
+
 def poc_counts(cves: list[str], limit: int = 40) -> dict:
     """Public PoC repos per CVE from nomi-sec/PoC-in-GitHub (CC0, no key needed)."""
     out = {}
@@ -283,6 +330,7 @@ def enrich(items: list[dict], kev: dict, watchlist: list[str]) -> None:
     hot = [c for c in set(all_cves) if c in kev or (epss.get(c, {}).get("score", 0) >= 0.1)
            or len(sources_per_cve.get(c, ())) >= 2]
     pocs = poc_counts(hot)
+    ssvc, vck = ssvc_scores(hot), vulncheck_kev(hot)
     for it in items:
         cves = [c.upper() for c in it.get("cves", [])]
         if cves:
@@ -297,6 +345,10 @@ def enrich(items: list[dict], kev: dict, watchlist: list[str]) -> None:
                          "dueDate": v.get("dueDate"),
                          "product": v.get("product", ""), "vendor": v.get("vendorProject", ""),
                          "ransomware": v.get("knownRansomwareCampaignUse")}
+        if (hit := next((c.upper() for c in it.get("cves", []) if c.upper() in ssvc), None)):
+            it["ssvc"] = ssvc[hit]
+        if (hit := next((c.upper() for c in it.get("cves", []) if c.upper() in vck), None)):
+            it["vulncheck_kev"] = {"cve": hit, **vck[hit]}
         scores = [epss[c.upper()] for c in it.get("cves", []) if c.upper() in epss]
         if scores:
             it["epss"] = max(scores, key=lambda s: s["score"])

@@ -345,16 +345,16 @@ def test_linkedin_blocks_employment_sensitive_wording():
 
 def test_quiet_day_answer_rejected_when_kev_listed():
     from digest.main import must_report, check_coverage
-    items = [{"source_name": "CISA KEV", "id": "CVE-2026-1", "cves": ["CVE-2026-1"]},
+    items = [{"source_name": "CISA KEV", "id": "CVE-2026-10001", "cves": ["CVE-2026-10001"]},
              {"source_name": "BleepingComputer", "id": "x"}]
     req = must_report(items)
-    assert req == {"CVE-2026-1"}
+    assert req == {"CVE-2026-10001"}
     with pytest.raises(ValueError, match="under-reported"):
         check_coverage({"quiet_day": True, "items": []}, req)
-    check_coverage({"items": [{"headline": "x", "identifiers": ["CVE-2026-1"]}]}, req)   # ok
-    two = {"CVE-2026-1", "CVE-2026-2"}
+    check_coverage({"items": [{"headline": "x", "identifiers": ["CVE-2026-10001"]}]}, req)   # ok
+    two = {"CVE-2026-10001", "CVE-2026-20002"}
     with pytest.raises(ValueError, match="1 of 2"):
-        check_coverage({"items": [{"identifiers": ["CVE-2026-1"]}]}, two)         # partial: rejected
+        check_coverage({"items": [{"identifiers": ["CVE-2026-10001"]}]}, two)         # partial: rejected
     six = {f"CVE-2026-{i}" for i in range(1, 7)}
     check_coverage({"items": [{"identifiers": [f"CVE-2026-{i}" for i in range(1, 6)]}]}, six)  # cap of 5: ok
     check_coverage({"quiet_day": True, "items": []}, set())                              # no KEV: quiet is fine
@@ -576,3 +576,34 @@ def test_patch_tuesday_summary_from_microsoft_record():
     assert "CVE-2026-60002" not in msg                    # critical, but fixed in Microsoft's cloud: no action
     assert "*Spoofing*" not in msg and "releaseNote/2026-Nov" in msg
     assert P.is_patch_tuesday(datetime(2026, 12, 8)) and not P.is_patch_tuesday(datetime(2026, 12, 1))
+
+def test_risk_line_comes_from_collected_data_not_the_model():
+    from digest.render import risk_for, risk_line
+    items = [{"url": "https://nvd.nist.gov/x", "cves": ["CVE-2026-10001"], "kev": {"listed": True},
+              "epss": {"score": 0.9412, "percentile": 0.995},
+              "ssvc": {"exploitation": "active", "automatable": "yes", "technical_impact": "total"}},
+             {"url": "https://b/y", "cves": ["CVE-2026-20002"], "vulncheck_kev": {"listed": True},
+              "epss": {"score": 0.0123, "percentile": 0.6}}]
+    r1 = risk_for({"identifiers": ["CVE-2026-10001"], "headline": "x"}, [], items)
+    assert risk_line(r1) == "CISA KEV · EPSS 94% (top 1%) · SSVC: active, automatable, total impact"
+    r2 = risk_for({"identifiers": [], "headline": "Thing CVE-2026-20002"}, [], items)
+    assert risk_line(r2) == "Exploited per VulnCheck (not yet in CISA KEV) · EPSS 1.2%"
+    assert risk_for({"identifiers": ["CVE-2026-99999"], "headline": "x"}, [], items) is None
+
+
+def test_ssvc_parser_reads_cisa_adp(monkeypatch):
+    from digest import collectors as C
+    rec = {"containers": {"adp": [{"title": "CISA ADP Vulnrichment", "metrics": [{"other": {"type": "ssvc", "content": {
+        "options": [{"Exploitation": "active"}, {"Automatable": "yes"}, {"Technical Impact": "total"}]}}}]}]}}
+    seen = {}
+    class R:
+        status_code = 200
+        def json(self): return rec
+    def get(url, **kw):
+        seen["url"] = url; return R()
+    monkeypatch.setattr(C.requests, "get", get)
+    out = C.ssvc_scores(["CVE-2026-123890"])
+    assert seen["url"].endswith("/2026/123xxx/CVE-2026-123890.json")
+    assert out == {"CVE-2026-123890": {"exploitation": "active", "automatable": "yes", "technical_impact": "total"}}
+    monkeypatch.delenv("VULNCHECK_API_KEY", raising=False)
+    assert C.vulncheck_kev(["CVE-2026-10001"]) == {}
