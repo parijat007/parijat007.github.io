@@ -4,6 +4,9 @@
   <li class="tag x-{{ e.exploitation }}">{{ e.exploitation | xlabel }}</li>
   <li class="tag cat-{{ e.category }}">{{ e.category | cat }}</li>
   {% if e.kev_due_date %}<li class="tag due">Patch by {{ e.kev_due_date | nicedate }}</li>{% endif %}
+  {% if e.risk and e.risk.epss and e.risk.epss.percentile >= 0.9 %}<li class="tag epss" title="FIRST EPSS: chance of exploitation in the next 30 days">EPSS {{ "%.0f" | format(e.risk.epss.score * 100) }}%</li>{% endif %}
+  {% if e.risk and e.risk.ssvc and e.risk.ssvc.automatable == "yes" %}<li class="tag ssvc" title="CISA SSVC: exploitation can be automated">Automatable</li>{% endif %}
+  {% if e.risk and e.risk.vulncheck_kev %}<li class="tag vck" title="Listed in VulnCheck KEV, not yet in CISA KEV">VulnCheck KEV</li>{% endif %}
   {% for s in e.stack_match %}<li class="tag stack">{{ s }}</li>{% endfor %}
   {% if e.is_update %}<li class="tag">Update</li>{% endif %}
 </ul>
@@ -24,6 +27,7 @@
     <dl class="detail">
       <dt>What happened</dt><dd>{{ e.summary }}</dd>
       <dt>Affected</dt><dd>{{ e.target }}</dd>
+      {% if e.risk %}<dt>Risk</dt><dd class="risk">{{ e.risk | riskline }}</dd>{% endif %}
       {% if e.identifiers %}<dt>Identifiers</dt><dd class="ids">{% for i in e.identifiers %}<span class="id">{{ i }}</span>{% endfor %}</dd>{% endif %}
       <dt>Do this</dt><dd>{{ e.action }}</dd>
       {% if e.hunt %}<dt>Hunt for</dt><dd>{{ e.hunt }}</dd>{% endif %}

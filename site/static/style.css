@@ -119,6 +119,9 @@ section.block { padding: 2.25rem 0; }
 .tag.x-N\/A, .tag.cat-GITHUB_REPO { color: var(--tooling); background: rgba(43, 195, 176, .1); }
 .tag.due { color: var(--deadline); background: transparent; border: 1px solid rgba(255, 176, 32, .5); }
 .tag.stack { color: var(--info); background: rgba(124, 155, 247, .12); }
+.tag.epss, .tag.ssvc { color: var(--sev-high); background: rgba(255, 122, 69, .1); }
+.tag.vck { color: var(--deadline); background: rgba(255, 176, 32, .12); }
+.detail .risk { font-variant-numeric: tabular-nums; }
 .detail { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: .5rem 1.25rem; margin: 1rem 0 .25rem; max-width: 820px; }
 .detail dt { color: var(--muted); font-size: .9rem; }
 .detail dd { margin: 0; }
