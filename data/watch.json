@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-24T20:20:23+00:00",
+ "updated": "2026-11-24T21:20:24+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
@@ -11,6 +11,41 @@
   "AWS Security Bulletins": "ok (2)"
  },
  "entries": [
+  {
+   "id": "GHSA-c4hm-4h84-2cf3",
+   "kind": "GHSA",
+   "title": "ruflo MCP bridge allows unauthenticated remote code execution in default Docker Compose deployments",
+   "summary": "Packages: npm:ruflo. The MCP bridge shipping in ruflo/docker-compose.yml exposed POST /mcp with no authentication. The docker-compose defaults bound the bridge and MongoDB to all interfaces. Combined, an unauthenticated network attacker could invoke tools/call → terminal_execute ",
+   "source": "GitHub Advisory",
+   "url": "https://github.com/advisories/GHSA-c4hm-4h84-2cf3",
+   "published": "2026-11-24T21:01:10Z",
+   "cves": [
+    "CVE-2026-59726"
+   ],
+   "cvss": 10.0,
+   "epss": {
+    "score": 0.0624,
+    "percentile": 0.937
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [
+    "Docker",
+    "npm"
+   ],
+   "first_seen": "2026-11-24T21:20:24+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode",
+     "Run the service as a non-privileged user and restrict outbound connections"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
+   }
+  },
   {
    "id": "CVE-2026-112732",
    "kind": "ADVISORY",
