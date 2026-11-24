@@ -127,9 +127,10 @@ def alerts(report: dict) -> list[str]:
             s = v["scores"].get(cat)
             if s is not None and s < floor:
                 out.append(f"Site {page}: {cat} score {s:.2f} (below {floor:.2f})")
+    label = {"brief": "Daily brief", "watch": "Hourly watch", "health": "Health check"}
     for wf, v in report["pipeline"].items():
         if v["success_rate"] < 0.95:
-            out.append(f"{wf}: {v['success_rate']:.0%} of runs succeeded in the last 7 days")
+            out.append(f"{label.get(wf, wf)}: {v['success_rate']:.0%} of runs succeeded in the last 7 days")
     w = report["pipeline"].get("watch", {})
     if (w.get("schedule_delay_max_min") or 0) > WATCH_MAX_DELAY_MIN:
         out.append(f"Hourly watch: GitHub started a run {w['schedule_delay_max_min']} min late this week")
