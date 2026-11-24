@@ -1,16 +1,107 @@
 {
- "updated": "2026-11-24T17:20:34+00:00",
+ "updated": "2026-11-24T18:20:23+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
   "CISA Advisories": "ok (4)",
   "Microsoft MSRC": "ok (10)",
   "Palo Alto PSIRT": "ok (0)",
-  "Fortinet PSIRT": "ok (0)",
+  "Fortinet PSIRT": "error: ReadTimeout",
   "Cisco PSIRT": "ok (5)",
   "AWS Security Bulletins": "ok (0)"
  },
  "entries": [
+  {
+   "id": "CVE-2026-132224",
+   "kind": "KEV",
+   "title": "Optimizely Web Experimentation External Control of Critical State Data Vulnerability",
+   "summary": "Optimizely Web Experimentation contains an external control of critical state data vulnerability in its account signup flow that could allow an attacker to impersonate existing customer users and modify Project JavaScript. Successful exploitation can result in attacker-controlled",
+   "source": "CISA KEV",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-132224",
+   "published": "2026-11-24",
+   "cves": [
+    "CVE-2026-132224"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0041,
+    "percentile": 0.358
+   },
+   "poc": 0,
+   "kev_due": "2026-11-27",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-24T18:20:23+00:00",
+   "required_action": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discon",
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
+  {
+   "id": "CVE-2026-131914",
+   "kind": "KEV",
+   "title": "Idunno AntiCsrf Deserialization of Untrusted Data Vulnerability",
+   "summary": "Idunno AntiCsrf contains a deserialization of untrusted data vulnerability that allows an unauthenticated remote attacker to execute arbitrary code via object injection. The impacted product(s) could be end-of-life (EoL) and/or end-of-service (EoS). Users are advised to discontin",
+   "source": "CISA KEV",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-131914",
+   "published": "2026-11-24",
+   "cves": [
+    "CVE-2026-131914"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0061,
+    "percentile": 0.502
+   },
+   "poc": 3,
+   "kev_due": "2026-11-27",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-24T18:20:23+00:00",
+   "required_action": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discon",
+   "fix": {
+    "weakness": "Unsafe deserialization",
+    "compensating_controls": [
+     "Block or filter untrusted network access to the affected endpoint (WAF rule or network ACL)",
+     "Run the service with least privilege and no outbound internet access where possible"
+    ],
+    "verify": "Hunt for unexpected child processes spawned by the application server process"
+   }
+  },
+  {
+   "id": "CVE-2026-132165",
+   "kind": "KEV",
+   "title": "Drupal Core Remote Code Execution Vulnerability",
+   "summary": "Drupal Core contains a not failing securely vulnerability that could allow an unauthenticated attacker to take over an existing site or execute arbitrary code via the Drupal installer. Under specific conditions, the attacker can use install.php to attempt to reinstall Drupal on t",
+   "source": "CISA KEV",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-132165",
+   "published": "2026-11-24",
+   "cves": [
+    "CVE-2026-132165"
+   ],
+   "cvss": null,
+   "epss": null,
+   "poc": 1,
+   "kev_due": "2026-11-27",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-24T18:20:23+00:00",
+   "required_action": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discon",
+   "fix": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode",
+     "Run the service as a non-privileged user and restrict outbound connections"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
+   }
+  },
   {
    "id": "/node/25841",
    "kind": "ADVISORY",
