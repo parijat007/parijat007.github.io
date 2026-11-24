@@ -49,6 +49,7 @@ else
 fi
 
 # caffeinate keeps the Mac awake for the duration of the run only
+export WF_BRIEF_WINDOW_UTC="10-17"   # a run outside 5 AM-noon EST is not the morning brief
 caffeinate -i "$REPO_DIR/.venv/bin/python" -m digest.main --skip-if-exists
 
 git add data/ state/

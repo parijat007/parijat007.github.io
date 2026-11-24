@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import html
+import unicodedata
 import logging
 import os
 import re
@@ -20,10 +21,23 @@ KEV_MIRROR = "https://raw.githubusercontent.com/cisagov/kev-data/main/known_expl
 CVE_RE = re.compile(r"CVE-\d{4}-\d{4,7}", re.I)
 
 
+INJECTION_RE = re.compile(r"ignore (all |any )?(previous|prior|above) (instructions|rules)|system prompt|"
+                          r"you are now|disregard (the|your) (rules|instructions)", re.I)
+
+
 def _clean(text: str | None, limit: int = 600) -> str:
-    text = html.unescape(re.sub(r"<[^>]+>", " ", text or ""))
+    """Feed text is untrusted. Decode entities FIRST, then strip markup, so an encoded
+    "&lt;/untrusted_items&gt;" cannot survive as a real tag; drop invisible format and control
+    characters (zero-width, bidi overrides, Unicode tag characters used to hide instructions)."""
+    text = html.unescape(html.unescape(text or ""))
+    text = re.sub(r"<[^>]*>", " ", text).replace("<", " ").replace(">", " ")
+    text = "".join(ch for ch in text if ch in "\n\t" or unicodedata.category(ch) not in ("Cf", "Cc", "Co", "Cs"))
     text = re.sub(r"\s+", " ", text).strip()
     return text[:limit]
+
+
+def injection_suspect(text: str) -> bool:
+    return bool(INJECTION_RE.search(text or ""))
 
 
 def _get_json(url: str, **kw):
@@ -208,6 +222,8 @@ def rss_items(feeds: list[dict], since: datetime, per_feed: int, status: dict) -
                 off += 1   # feed points somewhere it shouldn't: hijacked feed or redirector
                 continue
             text = _clean(e.get("summary") or e.get("description"))
+            if injection_suspect(f"{e.get('title')} {text}"):   # kept (AI-security news quotes these), but logged
+                log.warning("possible prompt-injection text in %s item %s", f["name"], e["link"])
             out.append({
                 "id": e.get("id") or e["link"], "source_type": "rss", "source_name": f["name"],
                 "source_tier": f.get("tier", "press"), "title": _clean(e.get("title"), 200),

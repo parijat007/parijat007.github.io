@@ -32,7 +32,11 @@ def brief_status(run_date: str, root: Path = ROOT) -> str:
     if not f.exists():
         return "missing"
     try:
-        return (json.loads(f.read_text()).get("meta") or {}).get("mode") or "unreadable"
+        meta = json.loads(f.read_text()).get("meta") or {}
+        gen = meta.get("generated_at") or ""
+        if len(gen) >= 13 and gen[11:13].isdigit() and not 10 <= int(gen[11:13]) < 17:
+            return "stale"     # written by a schedule GitHub ran hours late; the morning run replaces it
+        return meta.get("mode") or "unreadable"
     except (OSError, ValueError):
         return "unreadable"
 
@@ -56,7 +60,8 @@ def evaluate(now: datetime, brief: str, watch_age: float | None) -> dict:
         out["rerun_brief"] = True
         if h == BRIEF_DUE_UTC or h in BRIEF_RECHECK_UTC:
             what = {"missing": "has not been published",
-                    "fallback": "is facts-only (analyst models were unavailable)"}.get(brief, f"is {brief}")
+                    "fallback": "is facts-only (analyst models were unavailable)",
+                    "stale": "was written last night by a late schedule, not this morning"}.get(brief, f"is {brief}")
             out["alerts"].append(f"Today's brief {what}. A new cloud run has been started; "
                                  "it replaces a facts-only brief only if a model answers.")
     stale = watch_age is None or watch_age >= WATCH_STALE_H

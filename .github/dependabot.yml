@@ -1,0 +1,10 @@
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: "/"
+    schedule: { interval: weekly, day: tuesday }
+    open-pull-requests-limit: 3
+  - package-ecosystem: github-actions      # keeps the pinned SHAs current
+    directory: "/"
+    schedule: { interval: weekly, day: tuesday }
+    open-pull-requests-limit: 3

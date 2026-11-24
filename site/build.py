@@ -235,7 +235,22 @@ def build(out: Path) -> None:
         (out / ".well-known" / "security.txt").write_text(
             f"Contact: {sc}\nExpires: {expires}\nPreferred-Languages: en\n"
             f"Canonical: {base}/.well-known/security.txt\nPolicy: {base}/method/\n")
+    write_manifest(out)
     print(f"built {out} ({len(briefs)} briefs, {len(watch['entries'])} watch entries)")
+
+
+def write_manifest(out: Path) -> None:
+    """build.json: the commit this site was built from and a SHA-256 per file.
+    tools/site_check.py compares the live site against it every day (tamper check)."""
+    import hashlib
+    import os
+    import subprocess
+    commit = os.environ.get("GITHUB_SHA") or subprocess.run(
+        ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
+    files = {str(f.relative_to(out)): hashlib.sha256(f.read_bytes()).hexdigest()
+             for f in sorted(out.rglob("*")) if f.is_file() and f.name != "build.json"}
+    (out / "build.json").write_text(json.dumps({"commit": commit, "built_at": NOW.isoformat(timespec="seconds"),
+                                               "files": files}, indent=1))
 
 
 if __name__ == "__main__":

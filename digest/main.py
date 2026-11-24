@@ -110,7 +110,8 @@ def call_llm(cfg: dict, items: list[dict], ctx: dict) -> tuple[str, str]:
         n, chars = pc.get("max_items", 40), pc.get("max_text_chars", 400)
         slim = [{k: (v[:chars] if k == "text" and isinstance(v, str) else v)
                  for k, v in it.items() if k not in ("source_tier",)} for it in items[:n]]
-        user = ("<untrusted_items>\n" + json.dumps(slim, ensure_ascii=False) +
+        payload = json.dumps(slim, ensure_ascii=False).replace("</", "<\\/")   # no way to close the data block
+        user = ("<untrusted_items>\n" + payload +
                 "\n</untrusted_items>\n\nProduce today's digest JSON.")
         required = must_report(items[:n])
         for attempt in (1, 2):
@@ -197,15 +198,34 @@ def write_brief(digest: dict, run_date: str, meta: dict) -> Path:
     return out
 
 
-def existing_mode(run_date: str) -> str | None:
-    """Mode of the brief already published for run_date ("analyst", "fallback"), or None."""
+def brief_window() -> tuple[int, int] | None:
+    """WF_BRIEF_WINDOW_UTC="10-17": the UTC hours [start, end) in which a scheduled brief may be written.
+    GitHub can run a schedule many hours late; a brief written at night is not the morning brief."""
+    w = os.environ.get("WF_BRIEF_WINDOW_UTC", "").strip()
+    if not w:
+        return None
+    a, b = (int(x) for x in w.split("-"))
+    return a, b
+
+
+def in_window(hour: int, win: tuple[int, int] | None) -> bool:
+    return win is None or win[0] <= hour < win[1]
+
+
+def existing_mode(run_date: str, win: tuple[int, int] | None = None) -> str | None:
+    """Mode of the brief already published for run_date: "analyst", "fallback", "stale" (written
+    outside the morning window, so the morning run replaces it), or None when there is none."""
     f = ROOT / "data" / "briefs" / f"{run_date}.json"
     if not f.exists():
         return None
     try:
-        return (json.loads(f.read_text()).get("meta") or {}).get("mode") or "unknown"
+        meta = json.loads(f.read_text()).get("meta") or {}
     except (OSError, ValueError):
         return "unknown"
+    gen = meta.get("generated_at") or ""
+    if win and len(gen) >= 13 and gen[11:13].isdigit() and not in_window(int(gen[11:13]), win):
+        return "stale"
+    return meta.get("mode") or "unknown"
 
 
 def run(args) -> int:
@@ -215,11 +235,18 @@ def run(args) -> int:
     since = now - timedelta(hours=hours)
     run_date = now.date().isoformat()
 
-    prior = existing_mode(run_date)
+    win = brief_window()
+    if args.skip_if_exists and not in_window(now.hour, win):
+        log.info("outside the brief window %s UTC (now %02d:%02d); a late schedule is skipped",
+                 win, now.hour, now.minute)
+        return 0
+    prior = existing_mode(run_date, win)
     if args.skip_if_exists and prior == "analyst":
         log.info("analyst brief for %s already published; nothing to do", run_date)
         return 0
-    if args.skip_if_exists and prior:
+    if args.skip_if_exists and prior == "stale":
+        log.info("existing brief for %s was written outside the morning window; replacing it", run_date)
+    elif args.skip_if_exists and prior:
         log.info("existing %s brief for %s is facts-only; trying to upgrade it", prior, run_date)
     if args.items_fixture:
         items, status = json.loads(Path(args.items_fixture).read_text()), {"fixture": "ok"}
@@ -236,7 +263,8 @@ def run(args) -> int:
 
     seen = load_state()
     recent_cut = (now - timedelta(days=cfg["repeat_suppression_days"])).date().isoformat()
-    recent_ids = sorted(k for k, v in seen.items() if v >= recent_cut and not k.startswith("http"))
+    recent_ids = sorted(k for k, v in seen.items() if v >= recent_cut and not k.startswith("http")
+                        and not (prior == "stale" and v == run_date))   # the stale brief's items are re-judged
     ctx = {
         "RUN_DATE": run_date,
         "WINDOW_START": since.strftime("%Y-%m-%d %H:%M UTC"),
@@ -278,7 +306,7 @@ def run(args) -> int:
     if prior and prior != "analyst" and mode != "analyst" and args.skip_if_exists:
         log.info("upgrade failed: models still unavailable; keeping the existing facts-only brief")
         return 0
-    if prior and mode == "analyst" and prior != "analyst":
+    if prior and mode == "analyst" and prior not in ("analyst", "stale"):
         meta["upgraded_from"] = prior
         blocks[0] = "*Upgraded brief:* the analyst models are back; this replaces this morning's facts-only brief.\n\n" + blocks[0]
     if not args.dry_run:
