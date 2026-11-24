@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-24T19:20:24+00:00",
+ "updated": "2026-11-24T20:20:23+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
@@ -8,9 +8,104 @@
   "Palo Alto PSIRT": "ok (1)",
   "Fortinet PSIRT": "ok (0)",
   "Cisco PSIRT": "ok (5)",
-  "AWS Security Bulletins": "ok (0)"
+  "AWS Security Bulletins": "ok (2)"
  },
  "entries": [
+  {
+   "id": "CVE-2026-112732",
+   "kind": "ADVISORY",
+   "title": "CVE-2026-112732 Microsoft Office Visio Remote Code Execution Vulnerability",
+   "summary": "Information published. This CVE was addressed by updates that were released in November 2026, but the CVE was inadvertently omitted from the November 2026 Security Updates. This is an informational change only. Customers who have already installed the November 2026 updates do not",
+   "source": "Microsoft MSRC",
+   "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-112732",
+   "published": "2026-11-24T16:00:00+00:00",
+   "cves": [
+    "CVE-2026-112732"
+   ],
+   "cvss": null,
+   "epss": null,
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-24T20:20:23+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode",
+     "Run the service as a non-privileged user and restrict outbound connections"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
+   }
+  },
+  {
+   "id": "f3822d55098115f56753be6d8573fdead57e59f3",
+   "kind": "ADVISORY",
+   "title": "CVE-2026-134056 - Out-of-bounds write in padded block cipher decryption in AWS-LC",
+   "summary": "Bulletin ID: 2026-196-AWS Publication Date: 11/23/2026 12:00 PM PST Description: We identified CVE-2026-134056, an out-of-bounds write issue in AWS-LC's padded block cipher decryption. It affects applications that decrypt CBC or ECB ciphertext with PKCS7 padding over multiple upd",
+   "source": "AWS Security Bulletins",
+   "url": "https://aws.amazon.com/security/security-bulletins/rss/2026-196-aws/",
+   "published": "2026-11-23T20:29:41+00:00",
+   "cves": [
+    "CVE-2026-134056"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0068,
+    "percentile": 0.532
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [
+    "AWS"
+   ],
+   "first_seen": "2026-11-24T20:20:23+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Memory corruption",
+    "compensating_controls": [
+     "Remove internet exposure of the affected service until patched",
+     "Enable platform exploit mitigations and restart the service after patching"
+    ],
+    "verify": "Monitor for crashes or unexpected restarts of the affected service"
+   }
+  },
+  {
+   "id": "0bada62e5376e7ff04ad2589232c726edc9d9ec3",
+   "kind": "ADVISORY",
+   "title": "CVE-2026-134069 - Use of a default cryptographic key in the instance registration of Amazon SSM Agent on AWS Windows Server AMIs",
+   "summary": "Bulletin ID: 2026-197-AWS Publication Date: 11/23/2026 13:30 PM PST Description: Amazon SSM Agent is the AWS Systems Manager agent that runs on EC2 instances so they can be managed through Systems Manager. We identified CVE-2026-134069, an issue in Amazon SSM Agent on AWS-provide",
+   "source": "AWS Security Bulletins",
+   "url": "https://aws.amazon.com/security/security-bulletins/rss/2026-197-aws/",
+   "published": "2026-11-23T21:54:18+00:00",
+   "cves": [
+    "CVE-2026-134069"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0014,
+    "percentile": 0.033
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [
+    "AWS"
+   ],
+   "first_seen": "2026-11-24T20:20:23+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
   {
    "id": "CVE-2026-132224",
    "kind": "KEV",
@@ -58,7 +153,7 @@
     "score": 0.0061,
     "percentile": 0.502
    },
-   "poc": 3,
+   "poc": 4,
    "kev_due": "2026-11-27",
    "ransomware": "Unknown",
    "stack_match": [],
@@ -221,7 +316,7 @@
    "summary": "On November 19, 2026, the PHP Foundation announced the availability of security fixes that address a critical vulnerability that could lead to remote code execution. This vulnerability is identified by CVE-2026-126714. For information about this vulnerability, see the advisory GH",
    "source": "Cisco PSIRT",
    "url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-phpaftershell-nov-2026-kT9pL4Xe",
-   "published": "2026-11-23T20:20:00+00:00",
+   "published": "2026-11-24T19:47:02+00:00",
    "cves": [
     "CVE-2026-126714"
    ],
@@ -649,7 +744,7 @@
     "score": 0.0062,
     "percentile": 0.503
    },
-   "poc": 0,
+   "poc": 1,
    "kev_due": "2026-11-26",
    "ransomware": "Unknown",
    "stack_match": [],
