@@ -50,7 +50,7 @@ llm:
     mistral:        # Mistral free mode (no card, phone check). Key: admin.mistral.ai -> API keys.
       # Free mode may use requests for training: turn it off in Admin -> Privacy. Inputs are public advisories only.
       base_url: https://api.mistral.ai/v1
-      models: [mistral-large-2512, mistral-medium-latest, mistral-small-2603]   # as listed on admin.mistral.ai limits page
+      models: [mistral-medium-latest, mistral-small-2603]   # large-2512 is listed but not in the free tier (403)
       label: Mistral (free mode)
       api_key_env: [MISTRAL_API_KEY]
       json: object
