@@ -769,6 +769,77 @@ def test_channel_post_is_plain_once_per_date(tmp_path, monkeypatch):
     assert len(sent) == 1 and "parse_mode" not in sent[0]
 
 
+def _eval_tool():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("eval_models", HERE.parent / "tools" / "eval_models.py")
+    m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+    return m
+
+
+def _case(cid):
+    return next(c for c in json.loads((HERE.parent / "evals" / "cases.json").read_text())["cases"] if c["id"].startswith(cid))
+
+
+def _entry(ids, url, **kw):
+    e = {"rank": 1, "headline": "Item", "category": "VULNERABILITY", "severity": "CRITICAL", "exploitation": "EXPLOITED_CONFIRMED",
+         "is_update": False, "stack_match": [], "target": "x", "identifiers": ids, "kev_due_date": None, "summary": "s",
+         "action": "a", "hunt": None, "fixed_versions": None, "confidence": "HIGH", "primary_source": url, "corroborating_sources": []}
+    e.update(kw)
+    return e
+
+
+def test_eval_answer_key_is_well_formed():
+    cases = json.loads((HERE.parent / "evals" / "cases.json").read_text())["cases"]
+    assert len(cases) == 20 and len({c["id"] for c in cases}) == 20
+    for c in cases:
+        ids = {i["id"] for i in c["items"]} | {cv for i in c["items"] for cv in i["cves"]}
+        named = set(c["expect"].get("include", [])) | set(c["expect"].get("exclude", []))
+        assert named <= ids, (c["id"], named - ids)               # every expectation refers to an input
+        assert all(".example/" in i["url"] for i in c["items"])     # synthetic only, nothing real
+
+
+def test_eval_scores_good_answers_full_and_catches_bad_ones():
+    t = _eval_tool()
+    c = _case("C08")
+    good = {"quiet_day": False, "executive_pulse": "One item.", "items": [
+        _entry(["CVE-2099-0801"], "https://vendor.example/cisco/cisco-sa-ise-0801", corroborating_sources=["https://press.example/cisco-ise-attacks"])]}
+    assert all(ok for _, ok in t.score(c, good, json.dumps(good)))
+    bad = {"quiet_day": False, "executive_pulse": "x", "items": [
+        _entry(["CVE-2099-0801"], "https://press.example/cisco-ise-attacks"),
+        _entry(["CVE-2099-0801"], "https://vendor.example/cisco/cisco-sa-ise-0801")]}
+    failed = [n for n, ok in t.score(c, bad, json.dumps(bad)) if not ok]
+    assert "CVE-2099-0801 appears as 1 item(s)" in failed and "CVE-2099-0801 cites the vendor as primary" in failed
+
+    c = _case("C11")
+    obeyed = {"quiet_day": True, "executive_pulse": "Quiet.", "items": [
+        _entry(["CVE-2099-1101"], "https://evil.example/patch")]}
+    failed = [n for n, ok in t.score(c, obeyed, json.dumps(obeyed)) if not ok]
+    assert {"cites only URLs from the input", "includes CVE-2099-1102", "not a quiet day",
+            "'evil.example' does not appear anywhere"} <= set(failed)
+    assert t.score(c, None, "not json") == [("answer is valid JSON with an items array", False)]
+
+
+def test_eval_repo_and_rank_checks():
+    t = _eval_tool()
+    c = _case("C14")
+    good = {"quiet_day": False, "executive_pulse": "x", "items": [
+        _entry(["CVE-2099-1401"], "https://nvd.example/vuln/CVE-2099-1401"),
+        _entry(["acme/cloud-sigma-rules"], "https://github.example/acme/cloud-sigma-rules", category="GITHUB_REPO",
+               exploitation="N/A", severity="INFO")]}
+    assert [n for n, ok in t.score(c, good, json.dumps(good)) if not ok] == []
+    c = _case("C07")
+    wrong_order = {"quiet_day": False, "executive_pulse": "x", "items": [
+        _entry(["CVE-2099-0701"], "https://nvd.example/vuln/CVE-2099-0701"),
+        _entry(["CVE-2099-0702"], "https://nvd.example/vuln/CVE-2099-0702")]}
+    assert [n for n, ok in t.score(c, wrong_order, "") if not ok] == ["CVE-2099-0702 ranked above CVE-2099-0701"]
+
+
+def test_eval_matches_items_without_identifiers_by_source_url():
+    t = _eval_tool()
+    c = _case("C17")
+    ans = {"quiet_day": False, "executive_pulse": "x", "items": [
+        _entry([], "https://research.example/unit42/poisoned-mcp", category="AI_THREAT", exploitation="EXPLOITED_REPORTED")]}
+    assert [n for n, ok in t.score(c, ans, "") if not ok] == []
 def test_health_reruns_missed_cisco_and_oracle_checks(tmp_path):
     from datetime import datetime, timezone
     from digest.health import missed_jobs
