@@ -295,8 +295,10 @@ def run(args) -> int:
 
     seen = load_state()
     recent_cut = (now - timedelta(days=cfg["repeat_suppression_days"])).date().isoformat()
+    newly_kev = must_report(items)   # a CVE newly listed in KEV is news again, whatever was said before
     recent_ids = sorted(k for k, v in seen.items() if v >= recent_cut and not k.startswith("http")
-                        and not (prior == "stale" and v == run_date))   # the stale brief's items are re-judged
+                        and not (prior == "stale" and v == run_date)    # the stale brief's items are re-judged
+                        and k.upper() not in newly_kev)
     ctx = {
         "RUN_DATE": run_date,
         "WINDOW_START": since.strftime("%Y-%m-%d %H:%M UTC"),
