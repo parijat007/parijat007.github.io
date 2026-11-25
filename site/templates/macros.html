@@ -32,7 +32,7 @@
       <dt>Do this</dt><dd>{{ e.action }}</dd>
       {% if e.hunt %}<dt>Hunt for</dt><dd>{{ e.hunt }}</dd>{% endif %}
       {% if e.remediation %}{{ fix(e.remediation, e.primary_source) }}{% endif %}
-      <dt>Confidence</dt><dd>{{ e.confidence | title }}</dd>
+      <dt>Confidence</dt><dd>{{ e.confidence | title }}{% if e.verify_flags %} <span class="muted">(a second model found {{ e.verify_flags }} statement{{ '' if e.verify_flags == 1 else 's' }} not in the sources)</span>{% endif %}</dd>
       <dt>Sources</dt><dd><a href="{{ e.primary_source | safe_url }}" rel="noopener nofollow">{{ e.primary_source | host }}</a>{% for u in e.corroborating_sources %}, <a href="{{ u | safe_url }}" rel="noopener nofollow">{{ u | host }}</a>{% endfor %}</dd>
     </dl>
     <a class="report" href="{{ p.repo_url }}/issues/new?title={{ ('Correction: ' ~ run_date ~ ' #' ~ e.rank) | urlencode }}&labels=correction">Report an error in this item</a>
