@@ -13,6 +13,9 @@ permissions:
 jobs:
   bundle:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write          # OIDC sign-in to AWS for the immutable copy; no stored AWS keys
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -30,3 +33,33 @@ jobs:
           name: watchfloor-backup
           path: watchfloor-*.bundle*
           retention-days: 90
+      # Off-GitHub, immutable copy: S3 with Object Lock (compliance mode). Skipped until aws/backup-bucket.yaml
+      # is deployed and the two secrets exist. The role can write and read retention only: no read, list or delete.
+      - name: Check AWS backup is configured
+        id: aws
+        env:
+          ROLE: ${{ secrets.AWS_BACKUP_ROLE_ARN }}
+        run: echo "enabled=$([ -n "$ROLE" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        if: steps.aws.outputs.enabled == 'true'
+        with:
+          role-to-assume: ${{ secrets.AWS_BACKUP_ROLE_ARN }}
+          role-session-name: watchfloor-backup
+          aws-region: ${{ vars.AWS_BACKUP_REGION || 'us-east-1' }}
+      - name: Upload to S3 (locked) and verify
+        if: steps.aws.outputs.enabled == 'true'
+        env:
+          BUCKET: ${{ secrets.AWS_BACKUP_BUCKET }}
+        run: |
+          f=$(ls watchfloor-*.bundle)
+          key="backups/$f"
+          aws s3 cp "$f" "s3://$BUCKET/$key" --checksum-algorithm SHA256 --only-show-errors
+          aws s3 cp "$f.sha256" "s3://$BUCKET/$key.sha256" --checksum-algorithm SHA256 --only-show-errors
+          until=$(aws s3api get-object-retention --bucket "$BUCKET" --key "$key" --query 'Retention.[Mode,RetainUntilDate]' --output text)
+          echo "locked: $until"
+          case "$until" in COMPLIANCE*) ;; *) echo "::error::backup is not under a compliance-mode lock"; exit 1;; esac
+          # Least-privilege check: this role must NOT be able to delete.
+          if aws s3api delete-object --bucket "$BUCKET" --key "$key" >/dev/null 2>&1; then
+            echo "::error::the backup role was able to delete an object; tighten its policy"; exit 1
+          fi
+          echo "### S3 copy: s3://$BUCKET/$key, $until (delete refused, as intended)" >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,135 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Watchfloor immutable backups. An S3 bucket with Object Lock in compliance mode (no one, including the
+  account root user, can delete or overwrite a locked copy before its retention ends), and an IAM role that
+  GitHub Actions assumes through OIDC: no stored AWS keys. The role trusts only the main branch of one
+  repository and can only write new objects and read their retention. It cannot read, list or delete.
+
+Parameters:
+  GitHubRepo:
+    Type: String
+    Default: parijat007/parijat007.github.io
+    AllowedPattern: "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+    Description: owner/repository allowed to write backups
+  RetentionDays:
+    Type: Number
+    Default: 90
+    MinValue: 1
+    MaxValue: 365
+    Description: Days each backup is locked (compliance mode cannot be shortened later)
+  CreateOidcProvider:
+    Type: String
+    Default: "true"
+    AllowedValues: ["true", "false"]
+    Description: >-
+      Set to false if this AWS account already has the token.actions.githubusercontent.com identity provider
+      (IAM > Identity providers); an account can hold only one.
+
+Conditions:
+  MakeProvider: !Equals [!Ref CreateOidcProvider, "true"]
+
+Resources:
+  GitHubOidcProvider:
+    Type: AWS::IAM::OIDCProvider
+    Condition: MakeProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList: [sts.amazonaws.com]
+
+  BackupBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      ObjectLockEnabled: true
+      ObjectLockConfiguration:
+        ObjectLockEnabled: Enabled
+        Rule:
+          DefaultRetention:
+            Mode: COMPLIANCE
+            Days: !Ref RetentionDays
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+            BucketKeyEnabled: true
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      LifecycleConfiguration:
+        Rules:
+          - Id: expire-after-lock
+            Status: Enabled
+            Prefix: backups/
+            ExpirationInDays: 120          # after the 90-day lock: keeps cost bounded
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 1
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 1
+      Tags:
+        - { Key: project, Value: watchfloor }
+
+  BackupBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref BackupBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: "*"
+            Action: "s3:*"
+            Resource:
+              - !GetAtt BackupBucket.Arn
+              - !Sub "${BackupBucket.Arn}/*"
+            Condition:
+              Bool: { "aws:SecureTransport": "false" }
+
+  BackupWriterRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Description: GitHub Actions (main branch of one repo) writes Watchfloor backups. Write-only.
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !If
+                - MakeProvider
+                - !Ref GitHubOidcProvider     # Ref returns the provider ARN, and orders creation
+                - !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com"
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                "token.actions.githubusercontent.com:aud": sts.amazonaws.com
+                "token.actions.githubusercontent.com:sub": !Sub "repo:${GitHubRepo}:ref:refs/heads/main"
+      Policies:
+        - PolicyName: write-backups-only
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: PutNewBackups
+                Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObjectRetention
+                Resource: !Sub "${BackupBucket.Arn}/backups/*"
+      Tags:
+        - { Key: project, Value: watchfloor }
+
+Outputs:
+  RoleArn:
+    Description: Save as the GitHub secret AWS_BACKUP_ROLE_ARN
+    Value: !GetAtt BackupWriterRole.Arn
+  BucketName:
+    Description: Save as the GitHub secret AWS_BACKUP_BUCKET
+    Value: !Ref BackupBucket
