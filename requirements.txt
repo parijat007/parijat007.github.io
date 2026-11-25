@@ -1,3 +1,5 @@
+# Direct dependencies. CI and the cloud install the hash-locked requirements.lock; after editing this file run:
+#   pip-compile --generate-hashes --allow-unsafe --strip-extras -o requirements.lock requirements.txt
 anthropic>=0.40  # optional: only for llm.provider: anthropic
 feedparser>=6.0
 requests>=2.31
