@@ -1,0 +1,1389 @@
+{
+ "cves": {
+  "CVE-2026-114938": {
+   "cve": "CVE-2026-114938",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-23",
+     "source": "Cisco PSIRT",
+     "url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nov2026-java-rce-eCa6ss9z?vs_f=Cisco%20Security%20Advisory%26vs_cat=Security%20Intelligence%26vs_type=RSS%26vs_p=Vulnerability%20in%20Oracle%20OpenJDK%20(Java4Shell)%20Affecting%20Cisco%20Products:%20November%202026%26vs_k=1"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-17",
+     "count": 83,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-114938.json"
+    },
+    "published": {
+     "date": "2026-11-17",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-114938"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.5927
+    }
+   ],
+   "briefs": [
+    "2026-11-21"
+   ],
+   "detections": [],
+   "title": "Oracle OpenJDK Base64 RCE Affects Cisco and Palo Alto Networks Portfolios"
+  },
+  "CVE-2026-123633": {
+   "cve": "CVE-2026-123633",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-24",
+     "source": "Palo Alto PSIRT",
+     "url": "https://security.paloaltonetworks.com/CVE-2026-123633"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-18",
+     "count": 39,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-123633.json"
+    },
+    "published": {
+     "date": "2026-11-18",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-123633"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.2211
+    }
+   ],
+   "briefs": [
+    "2026-11-21",
+    "2026-11-22"
+   ],
+   "detections": [],
+   "title": "Multiple Critical Flaws in NGINX Expose Cisco and Palo Alto Appliances"
+  },
+  "CVE-2026-113425": {
+   "cve": "CVE-2026-113425",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-24",
+     "source": "Cisco PSIRT",
+     "url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nginx-nov-2026-e8jska2s?vs_f=Cisco%20Security%20Advisory%26vs_cat=Security%20Intelligence%26vs_type=RSS%26vs_p=Vulnerabilities%20in%20nginx%20Affecting%20Cisco%20Products:%20November%202026%26vs_k=1"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-18",
+     "count": 39,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-113425.json"
+    },
+    "published": {
+     "date": "2026-11-18",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-113425"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.1529
+    }
+   ],
+   "briefs": [
+    "2026-11-21",
+    "2026-11-22"
+   ],
+   "detections": [],
+   "title": "Multiple Critical Flaws in NGINX Expose Cisco and Palo Alto Appliances"
+  },
+  "CVE-2026-123634": {
+   "cve": "CVE-2026-123634",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-24",
+     "source": "Cisco PSIRT",
+     "url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nginx-nov-2026-e8jska2s?vs_f=Cisco%20Security%20Advisory%26vs_cat=Security%20Intelligence%26vs_type=RSS%26vs_p=Vulnerabilities%20in%20nginx%20Affecting%20Cisco%20Products:%20November%202026%26vs_k=1"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-18",
+     "count": 39,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-123634.json"
+    },
+    "published": {
+     "date": "2026-11-18",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-123634"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.1884
+    }
+   ],
+   "briefs": [
+    "2026-11-21",
+    "2026-11-22"
+   ],
+   "detections": [],
+   "title": "Multiple Critical Flaws in NGINX Expose Cisco and Palo Alto Appliances"
+  },
+  "CVE-2026-121810": {
+   "cve": "CVE-2026-121810",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-24",
+     "source": "Cisco PSIRT",
+     "url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nginx-nov-2026-e8jska2s?vs_f=Cisco%20Security%20Advisory%26vs_cat=Security%20Intelligence%26vs_type=RSS%26vs_p=Vulnerabilities%20in%20nginx%20Affecting%20Cisco%20Products:%20November%202026%26vs_k=1"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-18",
+     "count": 39,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-121810.json"
+    },
+    "published": {
+     "date": "2026-11-18",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-121810"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.1807
+    }
+   ],
+   "briefs": [
+    "2026-11-21",
+    "2026-11-22"
+   ],
+   "detections": [],
+   "title": "Multiple Critical Flaws in NGINX Expose Cisco and Palo Alto Appliances"
+  },
+  "CVE-2026-123007": {
+   "cve": "CVE-2026-123007",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-24",
+     "source": "Palo Alto PSIRT",
+     "url": "https://security.paloaltonetworks.com/CVE-2026-123633"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-18",
+     "count": 39,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-123007.json"
+    },
+    "published": {
+     "date": "2026-11-18",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-123007"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.4559
+    }
+   ],
+   "briefs": [
+    "2026-11-21",
+    "2026-11-22"
+   ],
+   "detections": [],
+   "title": "Multiple Critical Flaws in NGINX Expose Cisco and Palo Alto Appliances"
+  },
+  "CVE-2026-133199": {
+   "cve": "CVE-2026-133199",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    },
+    "published": {
+     "date": "2026-11-20",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-133199"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.005
+    }
+   ],
+   "briefs": [
+    "2026-11-21"
+   ],
+   "detections": [],
+   "title": "AWS ssosync Vulnerable to Privilege Inheritance on Reused Identifiers"
+  },
+  "CVE-2026-130901": {
+   "cve": "CVE-2026-130901",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    },
+    "published": {
+     "date": "2026-11-20",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-130901"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0017
+    }
+   ],
+   "briefs": [
+    "2026-11-21"
+   ],
+   "detections": [],
+   "title": "Arbitrary File Traversal in AWS Labs Document Loader MCP Server"
+  },
+  "CVE-2026-123890": {
+   "cve": "CVE-2026-123890",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    },
+    "kev_added": {
+     "date": "2026-11-20",
+     "due": "2026-11-23",
+     "ransomware": "Unknown",
+     "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    },
+    "published": {
+     "date": "2026-11-19",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-123890"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-19",
+     "count": 8,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-123890.json"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0501
+    }
+   ],
+   "briefs": [
+    "2026-11-22",
+    "2026-11-23"
+   ],
+   "detections": [],
+   "title": "CISA KEV: CVE-2026-123890 (VMware vCenter)"
+  },
+  "CVE-2025-42884": {
+   "cve": "CVE-2025-42884",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    },
+    "kev_added": {
+     "date": "2026-11-20",
+     "due": "2026-11-23",
+     "ransomware": "Unknown",
+     "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    },
+    "published": {
+     "date": "2025-11-11",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-42884"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-24",
+     "count": 1,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2025/CVE-2025-42884.json"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.011
+    }
+   ],
+   "briefs": [
+    "2026-11-23"
+   ],
+   "detections": [],
+   "title": "SAP NetWeaver Improper Neutralization of Special Elements (CVE-2025-42884)"
+  },
+  "CVE-2026-76466": {
+   "cve": "CVE-2026-76466",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    },
+    "kev_added": {
+     "date": "2026-11-20",
+     "due": "2026-11-23",
+     "ransomware": "Unknown",
+     "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-05",
+     "count": 4,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-76466.json"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0112
+    }
+   ],
+   "briefs": [
+    "2026-11-23"
+   ],
+   "detections": [],
+   "title": "Cisco Expressway Series Hard‑coded Credentials (CVE-2026-76466)"
+  },
+  "CVE-2026-129448": {
+   "cve": "CVE-2026-129448",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    },
+    "kev_added": {
+     "date": "2026-11-20",
+     "due": "2026-11-23",
+     "ransomware": "Unknown",
+     "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-18",
+     "count": 4,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-129448.json"
+    },
+    "detection_seen": {
+     "date": "2026-11-25",
+     "count": 1
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.2416
+    }
+   ],
+   "briefs": [
+    "2026-11-23"
+   ],
+   "detections": [
+    {
+     "kind": "Nuclei",
+     "path": "http/cves/2026/CVE-2026-129448.yaml",
+     "url": "https://github.com/projectdiscovery/nuclei-templates/blob/main/http/cves/2026/CVE-2026-129448.yaml"
+    }
+   ],
+   "title": "Apache Roller XML‑RPC Deserialization (CVE-2026-129448)"
+  },
+  "CVE-2026-134624": {
+   "cve": "CVE-2026-134624",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-23"
+    },
+    "kev_added": {
+     "date": "2026-11-23",
+     "due": "2026-11-26",
+     "ransomware": "Unknown",
+     "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-24",
+     "count": 1,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-134624.json"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0179
+    }
+   ],
+   "briefs": [
+    "2026-11-24"
+   ],
+   "detections": [],
+   "title": "N-able MailAssure LDAP SSRF Added to CISA KEV Following Cloud Breach"
+  },
+  "CVE-2026-133968": {
+   "cve": "CVE-2026-133968",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-23"
+    },
+    "kev_added": {
+     "date": "2026-11-23",
+     "due": "2026-11-26",
+     "ransomware": "Unknown",
+     "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-23",
+     "count": 3,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-133968.json"
+    },
+    "detection_seen": {
+     "date": "2026-11-25",
+     "count": 1
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.2716
+    }
+   ],
+   "briefs": [
+    "2026-11-24"
+   ],
+   "detections": [
+    {
+     "kind": "Nuclei",
+     "path": "http/cves/2026/CVE-2026-133968.yaml",
+     "url": "https://github.com/projectdiscovery/nuclei-templates/blob/main/http/cves/2026/CVE-2026-133968.yaml"
+    }
+   ],
+   "title": "Project MONAI MONAI Label Unauthenticated Arbitrary File Write Exploited"
+  },
+  "CVE-2026-131914": {
+   "cve": "CVE-2026-131914",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-24"
+    },
+    "kev_added": {
+     "date": "2026-11-24",
+     "due": "2026-11-27",
+     "ransomware": "Unknown",
+     "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-23",
+     "count": 4,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-131914.json"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-24",
+     "source": "CISA Advisories",
+     "url": "https://www.cisa.gov/news-events/alerts/2026/11/24/cisa-adds-three-known-exploited-vulnerabilities-catalog"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0429
+    }
+   ],
+   "briefs": [
+    "2026-11-25"
+   ],
+   "detections": [],
+   "title": "Idunno AntiCsrf Deserialization Allows Unauthenticated RCE"
+  },
+  "CVE-2026-132165": {
+   "cve": "CVE-2026-132165",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-24"
+    },
+    "kev_added": {
+     "date": "2026-11-24",
+     "due": "2026-11-27",
+     "ransomware": "Unknown",
+     "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-20",
+     "count": 3,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-132165.json"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-24",
+     "source": "CISA Advisories",
+     "url": "https://www.cisa.gov/news-events/alerts/2026/11/24/cisa-adds-three-known-exploited-vulnerabilities-catalog"
+    }
+   },
+   "epss": [],
+   "briefs": [
+    "2026-11-25"
+   ],
+   "detections": [],
+   "title": "Drupal Core Installer Vulnerability Allows Site Takeover and RCE"
+  },
+  "CVE-2026-132224": {
+   "cve": "CVE-2026-132224",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-24"
+    },
+    "kev_added": {
+     "date": "2026-11-24",
+     "due": "2026-11-27",
+     "ransomware": "Unknown",
+     "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-24",
+     "source": "CISA Advisories",
+     "url": "https://www.cisa.gov/news-events/alerts/2026/11/24/cisa-adds-three-known-exploited-vulnerabilities-catalog"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-23",
+     "count": 4,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-132224.json"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0078
+    }
+   ],
+   "briefs": [
+    "2026-11-25"
+   ],
+   "detections": [],
+   "title": "Optimizely Web Experimentation Critical State Data Manipulation"
+  },
+  "CVE-2026-59726": {
+   "cve": "CVE-2026-59726",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-24"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-24",
+     "source": "GitHub Advisory",
+     "url": "https://github.com/advisories/GHSA-c4hm-4h84-2cf3"
+    },
+    "poc_first_seen": {
+     "date": "2026-07-30",
+     "count": 1,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-59726.json"
+    },
+    "detection_seen": {
+     "date": "2026-11-25",
+     "count": 1
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0624
+    }
+   ],
+   "briefs": [
+    "2026-11-25"
+   ],
+   "detections": [
+    {
+     "kind": "Nuclei",
+     "path": "http/cves/2026/CVE-2026-59726.yaml",
+     "url": "https://github.com/projectdiscovery/nuclei-templates/blob/main/http/cves/2026/CVE-2026-59726.yaml"
+    }
+   ],
+   "title": "Unauthenticated RCE in Ruflo MCP Bridge Default Docker Deployment"
+  },
+  "CVE-2026-64670": {
+   "cve": "CVE-2026-64670",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-25"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-25",
+     "source": "GitHub Advisory",
+     "url": "https://github.com/advisories/GHSA-crj3-q72p-ggqm"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0038
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "@waline/client vulnerable to stored XSS through unsanitized comment edit previews"
+  },
+  "CVE-2026-103406": {
+   "cve": "CVE-2026-103406",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-25"
+    },
+    "kev_added": {
+     "date": "2026-11-25",
+     "due": "2026-11-28",
+     "ransomware": "Unknown",
+     "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0086
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Hewlett Packard Enterprise (HPE) Juniper Session Smart Conductor and Session Smart Router OS Command Injection Vulnerability"
+  },
+  "CVE-2026-111497": {
+   "cve": "CVE-2026-111497",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-24"
+    },
+    "kev_added": {
+     "date": "2026-10-27",
+     "due": "2026-11-10",
+     "ransomware": "Unknown",
+     "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-24",
+     "source": "Cisco PSIRT",
+     "url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-oct2026-node-js-Jj3SQ19u?vs_f=Cisco%20Security%20Advisory%26vs_cat=Security%20Intelligence%26vs_type=RSS%26vs_p=Vulnerabilities%20in%20Node.js%20and%20Brotli%20Affecting%20Cisco%20Products:%20October%202026%26vs_k=1"
+    },
+    "poc_first_seen": {
+     "date": "2026-10-21",
+     "count": 94,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-111497.json"
+    },
+    "detection_seen": {
+     "date": "2026-11-25",
+     "count": 1
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.3298
+    }
+   ],
+   "briefs": [],
+   "detections": [
+    {
+     "kind": "Nuclei",
+     "path": "http/javascript/cves/2026/CVE-2026-111497.yaml",
+     "url": "https://github.com/projectdiscovery/nuclei-templates/blob/main/http/javascript/cves/2026/CVE-2026-111497.yaml"
+    }
+   ],
+   "title": "Vulnerabilities in Node.js and Brotli Affecting Cisco Products: October 2026"
+  },
+  "CVE-2026-112732": {
+   "cve": "CVE-2026-112732",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-24"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-24",
+     "source": "Microsoft MSRC",
+     "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-112732"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0134
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "CVE-2026-112732 Microsoft Office Visio Remote Code Execution Vulnerability"
+  },
+  "CVE-2026-134056": {
+   "cve": "CVE-2026-134056",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-24"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-23",
+     "source": "AWS Security Bulletins",
+     "url": "https://aws.amazon.com/security/security-bulletins/rss/2026-196-aws/"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0068
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "CVE-2026-134056 - Out-of-bounds write in padded block cipher decryption in AWS-LC"
+  },
+  "CVE-2026-134069": {
+   "cve": "CVE-2026-134069",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-24"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-23",
+     "source": "AWS Security Bulletins",
+     "url": "https://aws.amazon.com/security/security-bulletins/rss/2026-197-aws/"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0027
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "CVE-2026-134069 - Use of a default cryptographic key in the instance registration of Amazon SSM Agent on AWS Windows Server AMIs"
+  },
+  "CVE-2026-129713": {
+   "cve": "CVE-2026-129713",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-24"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-24",
+     "source": "CISA Advisories",
+     "url": "https://www.cisa.gov/news-events/ics-advisories/icsa-26-328-03"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-24",
+     "count": 1,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-129713.json"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0098
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Danfoss AK-SM 8xxA Series"
+  },
+  "CVE-2026-126714": {
+   "cve": "CVE-2026-126714",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-23"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-24",
+     "source": "Cisco PSIRT",
+     "url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-phpaftershell-nov-2026-kT9pL4Xe?vs_f=Cisco%20Security%20Advisory%26vs_cat=Security%20Intelligence%26vs_type=RSS%26vs_p=Vulnerability%20in%20PHP%20Affecting%20Cisco%20Products:%20November%202026%26vs_k=1"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-20",
+     "count": 6,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-126714.json"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.3377
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Vulnerability in PHP Affecting Cisco Products: November 2026"
+  },
+  "CVE-2026-69291": {
+   "cve": "CVE-2026-69291",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-23"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0082
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "CVE-2026-69291 Windows Volume Manager Extension Driver Remote Code Execution Vulnerability"
+  },
+  "CVE-2026-78462": {
+   "cve": "CVE-2026-78462",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-23"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0076
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "CVE-2026-78462 Visual Studio Code Security Feature Bypass Vulnerability"
+  },
+  "CVE-2026-72965": {
+   "cve": "CVE-2026-72965",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-23"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0033
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "CVE-2026-72965 Windows WebClient Service Elevation of Privilege Vulnerability"
+  },
+  "CVE-2026-87697": {
+   "cve": "CVE-2026-87697",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-23"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0132
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "CVE-2026-87697 .NET Remote Code Execution Vulnerability"
+  },
+  "CVE-2026-70175": {
+   "cve": "CVE-2026-70175",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-23"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0073
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "CVE-2026-70175 ASP.NET Core Elevation of Privilege Vulnerability"
+  },
+  "CVE-2026-70197": {
+   "cve": "CVE-2026-70197",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-23"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0072
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "CVE-2026-70197 .NET and Visual Studio Remote Code Execution Vulnerability"
+  },
+  "CVE-2026-96225": {
+   "cve": "CVE-2026-96225",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-23"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0038
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "CVE-2026-96225 .NET Elevation of Privilege Vulnerability"
+  },
+  "CVE-2026-96233": {
+   "cve": "CVE-2026-96233",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-23"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.012
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "CVE-2026-96233 ASP.NET Core Denial of Service Vulnerability"
+  },
+  "CVE-2026-109481": {
+   "cve": "CVE-2026-109481",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-23"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0029
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "CVE-2026-109481 ASP.NET Core Elevation of Privilege Vulnerability"
+  },
+  "CVE-2026-119848": {
+   "cve": "CVE-2026-119848",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-23"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0083
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "CVE-2026-119848 Windows Message Queuing Denial of Service Vulnerability"
+  },
+  "CVE-2026-133469": {
+   "cve": "CVE-2026-133469",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-23"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-23",
+     "source": "GitHub Advisory",
+     "url": "https://github.com/advisories/GHSA-2r3w-c2vx-fv5g"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-23",
+     "count": 1,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-133469.json"
+    },
+    "detection_seen": {
+     "date": "2026-11-25",
+     "count": 1
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.011
+    }
+   ],
+   "briefs": [],
+   "detections": [
+    {
+     "kind": "Nuclei",
+     "path": "http/cves/2026/CVE-2026-133469.yaml",
+     "url": "https://github.com/projectdiscovery/nuclei-templates/blob/main/http/cves/2026/CVE-2026-133469.yaml"
+    }
+   ],
+   "title": "Xen Orchestra: Empty-object login token"
+  },
+  "CVE-2026-104099": {
+   "cve": "CVE-2026-104099",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-22",
+     "count": 3,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-104099.json"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0053
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Fabio: Access-control bypass through unnormalized request paths"
+  },
+  "CVE-2026-114516": {
+   "cve": "CVE-2026-114516",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-20",
+     "count": 4,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-114516.json"
+    },
+    "detection_seen": {
+     "date": "2026-11-25",
+     "count": 1
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0414
+    }
+   ],
+   "briefs": [],
+   "detections": [
+    {
+     "kind": "Nuclei",
+     "path": "http/cves/2026/CVE-2026-114516.yaml",
+     "url": "https://github.com/projectdiscovery/nuclei-templates/blob/main/http/cves/2026/CVE-2026-114516.yaml"
+    }
+   ],
+   "title": "Etherpad: Pre-auth arbitrary file read"
+  },
+  "CVE-2026-77369": {
+   "cve": "CVE-2026-77369",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-23",
+     "count": 2,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-77369.json"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0045
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Daptin: Broken Access Control (IDOR) in the generic YJS collaboration endpoint"
+  },
+  "CVE-2026-77367": {
+   "cve": "CVE-2026-77367",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-23",
+     "count": 2,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-77367.json"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0068
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Daptin: Unauthenticated SQL Injection via the `sort` query parameter on every entity list endpoint"
+  },
+  "CVE-2026-77359": {
+   "cve": "CVE-2026-77359",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-21",
+     "count": 1,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-77359.json"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0054
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Jupyter MCP Server: Browser DNS rebinding can hijack the Jupyter backend through management routes"
+  },
+  "CVE-2026-77312": {
+   "cve": "CVE-2026-77312",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-23",
+     "count": 2,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-77312.json"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.008
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Flyto2 Core: Arbitrary file write via unguarded data.*/file.* modules (incomplete fix of CVE-2026-67429)"
+  },
+  "CVE-2026-63344": {
+   "cve": "CVE-2026-63344",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-21",
+     "count": 1,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-63344.json"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0062
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Refitter allows arbitrary code execution through unescaped OpenAPI content-type values"
+  },
+  "CVE-2026-63346": {
+   "cve": "CVE-2026-63346",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-21",
+     "count": 1,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-63346.json"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0062
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Refitter allows code execution through unescaped OpenAPI header parameter names"
+  },
+  "CVE-2026-63345": {
+   "cve": "CVE-2026-63345",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-21",
+     "count": 1,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-63345.json"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0062
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Refitter allows arbitrary code execution through unescaped OpenAPI paths"
+  },
+  "CVE-2026-128138": {
+   "cve": "CVE-2026-128138",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-23",
+     "count": 2,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-128138.json"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0073
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "NLTK incomplete fix: additional JVM/JAR sandbox bypass through unvalidated launcher tokens in java() command arguments"
+  },
+  "CVE-2026-76807": {
+   "cve": "CVE-2026-76807",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0023
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Todoist MCP Server: Browser DNS rebinding lets websites write and delete Todoist data through local MCP server"
+  },
+  "CVE-2026-63412": {
+   "cve": "CVE-2026-63412",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0054
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Jane: Instantiation RCE via query parameter name -> raw PHPDoc */ breakout (jane-php/open-api-3)"
+  },
+  "CVE-2026-63413": {
+   "cve": "CVE-2026-63413",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0054
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Jane: Instantiation RCE via header parameter name -> raw PHPDoc */ breakout (jane-php/open-api-3)"
+  },
+  "CVE-2026-63411": {
+   "cve": "CVE-2026-63411",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0054
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Jane: Instantiation RCE via parameter description -> raw PHPDoc */ breakout (jane-php/open-api-3)"
+  },
+  "CVE-2026-75521": {
+   "cve": "CVE-2026-75521",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-23",
+     "count": 1,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-75521.json"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0033
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Miren Runtime: Authentication bypass in RPC layer: unverified TLS client certificates grant cluster superuser access"
+  },
+  "CVE-2024-7533": {
+   "cve": "CVE-2024-7533",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0063
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Chromium: CVE-2024-7533 Use after free in Sharing"
+  },
+  "CVE-2023-1531": {
+   "cve": "CVE-2023-1531",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0113
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Chromium: CVE-2023-1531 Use after free in ANGLE"
+  },
+  "CVE-2026-118899": {
+   "cve": "CVE-2026-118899",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-21"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0379
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "NGINX vulnerabilities"
+  }
+ },
+ "detections_checked": "2026-11-25",
+ "updated": "2026-11-25T16:19:43+00:00"
+}

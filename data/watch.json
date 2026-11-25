@@ -1,16 +1,49 @@
 {
- "updated": "2026-11-25T15:20:25+00:00",
+ "updated": "2026-11-25T16:19:43+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
   "CISA Advisories": "ok (4)",
-  "Microsoft MSRC": "ok (10)",
+  "Microsoft MSRC": "ok (1)",
   "Palo Alto PSIRT": "ok (3)",
   "Fortinet PSIRT": "ok (0)",
-  "Cisco PSIRT": "ok (6)",
+  "Cisco PSIRT": "ok (5)",
   "AWS Security Bulletins": "ok (2)"
  },
  "entries": [
+  {
+   "id": "GHSA-crj3-q72p-ggqm",
+   "kind": "GHSA",
+   "title": "@waline/client vulnerable to stored XSS through unsanitized comment edit previews",
+   "summary": "Packages: npm:@waline/client. ### Summary `@waline/client` renders the comment editor's live preview with `marked` and no sanitizer (`utils/markdown.ts`), and the preview is injected with `v-html`. When a comment is edited, the editor is seeded with the comment's raw, un-sanitize",
+   "source": "GitHub Advisory",
+   "url": "https://github.com/advisories/GHSA-crj3-q72p-ggqm",
+   "published": "2026-11-25T15:26:23Z",
+   "cves": [
+    "CVE-2026-64670"
+   ],
+   "cvss": 9.3,
+   "epss": {
+    "score": 0.0038,
+    "percentile": 0.243
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [
+    "npm"
+   ],
+   "first_seen": "2026-11-25T16:19:43+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Cross-site scripting",
+    "compensating_controls": [
+     "Enforce a strict Content-Security-Policy on the affected application",
+     "Limit administrative sessions and require re-authentication for sensitive actions"
+    ],
+    "verify": "Review web logs for script payloads in parameters"
+   }
+  },
   {
    "id": "CVE-2026-103406",
    "kind": "KEV",
