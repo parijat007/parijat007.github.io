@@ -150,7 +150,21 @@ def oracle_release(month: date) -> tuple[str, str, str, dict | None]:
 
 NVD_API = "https://services.nvd.nist.gov/rest/json/cves/2.0"
 ORACLE_NVD_SOURCE = "secalert_us@oracle.com"
-_ORACLE_FAMILY = re.compile(r"Vulnerability in the (.+?) product of (Oracle [^(.]+?)\s*\(component", re.I)
+_ORACLE_FAMILY = [   # Oracle's description styles: (product, family) from each
+    (re.compile(r"Vulnerability in the (.+?) product of (Oracle [^(.]+?)\s*\(component", re.I), 1, 2),
+    (re.compile(r"Vulnerability in the (.+?) component of (Oracle [^(.]+?)\s*[.(]", re.I), 1, 2),
+    (re.compile(r"Vulnerability in (Oracle [^(.]+?)\s*\(component", re.I), 1, 1),
+]
+
+
+def oracle_family(desc: str) -> tuple[str, str]:
+    """(product, family) from an Oracle CVE description; ('', 'Oracle') when no known style matches."""
+    for rx, pi, fi in _ORACLE_FAMILY:
+        m = rx.search(desc)
+        if m:
+            prod, fam = m.group(pi).strip(), m.group(fi).strip()
+            return (prod if pi != fi else ""), fam
+    return "", "Oracle"
 
 
 def oracle_from_nvd(day: date) -> dict | None:
@@ -170,14 +184,13 @@ def oracle_from_nvd(day: date) -> dict | None:
         for it in j.get("vulnerabilities", []):
             c = it["cve"]
             desc = next((d["value"] for d in c.get("descriptions", []) if d.get("lang") == "en"), "")
-            m = _ORACLE_FAMILY.search(desc)
-            fam = m.group(2).strip() if m else "Oracle"
-            prod = m.group(1).strip() if m else ""
+            prod, fam = oracle_family(desc)
             scores = [{"cvss_v3": {"baseScore": x["cvssData"]["baseScore"], "baseSeverity": x["cvssData"].get("baseSeverity", ""),
                                    "vectorString": x["cvssData"].get("vectorString", "")}}
                       for k in ("cvssMetricV31", "cvssMetricV30") for x in (c.get("metrics") or {}).get(k, [])]
             pid = f"{fam}|{prod}"
-            vulns.append({"cve": c["id"], "title": prod or desc[:80], "scores": scores,
+            title = prod or (fam if fam != "Oracle" else desc[:80])     # the family is shown beside it
+            vulns.append({"cve": c["id"], "title": title, "scores": scores,
                           "product_status": {"known_affected": [pid]}, "_family": fam})
         start += j.get("resultsPerPage", 0)
         if start >= j.get("totalResults", 0) or not j.get("resultsPerPage"):
