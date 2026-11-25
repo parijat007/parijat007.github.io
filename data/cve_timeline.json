@@ -1156,6 +1156,10 @@
     "detection_seen": {
      "date": "2026-11-25",
      "count": 1
+    },
+    "published": {
+     "date": "2026-11-19",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-114516"
     }
    },
    "epss": [
@@ -1184,6 +1188,10 @@
      "date": "2026-11-23",
      "count": 2,
      "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-77369.json"
+    },
+    "published": {
+     "date": "2026-11-19",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-77369"
     }
    },
    "epss": [
@@ -1206,6 +1214,10 @@
      "date": "2026-11-23",
      "count": 2,
      "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-77367.json"
+    },
+    "published": {
+     "date": "2026-11-19",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-77367"
     }
    },
    "epss": [
@@ -1228,6 +1240,10 @@
      "date": "2026-11-21",
      "count": 1,
      "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-77359.json"
+    },
+    "published": {
+     "date": "2026-11-19",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-77359"
     }
    },
    "epss": [
@@ -1250,6 +1266,10 @@
      "date": "2026-11-23",
      "count": 2,
      "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-77312.json"
+    },
+    "published": {
+     "date": "2026-11-19",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-77312"
     }
    },
    "epss": [
@@ -1272,6 +1292,10 @@
      "date": "2026-11-21",
      "count": 1,
      "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-63344.json"
+    },
+    "published": {
+     "date": "2026-10-30",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63344"
     }
    },
    "epss": [
@@ -1294,6 +1318,10 @@
      "date": "2026-11-21",
      "count": 1,
      "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-63346.json"
+    },
+    "published": {
+     "date": "2026-10-30",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63346"
     }
    },
    "epss": [
@@ -1316,6 +1344,10 @@
      "date": "2026-11-21",
      "count": 1,
      "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-63345.json"
+    },
+    "published": {
+     "date": "2026-10-30",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63345"
     }
    },
    "epss": [
@@ -1338,6 +1370,10 @@
      "date": "2026-11-23",
      "count": 2,
      "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-128138.json"
+    },
+    "published": {
+     "date": "2026-11-19",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-128138"
     }
    },
    "epss": [
@@ -1355,6 +1391,10 @@
    "events": {
     "watchfloor_first": {
      "date": "2026-11-21"
+    },
+    "published": {
+     "date": "2026-11-18",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-76807"
     }
    },
    "epss": [
@@ -1372,6 +1412,10 @@
    "events": {
     "watchfloor_first": {
      "date": "2026-11-21"
+    },
+    "published": {
+     "date": "2026-11-18",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63412"
     }
    },
    "epss": [
@@ -1389,6 +1433,10 @@
    "events": {
     "watchfloor_first": {
      "date": "2026-11-21"
+    },
+    "published": {
+     "date": "2026-11-18",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63413"
     }
    },
    "epss": [
@@ -1406,6 +1454,10 @@
    "events": {
     "watchfloor_first": {
      "date": "2026-11-21"
+    },
+    "published": {
+     "date": "2026-11-18",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-63411"
     }
    },
    "epss": [
@@ -1428,6 +1480,10 @@
      "date": "2026-11-23",
      "count": 1,
      "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-75521.json"
+    },
+    "published": {
+     "date": "2026-11-18",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-75521"
     }
    },
    "epss": [
@@ -1515,5 +1571,5 @@
   }
  },
  "detections_checked": "2026-11-25",
- "updated": "2026-11-25T18:20:23+00:00"
+ "updated": "2026-11-25T19:20:23+00:00"
 }

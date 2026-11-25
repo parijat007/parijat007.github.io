@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-25T18:20:23+00:00",
+ "updated": "2026-11-25T19:20:23+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
@@ -7,10 +7,39 @@
   "Microsoft MSRC": "ok (1)",
   "Palo Alto PSIRT": "ok (3)",
   "Fortinet PSIRT": "ok (0)",
-  "Cisco PSIRT": "ok (5)",
+  "Cisco PSIRT": "ok (6)",
   "AWS Security Bulletins": "ok (3)"
  },
  "entries": [
+  {
+   "id": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-ucs-uefi-sb-bypass-eb6xC5GW",
+   "kind": "ADVISORY",
+   "title": "Cisco UCS and UCS-Based Appliances UEFI Shell Secure Boot Bypass Vulnerability",
+   "summary": "A vulnerability in the Unified Extensible Firmware Interface (UEFI) Shell implementation of Cisco UCS Servers and UCS-based appliances could allow an authenticated attacker with valid credentials for a user account with the role of user or admin or an unauthenticated attacker wit",
+   "source": "Cisco PSIRT",
+   "url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-ucs-uefi-sb-bypass-eb6xC5GW",
+   "published": "2026-11-25T18:29:45+00:00",
+   "cves": [],
+   "cvss": null,
+   "epss": null,
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [
+    "Cisco"
+   ],
+   "first_seen": "2026-11-25T19:20:23+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Restrict the device's management interface to an admin network; check for new admin accounts and config changes",
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
   {
    "id": "894e27f00a93648d0c5efbc5ac12da50db16c339",
    "kind": "ADVISORY",
