@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-25T16:21:13+00:00",
+ "updated": "2026-11-25T17:20:35+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
@@ -8,9 +8,42 @@
   "Palo Alto PSIRT": "ok (3)",
   "Fortinet PSIRT": "ok (0)",
   "Cisco PSIRT": "ok (5)",
-  "AWS Security Bulletins": "ok (2)"
+  "AWS Security Bulletins": "ok (3)"
  },
  "entries": [
+  {
+   "id": "894e27f00a93648d0c5efbc5ac12da50db16c339",
+   "kind": "ADVISORY",
+   "title": "CVE-2026-134068 - Stack-based buffer overflow in replication origin name parsing in AWS pgactive",
+   "summary": "Bulletin ID: 2026-198-AWS Publication Date: 11/24/2026 10:00 AM PST Description: pgactive is an open source PostgreSQL extension from AWS that provides active-active replication between PostgreSQL databases. We identified CVE-2026-134068, an issue in the replication origin name p",
+   "source": "AWS Security Bulletins",
+   "url": "https://aws.amazon.com/security/security-bulletins/rss/2026-198-aws/",
+   "published": "2026-11-24T18:09:02+00:00",
+   "cves": [
+    "CVE-2026-134068"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.008,
+    "percentile": 0.531
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [
+    "AWS"
+   ],
+   "first_seen": "2026-11-25T17:20:35+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Memory corruption",
+    "compensating_controls": [
+     "Remove internet exposure of the affected service until patched",
+     "Enable platform exploit mitigations and restart the service after patching"
+    ],
+    "verify": "Monitor for crashes or unexpected restarts of the affected service"
+   }
+  },
   {
    "id": "GHSA-crj3-q72p-ggqm",
    "kind": "GHSA",
