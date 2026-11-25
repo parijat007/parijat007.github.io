@@ -666,6 +666,59 @@ def test_ledger_sync_records_new_and_replaced_briefs_once(tmp_path):
     assert L.verify(tmp_path) == []
 
 
+def _csaf_tool():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("csaf_patchday", HERE.parent / "tools" / "csaf_patchday.py")
+    m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+    return m
+
+
+def test_csaf_summary_merges_cves_skips_vex_and_flags_kev():
+    t = _csaf_tool()
+    doc = json.loads((HERE / "csaf_sample.json").read_text())
+    s = t.summarize_csaf([doc], kev={"CVE-2026-0002"})
+    assert s["total"] == 2                                            # 0003 is VEX not-affected; 0002 merged
+    v2 = next(v for v in s["exploited"] if v["cve"] == "CVE-2026-0002")
+    assert v2["cvss"] == 7.1 and v2["severity"] == "High"             # highest score wins; severity derived
+    assert v2["families"] == ["Oracle Database Server", "Oracle Fusion Middleware"]
+    assert v2["title"] == "Database privilege escalation"             # from the description note, whitespace fixed
+    assert s["critical"] == 1 and s["remote_noauth"] == 1
+    assert [v["cve"] for v in s["top"]] == ["CVE-2026-0001"]
+    text = t.message("Oracle", "Critical Security Patch Update, November 2026", s, "https://example.test")
+    assert "2 CVEs · 1 critical · 1 exploitable remotely without login · 1 in CISA KEV" in text
+    assert text.index("Exploited now") < text.index("Critical or remote")
+
+
+def test_oracle_release_day_is_third_tuesday():
+    from datetime import date
+    t = _csaf_tool()
+    assert t.third_tuesday(date(2026, 11, 3)) == date(2026, 11, 17)
+    assert t.third_tuesday(date(2026, 12, 1)) == date(2026, 12, 15)
+    assert t.third_tuesday(date(2027, 1, 30)) == date(2027, 1, 19)
+
+
+def test_oracle_nvd_fallback_shapes_records_like_csaf(monkeypatch):
+    from datetime import date
+    t = _csaf_tool()
+    page = {"resultsPerPage": 2, "totalResults": 2, "vulnerabilities": [
+        {"cve": {"id": "CVE-2026-1111", "descriptions": [{"lang": "en", "value":
+            "Vulnerability in the Oracle WebLogic Server product of Oracle Fusion Middleware (component: Core). Easily exploitable."}],
+            "metrics": {"cvssMetricV31": [{"cvssData": {"baseScore": 9.8, "baseSeverity": "CRITICAL",
+                                                        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"}}]}}},
+        {"cve": {"id": "CVE-2026-2222", "descriptions": [{"lang": "en", "value":
+            "Vulnerability in the Oracle Database Server product of Oracle Database Server (component: Java VM)."}],
+            "metrics": {"cvssMetricV31": [{"cvssData": {"baseScore": 4.3, "vectorString": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:N"}}]}}}]}
+
+    class R:
+        status_code = 200
+        def raise_for_status(self): pass
+        def json(self): return page
+    monkeypatch.setattr(t.requests, "get", lambda *a, **k: R())
+    doc = t.oracle_from_nvd(date(2026, 11, 17))
+    s = t.summarize_csaf([doc], kev=set())
+    assert s["total"] == 2 and s["critical"] == 1 and s["remote_noauth"] == 1
+    assert dict(s["families"]) == {"Oracle Fusion Middleware": 1, "Oracle Database Server": 1}
+    assert s["top"][0]["title"] == "Oracle WebLogic Server"
 def test_orcid_parse_and_merge_keeps_hand_list_authoritative():
     import importlib.util
     spec = importlib.util.spec_from_file_location("orcid_sync", ROOT / "tools" / "orcid_sync.py")

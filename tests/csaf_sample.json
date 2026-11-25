@@ -1,0 +1,21 @@
+{"document": {"category": "csaf_security_advisory", "csaf_version": "2.0", "title": "Sample advisory",
+  "tracking": {"id": "SAMPLE-1", "initial_release_date": "2026-11-17T13:00:00-08:00"}},
+ "product_tree": {"branches": [{"category": "vendor", "name": "Oracle", "branches": [
+   {"category": "product_family", "name": "Oracle Database Server", "branches": [
+     {"category": "product_name", "name": "Oracle Database", "branches": [
+       {"category": "product_version", "name": "19.3", "product": {"name": "Oracle Database 19.3", "product_id": "db19"}}]}]},
+   {"category": "product_family", "name": "Oracle Fusion Middleware", "branches": [
+     {"category": "product_name", "name": "WebLogic Server", "branches": [
+       {"category": "product_version", "name": "14.1", "product": {"name": "WebLogic 14.1", "product_id": "wls14"}}]}]}]}]},
+ "vulnerabilities": [
+  {"cve": "CVE-2026-0001", "title": "WebLogic remote code execution",
+   "product_status": {"known_affected": ["wls14"]},
+   "scores": [{"products": ["wls14"], "cvss_v3": {"baseScore": 9.8, "baseSeverity": "CRITICAL", "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"}}]},
+  {"cve": "CVE-2026-0002", "notes": [{"category": "description", "text": "Database privilege   escalation"}],
+   "product_status": {"known_affected": ["db19"]},
+   "scores": [{"products": ["db19"], "cvss_v3": {"baseScore": 6.5, "vectorString": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N"}}]},
+  {"cve": "CVE-2026-0002", "product_status": {"known_affected": ["wls14"]},
+   "scores": [{"products": ["wls14"], "cvss_v3": {"baseScore": 7.1, "vectorString": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:L/A:N"}}]},
+  {"cve": "CVE-2026-0003", "title": "Third-party library, not exploitable here",
+   "product_status": {"known_not_affected": ["db19"]}}
+ ]}
