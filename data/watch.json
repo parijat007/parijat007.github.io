@@ -1,16 +1,70 @@
 {
- "updated": "2026-11-25T00:07:33+00:00",
+ "updated": "2026-11-25T00:20:20+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
   "CISA Advisories": "ok (5)",
   "Microsoft MSRC": "ok (10)",
-  "Palo Alto PSIRT": "ok (1)",
+  "Palo Alto PSIRT": "ok (3)",
   "Fortinet PSIRT": "ok (0)",
   "Cisco PSIRT": "ok (6)",
   "AWS Security Bulletins": "ok (2)"
  },
  "entries": [
+  {
+   "id": "https://security.paloaltonetworks.com/PAN-SA-2026-0015",
+   "kind": "ADVISORY",
+   "title": "PAN-SA-2026-0015 Security Bulletin: OSS CVEs Fixed in PAN-OS (Severity: INFORMATIONAL)",
+   "summary": "",
+   "source": "Palo Alto PSIRT",
+   "url": "https://security.paloaltonetworks.com/PAN-SA-2026-0015",
+   "published": "2026-11-24T23:10:00+00:00",
+   "cves": [],
+   "cvss": null,
+   "epss": null,
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-25T00:20:20+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Restrict the device's management interface to an admin network; check for new admin accounts and config changes",
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
+  {
+   "id": "https://security.paloaltonetworks.com/PAN-SA-2026-0005",
+   "kind": "ADVISORY",
+   "title": "PAN-SA-2026-0005 Informational Bulletin: Precautionary Fixes for Non-Exploitable OSS CVEs in PAN-OS (Severity: INFORMATIONAL)",
+   "summary": "",
+   "source": "Palo Alto PSIRT",
+   "url": "https://security.paloaltonetworks.com/PAN-SA-2026-0005",
+   "published": "2026-11-24T19:00:00+00:00",
+   "cves": [],
+   "cvss": null,
+   "epss": null,
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-25T00:20:20+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Restrict the device's management interface to an admin network; check for new admin accounts and config changes",
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
   {
    "id": "/node/25848",
    "kind": "ADVISORY",
