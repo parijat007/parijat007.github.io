@@ -411,7 +411,7 @@ def test_openrouter_free_model_discovery(monkeypatch):
                 {"id": "c/small:free", "supported_parameters": ["response_format"], "context_length": 8192},
                 {"id": "d/paid", "supported_parameters": ["response_format"], "context_length": 200000}]}
     monkeypatch.setattr(llm.requests, "get", lambda *a, **k: R())
-    assert llm.discover_free_models({"base_url": "https://or.example/api/v1"}) == ["b/direct:free"]
+    assert llm.discover_free_models({"base_url": "https://or.example/api/v1"}) == ["b/direct:free", "a/think:free"]   # direct first
 
 
 def test_skip_if_exists_upgrades_only_facts_only_briefs(tmp_path, monkeypatch):
