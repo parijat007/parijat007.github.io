@@ -38,10 +38,15 @@ def _blob(e: dict) -> str:
     return json.dumps({k: e.get(k) for k in ("identifiers", "headline", "target", "primary_source", "summary")}).upper()
 
 
+_URLS: dict[str, set[str]] = {}     # input id -> its URLs, set per case by score()
+
+
 def find(out: dict, key: str) -> list[int]:
-    """Indexes of output items that are about `key` (a CVE, GHSA, repo name or item id)."""
-    k = key.upper()
-    return [i for i, e in enumerate(out.get("items") or []) if k in _blob(e)]
+    """Indexes of output items about `key` (a CVE, GHSA, repo or item id): named in the item, or citing
+    a URL of the input item with that id (research and repo items often carry no identifier)."""
+    k, urls = key.upper(), _URLS.get(key, set())
+    return [i for i, e in enumerate(out.get("items") or [])
+            if k in _blob(e) or ({e.get("primary_source"), *(e.get("corroborating_sources") or [])} & urls)]
 
 
 def score(case: dict, out: dict | None, raw: str) -> list[tuple[str, bool]]:
@@ -49,6 +54,10 @@ def score(case: dict, out: dict | None, raw: str) -> list[tuple[str, bool]]:
     if out is None or not isinstance(out.get("items"), list):
         return [("answer is valid JSON with an items array", False)]
     items, x = out["items"], case["expect"]
+    _URLS.clear()
+    for it in case["items"]:
+        for key in [it["id"], *it.get("cves", [])]:
+            _URLS.setdefault(key, set()).add(it["url"])
     checks: list[tuple[str, bool]] = [("answer is valid JSON with an items array", True)]
     allowed = {it["url"] for it in case["items"]} | {r for it in case["items"] for r in it.get("refs", [])}
     cited = [u for e in items for u in [e.get("primary_source"), *(e.get("corroborating_sources") or [])] if u]
@@ -135,6 +144,9 @@ def user_message(pc: dict, items: list[dict]) -> str:
             "\n</untrusted_items>\n\nProduce today's digest JSON.")
 
 
+PAUSE = {"groq": 45.0}     # free tiers with a tokens-per-minute cap: the prompt alone is several thousand tokens
+
+
 def run_provider(name: str, cfg: dict, cases: list[dict], pause: float) -> dict:
     from digest.llm import complete  # noqa: PLC0415
     from digest.main import sources_by_name  # noqa: PLC0415
@@ -143,10 +155,20 @@ def run_provider(name: str, cfg: dict, cases: list[dict], pause: float) -> dict:
     res = {"provider": name, "label": pc.get("label", name), "cases": []}
     for c in cases:
         t0 = time.monotonic()
-        try:
-            raw = complete(name, cfg["llm"], system_prompt(cfg, c), user_message(pc, c["items"]))
-        except Exception as e:  # noqa: BLE001
-            res["cases"].append({"id": c["id"], "status": "error", "error": str(e)[:200]})
+        raw, err = None, None
+        for attempt in (1, 2):
+            try:
+                raw = complete(name, cfg["llm"], system_prompt(cfg, c), user_message(pc, c["items"]))
+                break
+            except Exception as e:  # noqa: BLE001
+                err = str(e)[:200]
+                if attempt == 1 and ("429" in err or "rate" in err.lower()):
+                    time.sleep(65)          # wait out the per-minute window once
+                    t0 = time.monotonic()
+                    continue
+                break
+        if raw is None:
+            res["cases"].append({"id": c["id"], "status": "error", "error": err})
             time.sleep(pause)
             continue
         secs = round(time.monotonic() - t0, 1)
@@ -162,7 +184,7 @@ def run_provider(name: str, cfg: dict, cases: list[dict], pause: float) -> dict:
         res["cases"].append({"id": c["id"], "status": "pass" if not failed else "fail", "seconds": secs,
                              "model": pc.get("_used_model"), "checks": len(checks), "failed": failed,
                              "interventions": fixes})
-        time.sleep(pause)
+        time.sleep(max(pause, PAUSE.get(name, 0)))
     done = [x for x in res["cases"] if x["status"] != "error"]
     res["summary"] = {"cases": len(cases), "answered": len(done), "passed": sum(x["status"] == "pass" for x in done),
                       "checks": sum(x["checks"] for x in done),

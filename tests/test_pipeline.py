@@ -832,3 +832,11 @@ def test_eval_repo_and_rank_checks():
         _entry(["CVE-2099-0701"], "https://nvd.example/vuln/CVE-2099-0701"),
         _entry(["CVE-2099-0702"], "https://nvd.example/vuln/CVE-2099-0702")]}
     assert [n for n, ok in t.score(c, wrong_order, "") if not ok] == ["CVE-2099-0702 ranked above CVE-2099-0701"]
+
+
+def test_eval_matches_items_without_identifiers_by_source_url():
+    t = _eval_tool()
+    c = _case("C17")
+    ans = {"quiet_day": False, "executive_pulse": "x", "items": [
+        _entry([], "https://research.example/unit42/poisoned-mcp", category="AI_THREAT", exploitation="EXPLOITED_REPORTED")]}
+    assert [n for n, ok in t.score(c, ans, "") if not ok] == []
