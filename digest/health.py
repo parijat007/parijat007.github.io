@@ -74,6 +74,22 @@ def evaluate(now: datetime, brief: str, watch_age: float | None) -> dict:
     return out
 
 
+def missed_jobs(now: datetime, root: Path = ROOT) -> dict:
+    """Daily/weekly jobs whose GitHub schedule did not fire. GitHub often drops or delays scheduled
+    runs; this hourly check (started on time by an external scheduler) restarts them."""
+    out = {"rerun_perf": False, "rerun_patchday": False}
+    try:
+        upd = datetime.fromisoformat(json.loads((root / "data" / "perf.json").read_text())["updated"])
+        stale = (now - upd).total_seconds() > 26 * 3600
+    except (OSError, ValueError, KeyError):
+        stale = True
+    out["rerun_perf"] = stale and now.hour >= 17
+    patch_tuesday = now.weekday() == 1 and 8 <= now.day <= 14
+    sent = (root / "data" / "patchday" / f"{now.strftime('%Y-%b')}.json").exists()
+    out["rerun_patchday"] = patch_tuesday and now.hour >= 19 and not sent
+    return out
+
+
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     ap = argparse.ArgumentParser()
@@ -83,6 +99,7 @@ def main() -> None:
     now = datetime.now(timezone.utc)
     brief, age = brief_status(now.date().isoformat()), watch_age_hours(now)
     res = evaluate(now, brief, age)
+    res.update(missed_jobs(now))
     log.info("brief=%s watch_age=%s -> %s", brief, None if age is None else round(age, 2), res)
 
     gh_out = os.environ.get("GITHUB_OUTPUT")
@@ -90,6 +107,8 @@ def main() -> None:
         with open(gh_out, "a") as fh:
             fh.write(f"rerun_brief={str(res['rerun_brief']).lower()}\n")
             fh.write(f"rerun_watch={str(res['rerun_watch']).lower()}\n")
+            fh.write(f"rerun_perf={str(res['rerun_perf']).lower()}\n")
+            fh.write(f"rerun_patchday={str(res['rerun_patchday']).lower()}\n")
     summary = os.environ.get("GITHUB_STEP_SUMMARY")
     if summary:
         with open(summary, "a") as fh:

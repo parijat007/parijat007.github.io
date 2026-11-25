@@ -40,3 +40,19 @@ jobs:
         if: steps.h.outputs.rerun_watch == 'true'
         env: { GH_TOKEN: "${{ github.token }}" }
         run: gh api -X POST "repos/${{ github.repository }}/actions/workflows/watch.yml/dispatches" -f ref=main
+      - name: Re-run performance check (daily, if GitHub skipped it)
+        if: steps.h.outputs.rerun_perf == 'true'
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: gh api -X POST "repos/${{ github.repository }}/actions/workflows/perf.yml/dispatches" -f ref=main
+      - name: Re-run Patch Tuesday (if GitHub skipped it)
+        if: steps.h.outputs.rerun_patchday == 'true'
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: gh api -X POST "repos/${{ github.repository }}/actions/workflows/patchday.yml/dispatches" -f ref=main -F "inputs[dry_run]=false"
+      - name: Re-run weekly backup (if none in 8 days)
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          last=$(gh run list -R "${{ github.repository }}" -w backup.yml -L 1 --status success --json createdAt -q '.[0].createdAt // ""')
+          if [ -z "$last" ] || [ $(( $(date -u +%s) - $(date -u -d "$last" +%s) )) -gt 691200 ]; then
+            gh api -X POST "repos/${{ github.repository }}/actions/workflows/backup.yml/dispatches" -f ref=main
+            echo "backup re-run started (last success: ${last:-none})"
+          fi

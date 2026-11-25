@@ -607,3 +607,18 @@ def test_ssvc_parser_reads_cisa_adp(monkeypatch):
     assert out == {"CVE-2026-123890": {"exploitation": "active", "automatable": "yes", "technical_impact": "total"}}
     monkeypatch.delenv("VULNCHECK_API_KEY", raising=False)
     assert C.vulncheck_kev(["CVE-2026-10001"]) == {}
+
+
+def test_health_restarts_daily_jobs_github_skipped(tmp_path):
+    from datetime import datetime, timezone
+    from digest.health import missed_jobs
+    (tmp_path / "data" / "patchday").mkdir(parents=True)
+    (tmp_path / "data" / "perf.json").write_text(json.dumps({"updated": "2026-11-24T03:38:18+00:00"}))
+    t = lambda d, h: datetime(2026, 12, d, h, 0, tzinfo=timezone.utc)
+    assert missed_jobs(datetime(2026, 11, 24, 23, 0, tzinfo=timezone.utc), tmp_path)["rerun_perf"] is False  # 19.4 h old
+    assert missed_jobs(t(1, 18), tmp_path)["rerun_perf"] is True                                   # days old, after 17 UTC
+    assert missed_jobs(t(1, 9), tmp_path)["rerun_perf"] is False                                   # waits for its slot
+    assert missed_jobs(t(8, 20), tmp_path)["rerun_patchday"] is True                               # 2nd Tuesday, not sent
+    (tmp_path / "data" / "patchday" / "2026-Dec.json").write_text("{}")
+    assert missed_jobs(t(8, 20), tmp_path)["rerun_patchday"] is False                              # already sent
+    assert missed_jobs(t(1, 20), tmp_path)["rerun_patchday"] is False                              # 1st Tuesday
