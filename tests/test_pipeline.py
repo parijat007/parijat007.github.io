@@ -693,3 +693,27 @@ def test_oracle_release_day_is_third_tuesday():
     assert t.third_tuesday(date(2026, 11, 3)) == date(2026, 11, 17)
     assert t.third_tuesday(date(2026, 12, 1)) == date(2026, 12, 15)
     assert t.third_tuesday(date(2027, 1, 30)) == date(2027, 1, 19)
+
+
+def test_oracle_nvd_fallback_shapes_records_like_csaf(monkeypatch):
+    from datetime import date
+    t = _csaf_tool()
+    page = {"resultsPerPage": 2, "totalResults": 2, "vulnerabilities": [
+        {"cve": {"id": "CVE-2026-1111", "descriptions": [{"lang": "en", "value":
+            "Vulnerability in the Oracle WebLogic Server product of Oracle Fusion Middleware (component: Core). Easily exploitable."}],
+            "metrics": {"cvssMetricV31": [{"cvssData": {"baseScore": 9.8, "baseSeverity": "CRITICAL",
+                                                        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"}}]}}},
+        {"cve": {"id": "CVE-2026-2222", "descriptions": [{"lang": "en", "value":
+            "Vulnerability in the Oracle Database Server product of Oracle Database Server (component: Java VM)."}],
+            "metrics": {"cvssMetricV31": [{"cvssData": {"baseScore": 4.3, "vectorString": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:N"}}]}}}]}
+
+    class R:
+        status_code = 200
+        def raise_for_status(self): pass
+        def json(self): return page
+    monkeypatch.setattr(t.requests, "get", lambda *a, **k: R())
+    doc = t.oracle_from_nvd(date(2026, 11, 17))
+    s = t.summarize_csaf([doc], kev=set())
+    assert s["total"] == 2 and s["critical"] == 1 and s["remote_noauth"] == 1
+    assert dict(s["families"]) == {"Oracle Fusion Middleware": 1, "Oracle Database Server": 1}
+    assert s["top"][0]["title"] == "Oracle WebLogic Server"

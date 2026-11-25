@@ -148,6 +148,53 @@ def oracle_release(month: date) -> tuple[str, str, str, dict | None]:
     return "", "", "", None
 
 
+NVD_API = "https://services.nvd.nist.gov/rest/json/cves/2.0"
+ORACLE_NVD_SOURCE = "secalert_us@oracle.com"
+_ORACLE_FAMILY = re.compile(r"Vulnerability in the (.+?) product of (Oracle [^(.]+?)\s*\(component", re.I)
+
+
+def oracle_from_nvd(day: date) -> dict | None:
+    """Oracle-assigned CVEs published on the release day, shaped as a minimal CSAF document. Used when
+    oracle.com refuses the runner. Third-party component fixes in the update are not CVEs Oracle assigns,
+    so they are missing here; the message says so."""
+    import time  # noqa: PLC0415
+    hdr = {**HDR, **({"apiKey": os.environ["NVD_API_KEY"]} if os.environ.get("NVD_API_KEY") else {})}
+    params = {"sourceIdentifier": ORACLE_NVD_SOURCE, "resultsPerPage": 2000,
+              "pubStartDate": f"{day.isoformat()}T00:00:00.000Z",
+              "pubEndDate": f"{(day + timedelta(days=2)).isoformat()}T00:00:00.000Z"}
+    vulns, start = [], 0
+    while True:
+        r = requests.get(NVD_API, params={**params, "startIndex": start}, headers=hdr, timeout=90)
+        r.raise_for_status()
+        j = r.json()
+        for it in j.get("vulnerabilities", []):
+            c = it["cve"]
+            desc = next((d["value"] for d in c.get("descriptions", []) if d.get("lang") == "en"), "")
+            m = _ORACLE_FAMILY.search(desc)
+            fam = m.group(2).strip() if m else "Oracle"
+            prod = m.group(1).strip() if m else ""
+            scores = [{"cvss_v3": {"baseScore": x["cvssData"]["baseScore"], "baseSeverity": x["cvssData"].get("baseSeverity", ""),
+                                   "vectorString": x["cvssData"].get("vectorString", "")}}
+                      for k in ("cvssMetricV31", "cvssMetricV30") for x in (c.get("metrics") or {}).get(k, [])]
+            pid = f"{fam}|{prod}"
+            vulns.append({"cve": c["id"], "title": prod or desc[:80], "scores": scores,
+                          "product_status": {"known_affected": [pid]}, "_family": fam})
+        start += j.get("resultsPerPage", 0)
+        if start >= j.get("totalResults", 0) or not j.get("resultsPerPage"):
+            break
+        time.sleep(1)
+    if not vulns:
+        return None
+    fams = sorted({v.pop("_family") for v in vulns})
+    tree = {"branches": [{"category": "vendor", "name": "Oracle", "branches": [
+        {"category": "product_family", "name": f, "branches": [
+            {"category": "product_name", "name": pid.split("|", 1)[1] or f,
+             "product": {"name": pid, "product_id": pid}}
+            for pid in sorted({p for v in vulns for p in v["product_status"]["known_affected"] if p.startswith(f + "|")})]}
+        for f in fams]}]}
+    return {"document": {"title": "Oracle-assigned CVEs from NVD"}, "product_tree": tree, "vulnerabilities": vulns}
+
+
 def cisco_advisories_for(day: date) -> list[dict]:
     r = requests.get(CISCO_RSS, headers={**HDR, "Accept": "application/rss+xml"}, timeout=60)
     r.raise_for_status()
@@ -178,7 +225,11 @@ def advisories(docs: list[dict], kev: set[str]) -> list[dict]:
     out = []
     for d in docs:
         doc = d.get("document") or {}
-        cves = sorted({v.get("cve") for v in d.get("vulnerabilities") or [] if (v.get("cve") or "").startswith("CVE-")})
+        def counts(v):
+            ps = v.get("product_status") or {}
+            return any(ps.get(k) for k in AFFECTED) or not ps.get("known_not_affected")
+        cves = sorted({v.get("cve") for v in d.get("vulnerabilities") or []
+                       if (v.get("cve") or "").startswith("CVE-") and counts(v)})
         scores = [x for v in d.get("vulnerabilities") or [] for x in [_cvss(v)[0]] if x is not None]
         vecs = [_cvss(v)[2] for v in d.get("vulnerabilities") or []]
         out.append({"id": (doc.get("tracking") or {}).get("id", ""), "title": doc.get("title", ""),
@@ -244,18 +295,33 @@ def run_oracle(args, now: datetime) -> int:
         if out_f.exists():
             print(f"Oracle {rid} already sent")
             return 0
+    via_nvd = False
     if args.fixture:
         kind, page, docs = "cspu", "fixture", [json.loads(Path(args.fixture).read_text())]
     else:
         kind, url, page, doc = oracle_release(month)
+        via_nvd = False
         if not doc:
-            print(f"Oracle has not published a CSAF file for {rid} yet")
-            return 0
+            day = third_tuesday(month)
+            if month.year == 2026 and month.month == 5:
+                day = date(2026, 5, 28)                    # the first CSPU shipped off-cycle
+            print(f"oracle.com CSAF unavailable; trying NVD for Oracle-assigned CVEs published {day}")
+            doc = oracle_from_nvd(day)
+            if not doc:
+                print(f"No Oracle release found for {rid} yet")
+                return 0
+            via_nvd = True
+            kind = "cpu" if month.month in CPU_MONTHS else "cspu"
+            page = ORACLE_PAGE.format(kind=kind, mon=month.strftime("%b").lower(), year=month.year)
         docs = [doc]
     s = summarize_csaf(docs, set() if args.fixture else kev_ids())
     name = "Critical Patch Update" if kind == "cpu" else "Critical Security Patch Update"
     label = f"{name}, {month.strftime('%B %Y')}"
-    deliver(message("Oracle", label, s, page), out_f, {"vendor": "oracle", "id": rid, "kind": kind, "source": page, **s}, args.dry_run)
+    text = message("Oracle", label, s, page)
+    if not args.fixture and via_nvd:
+        text = text.replace("\n\nSource:", "\n\nCounts cover CVEs Oracle assigned (via NVD); fixes to third-party "
+                            "components in the update are not included.\n\nSource:", 1)
+    deliver(text, out_f, {"vendor": "oracle", "id": rid, "kind": kind, "source": page, **s}, args.dry_run)
     return 0
 
 
