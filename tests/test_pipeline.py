@@ -944,7 +944,9 @@ def test_openrouter_discovery_accepts_switchable_reasoning_models(monkeypatch):
         {"id": "d/nojson:free", "supported_parameters": ["temperature"], "context_length": 131072},
         {"id": "e/small:free", "supported_parameters": ["response_format"], "context_length": 8192},
         {"id": "openrouter/free", "supported_parameters": ["response_format"], "context_length": 200000, "pricing": {"prompt": "0", "completion": "0"}},
-        {"id": "f/paid", "supported_parameters": ["response_format"], "context_length": 200000, "pricing": {"prompt": "0.000001", "completion": "0.000002"}}]}
+        {"id": "f/paid", "supported_parameters": ["response_format"], "context_length": 200000, "pricing": {"prompt": "0.000001", "completion": "0.000002"}},
+        {"id": "g/music-preview", "supported_parameters": ["response_format"], "context_length": 400000, "pricing": {"prompt": "0", "completion": "0"},
+         "architecture": {"output_modalities": ["audio"]}}]}
 
     class R:
         def json(self): return data

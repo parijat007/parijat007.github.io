@@ -174,8 +174,9 @@ def discover_free_models(pc: dict, limit: int = 4) -> list[str]:
         sp = set(m.get("supported_parameters") or [])
         price = m.get("pricing") or {}
         free = m.get("id", "").endswith(":free") or (str(price.get("prompt")) == "0" and str(price.get("completion")) == "0")
-        if not free or m.get("id") == "openrouter/free":
-            continue
+        arch = m.get("architecture") or {}
+        if not free or m.get("id") == "openrouter/free" or arch.get("output_modalities") not in (None, ["text"]):
+            continue                                   # skip music, image and other non-text models
         seen["free"] += 1
         if not ({"response_format", "structured_outputs"} & sp):
             continue
