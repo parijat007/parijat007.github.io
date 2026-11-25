@@ -345,6 +345,11 @@ def run_cisco(args, now: datetime) -> int:
         print(f"Cisco {day} already sent")
         return 0
     docs = [json.loads(Path(args.fixture).read_text())] if args.fixture else cisco_advisories_for(day)
+    if not (args.fixture or args.dry_run):          # the health check re-runs a day nobody checked
+        mark = ROOT / "state" / "cisco_checked.json"
+        mark.parent.mkdir(parents=True, exist_ok=True)
+        prev = json.loads(mark.read_text()).get("day", "") if mark.exists() else ""
+        mark.write_text(json.dumps({"day": max(prev, day.isoformat())}) + "\n")
     if len(docs) < (1 if args.fixture else args.min_advisories):
         print(f"Cisco {day}: {len(docs)} new advisories, below the bundle threshold of {args.min_advisories}")
         return 0

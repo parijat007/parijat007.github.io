@@ -767,3 +767,21 @@ def test_channel_post_is_plain_once_per_date(tmp_path, monkeypatch):
     assert channel.post(d, "2026-11-24", "https://x.test", tmp_path) is True
     assert channel.post(d, "2026-11-24", "https://x.test", tmp_path) is False      # second runner: no repost
     assert len(sent) == 1 and "parse_mode" not in sent[0]
+
+
+def test_health_reruns_missed_cisco_and_oracle_checks(tmp_path):
+    from datetime import datetime, timezone
+    from digest.health import missed_jobs
+    (tmp_path / "data" / "patchday").mkdir(parents=True); (tmp_path / "state").mkdir()
+    at = lambda s: datetime.fromisoformat(s).replace(tzinfo=timezone.utc)  # noqa: E731
+    assert missed_jobs(at("2026-11-25T09:00"), tmp_path)["rerun_cisco"] is True          # never checked
+    assert missed_jobs(at("2026-11-25T07:00"), tmp_path)["rerun_cisco"] is False         # before 08:00
+    (tmp_path / "state" / "cisco_checked.json").write_text('{"day": "2026-11-24"}')
+    assert missed_jobs(at("2026-11-25T09:00"), tmp_path)["rerun_cisco"] is False
+    # Oracle: third Tuesday of Dec 2026 is the 15th
+    assert missed_jobs(at("2026-12-15T22:00"), tmp_path)["rerun_oracle"] is False        # release day itself
+    r = missed_jobs(at("2026-12-16T09:00"), tmp_path)
+    assert r["rerun_oracle"] is True and r["oracle_month"] == "2026-Dec"
+    (tmp_path / "data" / "patchday" / "oracle-2026-Dec.json").write_text("{}")
+    assert missed_jobs(at("2026-12-16T09:00"), tmp_path)["rerun_oracle"] is False
+    assert missed_jobs(at("2026-12-28T09:00"), tmp_path)["rerun_oracle"] is False        # more than a week later
