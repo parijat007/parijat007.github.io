@@ -1,5 +1,6 @@
 """Offline tests: no network. Run with `python -m pytest -q tests`."""
 import json
+import sys
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
@@ -11,6 +12,7 @@ from digest.main import _sentences, fallback_digest
 from digest.render import pack, parse_json, render, validate
 
 HERE = Path(__file__).parent
+ROOT = HERE.parent
 ITEMS = json.loads((HERE / "sample_items.json").read_text())
 LLM_OUT = (HERE / "sample_llm.json").read_text()
 
@@ -717,3 +719,30 @@ def test_oracle_nvd_fallback_shapes_records_like_csaf(monkeypatch):
     assert s["total"] == 2 and s["critical"] == 1 and s["remote_noauth"] == 1
     assert dict(s["families"]) == {"Oracle Fusion Middleware": 1, "Oracle Database Server": 1}
     assert s["top"][0]["title"] == "Oracle WebLogic Server"
+def test_orcid_parse_and_merge_keeps_hand_list_authoritative():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("orcid_sync", ROOT / "tools" / "orcid_sync.py")
+    o = importlib.util.module_from_spec(spec); spec.loader.exec_module(o)
+    works = o.parse(json.loads((ROOT / "tests" / "orcid_sample.json").read_text()))
+    assert [w["title"] for w in works][0].startswith("Detection Confidence")       # newest first
+    assert all(w["url"] is None or w["url"].startswith("https://") for w in works)  # http links dropped
+    assert works[0]["doi"] == "10.63282/3050-9262.IJAIDSML-V7I3P111"                 # doi.org prefix stripped
+    sys.path.insert(0, str(ROOT / "site"))
+    from build import merge_publications
+    manual = [{"title": "Hand title", "url": "https://doi.org/10.63282/3050-9262.IJAIDSML-V7I3P111", "status": "published"}]
+    merged = merge_publications(manual, {"works": works})
+    assert merged[0]["title"] == "Hand title"                                         # hand entry unchanged
+    assert [w["title"] for w in merged].count("Hand title") == 1
+    assert not any("ORCID wording" in w["title"] for w in merged)                     # same DOI: not repeated
+    assert any(w.get("via_orcid") and w["title"] == "Sample Work Only In ORCID" for w in merged)
+
+
+def test_corrections_view_lists_only_changes_newest_first():
+    sys.path.insert(0, str(ROOT / "site"))
+    from build import ledger_view
+    es = [{"seq": 1, "file": "data/briefs/a.json", "reason": "baseline", "hash": "h1"},
+          {"seq": 2, "file": "data/briefs/b.json", "reason": "published", "hash": "h2"},
+          {"seq": 3, "file": "data/briefs/b.json", "reason": "replaced", "hash": "h3"},
+          {"seq": 4, "file": "data/briefs/a.json", "reason": "correction", "hash": "h4"}]
+    v = ledger_view(es)
+    assert [e["seq"] for e in v["fixes"]] == [4, 3] and v["briefs"] == 2 and v["head"] == "h4"

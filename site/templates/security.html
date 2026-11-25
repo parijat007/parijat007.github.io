@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Security of this site — {{ p.name }}{% endblock %}
+{% block desc %}How this site is protected, and how anyone can check that what they read is what was published.{% endblock %}
+{% block main %}
+<section class="page-head"><h1>Security of this site</h1>
+<p class="lede">The site is built on the assumption that any part of it could be attacked. So every build is signed in a public log, and every brief is recorded in a chain that cannot be rewritten without it showing.</p></section>
+<div class="prose">
+<h2>Check it yourself</h2>
+<p>Three checks, each needing only public data. They run every hour as well, with an alert if any fails.</p>
+<ol>
+<li><b>The build is signed.</b> <a href="{{ root }}build.json">build.json</a> lists the fingerprint of every file on the site. Each deploy signs it through <a href="https://www.sigstore.dev/" rel="noopener">Sigstore</a>, whose public transparency log cannot be edited. With the GitHub CLI:<br>
+<code>gh attestation verify build.json -R {{ repo }} --signer-workflow {{ repo }}/.github/workflows/pages.yml</code></li>
+<li><b>The files match the build.</b> The SHA-256 of any page you download should equal its entry in build.json.</li>
+<li><b>The record is unbroken.</b> build.json carries the head of the <a href="{{ root }}corrections/">brief record</a>. That head must appear in <a href="{{ root }}api/ledger.jsonl">ledger.jsonl</a>, and the chain must check out:<br>
+<code>python -m digest.ledger verify</code> in a copy of the <a href="{{ p.repo_url }}">source</a>.</li>
+</ol>
+{% if ledger.head %}<p>Current record head: <code>{{ ledger.head[:16] }}…</code> ({{ ledger.total }} entries).</p>{% endif %}
+<h2>What protects it</h2>
+<ul>
+<li><b>No server, no accounts, no trackers.</b> The site is static files. There is nothing to log in to and no personal data is stored.</li>
+<li><b>Strict content policy.</b> Pages load scripts only from this site, and the policy is checked daily.</li>
+<li><b>Untrusted text stays data.</b> Feed text is cleaned before any model reads it, and risk facts (KEV, EPSS, SSVC, CVSS) come from the sources, never from a model.</li>
+<li><b>Locked supply chain.</b> Every build step is pinned to an exact version, and Python packages are installed only if their fingerprints match.</li>
+<li><b>Continuous checks.</b> Secret scanning, dependency audit, code scanning and workflow linting on every change; tests must pass before anything deploys.</li>
+<li><b>Copies kept elsewhere.</b> The full history is backed up weekly, including a copy held off GitHub.</li>
+</ul>
+<h2>Report a problem</h2>
+<p>See <a href="{{ root }}.well-known/security.txt">security.txt</a> for how to report a security issue with this site.</p>
+</div>
+{% endblock %}

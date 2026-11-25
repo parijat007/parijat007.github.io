@@ -86,6 +86,7 @@
 {% if p.publications %}
 <section class="block two" aria-labelledby="pub-h">
   <h2 id="pub-h">Research and publications</h2>
+  {% if p.orcid_synced %}<p class="muted">Kept in step with the <a href="https://orcid.org/0009-0000-9233-3352" rel="noopener">ORCID record</a> weekly.</p>{% endif %}
   <ul class="pubs">{% for w in p.publications %}
     <li class="{{ draft(w) }}">
       <p class="pub-title">{% if w.url and w.url.startswith('http') %}<a class="plain" href="{{ w.url | safe_url }}" rel="noopener">{{ w.title }}</a>{% else %}{{ w.title }}{% endif %}</p>
