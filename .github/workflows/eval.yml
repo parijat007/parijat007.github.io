@@ -1,0 +1,63 @@
+name: Model evaluation
+
+# Scores the analyst models against the answer key in evals/cases.json (20 cases, synthetic inputs).
+# Monthly, after the morning brief, and by hand. Gemini is left out by default: its free tier allows 20
+# requests a day per model, which the brief needs. Results: the run's Summary page and data/evals/.
+on:
+  schedule:
+    - cron: "17 15 1 * *"    # 1st of each month, 15:17 UTC
+  pull_request:                # baseline when the answer key or the scorer changes (dry run, two models)
+    paths: ["evals/**", "tools/eval_models.py", "digest/prompt.md", ".github/workflows/eval.yml"]
+  workflow_dispatch:
+    inputs:
+      providers:
+        description: "Comma-separated providers (gemini uses the brief's daily quota)"
+        type: string
+        default: "groq,cloudflare,openrouter"
+      cases:
+        description: "Case id prefixes, e.g. C01,C11 (blank = all 20)"
+        type: string
+        default: ""
+      save:
+        description: "Commit the results to data/evals"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: data-writer
+  cancel-in-progress: false
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write          # commit data/evals
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install --require-hashes -r requirements.lock
+      - name: Evaluate
+        env:
+          GEMINI_API_KEY:     ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN:  ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          PROVIDERS: ${{ inputs.providers || (github.event_name == 'pull_request' && 'groq,cloudflare') || 'groq,cloudflare,openrouter' }}
+          CASES: ${{ inputs.cases }}
+          SAVE: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.save) }}
+        run: |
+          args=(--providers "$PROVIDERS")
+          [ -n "$CASES" ] && args+=(--cases "$CASES")
+          [ "$SAVE" = "true" ] || args+=(--dry-run)
+          python tools/eval_models.py "${args[@]}"
+      - name: Commit
+        if: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.save) }}
+        run: |
+          tools/publish.sh "eval: $(date -u +%F)"

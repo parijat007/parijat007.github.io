@@ -258,6 +258,17 @@ def existing_mode(run_date: str, win: tuple[int, int] | None = None) -> str | No
     return meta.get("mode") or "unknown"
 
 
+def save_inputs(items: list[dict], run_date: str, keep: int = 30) -> None:
+    """Keep the day's collected inputs (public data) so a real day can be replayed as an eval case later."""
+    import gzip  # noqa: PLC0415
+    d = ROOT / "state" / "inputs"
+    d.mkdir(parents=True, exist_ok=True)
+    with gzip.open(d / f"{run_date}.json.gz", "wt", encoding="utf-8") as fh:
+        json.dump(items, fh, ensure_ascii=False)
+    for old in sorted(d.glob("*.json.gz"))[:-keep]:
+        old.unlink()
+
+
 def run(args) -> int:
     cfg = load_config()
     now = datetime.now(timezone.utc)
@@ -285,6 +296,8 @@ def run(args) -> int:
         items, status = collect(cfg, since, now)
     t_collected = time.monotonic()
     log.info("collected %d items for the model", len(items))
+    if not args.items_fixture and not args.dry_run:
+        save_inputs(items, run_date)
     if not getattr(locals().get("args"), "items_fixture", None):
         _src = ROOT / "data" / "sources.json"
         _old = json.loads(_src.read_text()) if _src.exists() else {"status": {}}
