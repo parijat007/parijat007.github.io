@@ -6,7 +6,7 @@ cd "$REPO_DIR"
 [[ -f mac/brief.env ]] || { cp mac/brief.env.example mac/brief.env; echo "Edit mac/brief.env, then re-run."; exit 1; }
 
 echo "1/4 Python environment"
-python3 -m venv .venv && .venv/bin/pip install -q -r requirements.txt
+python3 -m venv .venv && .venv/bin/pip install -q --require-hashes -r requirements.lock && shasum -a 256 requirements.lock > .venv/.lock-sha
 
 echo "2/4 Secrets -> macOS Keychain (input hidden; press Enter to skip optional ones)"
 store() {

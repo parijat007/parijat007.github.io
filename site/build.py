@@ -151,6 +151,35 @@ def load_notes() -> list[dict]:
     return sorted(notes, key=lambda n: n["date"], reverse=True)
 
 
+def _norm_title(t: str) -> str:
+    return re.sub(r"[^a-z0-9]+", " ", (t or "").lower()).strip()
+
+
+def _doi(u: str | None) -> str | None:
+    m = re.search(r"doi\.org/(10\.\S+)", u or "", re.I)
+    return m.group(1).lower() if m else None
+
+
+def merge_publications(manual: list[dict], orcid: dict | None) -> list[dict]:
+    """Hand-kept list first (authoritative); ORCID works not already listed (by DOI or title) added after it."""
+    pubs = list(manual or [])
+    seen_doi = {d for d in (_doi(w.get("url")) for w in pubs) if d}
+    seen_title = {_norm_title(w.get("title", "")) for w in pubs}
+    for w in (orcid or {}).get("works", []):
+        if (w.get("doi") or "").lower() in seen_doi or _norm_title(w["title"]) in seen_title:
+            continue
+        pubs.append({"title": w["title"], "venue": w.get("venue") or (w.get("type") or "").capitalize() or "ORCID record",
+                     "status": "published", "year": w.get("year") or "", "url": w.get("url"), "via_orcid": True})
+    return pubs
+
+
+def ledger_view(entries: list[dict]) -> dict:
+    """What the corrections page shows: every replacement or correction, newest first, plus totals."""
+    fixes = [e for e in entries if e.get("reason") in ("replaced", "correction")]
+    return {"fixes": list(reversed(fixes)), "total": len(entries),
+            "briefs": len({e["file"] for e in entries}), "head": entries[-1]["hash"] if entries else None}
+
+
 def gate_profile(p, preview: bool):
     """Items marked `confirm: true` are drafts: shown (flagged) in preview builds, never published."""
     if isinstance(p, dict):
@@ -166,6 +195,9 @@ def build(out: Path) -> None:
     preview = os.environ.get("WF_PREVIEW") == "1"
     p = gate_profile(yaml.safe_load((SITE / "profile.yaml").read_text()), preview)
     p["preview"] = preview
+    orcid = json.loads((DATA / "orcid.json").read_text()) if (DATA / "orcid.json").exists() else None
+    p["publications"] = merge_publications(p.get("publications"), orcid)
+    p["orcid_synced"] = orcid.get("fetched_at") if orcid else None
     sys.path.insert(0, str(ROOT))
     from digest.config import load_config  # noqa: PLC0415
     cfg = load_config()
@@ -218,11 +250,18 @@ def build(out: Path) -> None:
     page("notes.html", "notes/", "notes/", notes=notes)
     for n in notes:
         page("note.html", f"notes/{n['slug']}/", "notes/", lastmod=str(n["date"]), og_type="article", n=n)
+    from digest.ledger import read as read_ledger  # noqa: PLC0415
+    ledger = read_ledger(ROOT)
+    page("corrections.html", "corrections/", "corrections/", ledger=ledger_view(ledger))
+    page("security.html", "security/", "security/", ledger=ledger_view(ledger),
+         repo=(p.get("repo_url") or "").removeprefix("https://github.com/").strip("/"))
     page("404.html", "", "")
 
     (out / "api").mkdir()
     (out / "api" / "latest.json").write_text(json.dumps(today or {}, indent=1, ensure_ascii=False))
     (out / "api" / "watch.json").write_text(json.dumps(watch, indent=1, ensure_ascii=False))
+    if (DATA / "ledger.jsonl").exists():   # the public copy anyone can verify against
+        shutil.copyfile(DATA / "ledger.jsonl", out / "api" / "ledger.jsonl")
     (out / "feed.xml").write_text(rss(briefs, p, base))
     robots = "User-agent: *\nAllow: /\n" + (f"Sitemap: {base}/sitemap.xml\n" if base else "")
     (out / "robots.txt").write_text(robots)
