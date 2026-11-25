@@ -59,3 +59,52 @@ def post(digest: dict, run_date: str, base: str, root: Path, dry_run: bool = Fal
     marker.parent.mkdir(parents=True, exist_ok=True)
     marker.write_text(json.dumps(dict(sorted(done.items())[-60:]), indent=1))
     return True
+
+
+WELCOME = """Watchfloor: a daily, source-checked cyber threat brief, plus an hourly watch for newly exploited vulnerabilities.
+
+One post a day: the top items, whether each is confirmed exploited, and a link to the full brief with its sources.
+
+Facts come from CISA KEV, vendor advisories and other public sources. Nothing is posted without a source, and corrections are logged publicly.
+
+Site: https://theparijat.com"""
+
+
+def can_post(chan: str, token: str) -> str:
+    """'ok' when the bot is an admin of the channel allowed to post; otherwise what is wrong."""
+    api = f"https://api.telegram.org/bot{token}"
+    me = requests.get(f"{api}/getMe", timeout=30).json().get("result", {})
+    r = requests.get(f"{api}/getChatMember", params={"chat_id": chan, "user_id": me.get("id")}, timeout=30).json()
+    if not r.get("ok"):
+        return f"cannot see the channel: {r.get('description', 'unknown error')}"
+    m = r["result"]
+    if m.get("status") != "administrator":
+        return f"bot is '{m.get('status')}', not an admin"
+    return "ok" if m.get("can_post_messages") else "bot is an admin but cannot post messages"
+
+
+def main() -> int:
+    import argparse  # noqa: PLC0415
+    import sys  # noqa: PLC0415
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from digest.config import load_config  # noqa: PLC0415
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--welcome", action="store_true", help="post the channel's welcome message")
+    args = ap.parse_args()
+    chan = os.environ.get("TELEGRAM_CHANNEL_ID") or load_config().get("delivery", {}).get("telegram_channel")
+    token = os.environ.get("TELEGRAM_BOT_TOKEN")
+    if not (chan and token):
+        print("channel or bot token not configured")
+        return 1
+    status = can_post(chan, token)
+    print(f"{chan}: {status}")
+    if status != "ok" or not args.welcome:
+        return 0 if status == "ok" else 1
+    r = requests.post(f"https://api.telegram.org/bot{token}/sendMessage", timeout=60,
+                      json={"chat_id": chan, "text": WELCOME, "disable_web_page_preview": True})
+    print("welcome posted" if r.ok else f"welcome failed: HTTP {r.status_code} {r.text[:200]}")
+    return 0 if r.ok else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
