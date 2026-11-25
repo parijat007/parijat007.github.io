@@ -374,3 +374,22 @@ h3.sub + .creds + h3.sub { margin-top: 1.4rem; }
 .feeds { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); gap: .5rem; }
 .feeds li { background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius-s); padding: .6rem .8rem; }
 .feeds .count { color: var(--muted); font-size: .85rem; display: block; }
+
+/* CVE timeline */
+.cve-facts { display: grid; gap: .5rem 1.5rem; grid-template-columns: max-content 1fr; margin: 0 0 2rem; }
+.cve-facts > div { display: contents; }
+.cve-facts dt { color: var(--muted); }
+.cve-facts dd { margin: 0; }
+.cve-timeline { list-style: none; margin: 1rem 0; padding: 0 0 0 1.25rem; border-left: 2px solid var(--rule); }
+.cve-timeline li { position: relative; padding: .45rem 0 .9rem .75rem; display: grid; grid-template-columns: 14rem 4rem 1fr; gap: .25rem 1rem; align-items: baseline; }
+.cve-timeline li::before { content: ""; position: absolute; left: -1.25rem; top: .85rem; width: 12px; height: 12px; margin-left: -7px;
+  border-radius: 50%; background: var(--base); border: 2px solid var(--muted); }
+.cve-timeline .tl-kev_added::before { border-color: var(--breach); background: var(--breach); }
+.cve-timeline .tl-poc_first_seen::before { border-color: var(--deadline); }
+.cve-timeline .tl-detection_seen::before { border-color: var(--tooling); }
+.tl-date { color: var(--text); }
+.tl-day { color: var(--muted); font-size: .9rem; font-variant-numeric: tabular-nums; }
+@media (max-width: 640px) { .cve-timeline li { grid-template-columns: 1fr; gap: 0; } .tl-day { order: -1; } }
+.detections { list-style: none; padding: 0; }
+.detections li { padding: .3rem 0; }
+.det-kind { display: inline-block; min-width: 4.5rem; color: var(--muted); font-size: .9rem; }

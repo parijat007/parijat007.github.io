@@ -260,6 +260,8 @@ def build(out: Path) -> None:
         shutil.rmtree(out)
     shutil.copytree(SITE / "static", out / "static")
     E = env()
+    tl = json.loads((DATA / "cve_timeline.json").read_text()) if (DATA / "cve_timeline.json").exists() else {"cves": {}}
+    E.globals["cve_pages"] = set(tl["cves"])          # identifiers that link to a timeline page
 
     sitemap: list[tuple[str, str | None]] = []
 
@@ -320,6 +322,11 @@ def build(out: Path) -> None:
     page("status.html", "status/", "status/", perf=perf)
     topics = topic_feeds(briefs, watch, cfg.get("stack_watchlist", []), base)
     page("feeds.html", "feeds/", "feeds/", topics=topics)
+    sys.path.insert(0, str(ROOT))
+    from digest.timeline import ordered_events  # noqa: PLC0415
+    for cid, rec in tl["cves"].items():
+        page("cve.html", f"cve/{cid}/", "watch/", rec=rec, events=ordered_events(rec),
+             lastmod=(rec.get("epss") or [{}])[-1].get("date"))
     page("404.html", "", "")
 
     (out / "api").mkdir()

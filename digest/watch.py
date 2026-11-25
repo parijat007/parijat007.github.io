@@ -86,6 +86,12 @@ def run(no_alert: bool = False) -> int:
                               indent=1, ensure_ascii=False))
     log.info("watch: %d entries (%d new)", len(entries), len(fresh))
 
+    try:                                     # per-CVE timelines and detection pointers (digest/timeline.py)
+        from .timeline import update as update_timeline
+        update_timeline(now, kev, items, entries, cfg.get("tiers", {}))
+    except Exception as e:  # noqa: BLE001  the watch must not fail over the timeline
+        log.warning("timeline update failed: %s", e)
+
     hot = [e for e in fresh if e["kind"] == "KEV" and e["stack_match"]]
     if hot and not no_alert and w.get("alert_on_stack_kev", True):
         lines = [f"*🚨 New KEV on your watchlist*"]
