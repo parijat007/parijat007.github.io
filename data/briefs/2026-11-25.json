@@ -1,0 +1,276 @@
+{
+ "run_date": "2026-11-25",
+ "quiet_day": false,
+ "executive_pulse": "CISA added three vulnerabilities to KEV including actively exploited flaws in Idunno AntiCsrf, Drupal Core, and Optimizely Web Experimentation. Critical supply chain RCE vulnerabilities were disclosed in the ruflo MCP bridge and Node.js/Brotli dependencies.",
+ "items": [
+  {
+   "rank": 1,
+   "headline": "Idunno AntiCsrf Deserialization Allows Unauthenticated RCE",
+   "category": "ACTIVE_ATTACK",
+   "severity": "CRITICAL",
+   "exploitation": "EXPLOITED_CONFIRMED",
+   "is_update": false,
+   "stack_match": [],
+   "target": "Idunno AntiCsrf",
+   "identifiers": [
+    "CVE-2026-131914",
+    "CWE-502"
+   ],
+   "kev_due_date": "2026-11-27",
+   "summary": "Idunno AntiCsrf contains an untrusted data deserialization flaw allowing an unauthenticated remote attacker to execute arbitrary code via object injection in a single web request.",
+   "action": "Discontinue use and migrate away from this end-of-life library immediately.",
+   "hunt": "Web application logs: unexpected serialized payload structures or object injection attempts in HTTP POST requests.",
+   "fixed_versions": null,
+   "confidence": "HIGH",
+   "primary_source": "https://www.cisa.gov/news-events/alerts/2026/11/24/cisa-adds-three-known-exploited-vulnerabilities-catalog",
+   "corroborating_sources": [
+    "https://nvd.nist.gov/vuln/detail/CVE-2026-131914",
+    "https://www.securityweek.com/hackers-exploit-unpatched-flaw-in-defunct-idunno-anticsrf-library/"
+   ],
+   "source_tiers": [
+    "authority",
+    "press"
+   ],
+   "remediation": {
+    "weakness": "Unsafe deserialization",
+    "compensating_controls": [
+     "Block or filter untrusted network access to the affected endpoint (WAF rule or network ACL)",
+     "Run the service with least privilege and no outbound internet access where possible"
+    ],
+    "verify": "Hunt for unexpected child processes spawned by the application server process",
+    "fixed_versions": null
+   },
+   "risk": {
+    "kev": true,
+    "epss": {
+     "score": 0.0061,
+     "percentile": 0.502
+    },
+    "ssvc": {
+     "exploitation": "none",
+     "automatable": "yes",
+     "technical_impact": "total"
+    }
+   }
+  },
+  {
+   "rank": 2,
+   "headline": "Drupal Core Installer Vulnerability Allows Site Takeover and RCE",
+   "category": "ACTIVE_ATTACK",
+   "severity": "HIGH",
+   "exploitation": "EXPLOITED_CONFIRMED",
+   "is_update": false,
+   "stack_match": [],
+   "target": "Drupal Core",
+   "identifiers": [
+    "CVE-2026-132165",
+    "CWE-636"
+   ],
+   "kev_due_date": "2026-11-27",
+   "summary": "Drupal Core fails to fail securely during specific conditions, allowing an unauthenticated remote attacker to trigger install.php to attempt reinstallation, leading to site takeover or RCE.",
+   "action": "Apply Drupal security update sa-core-2026-017 and restrict access to install.php.",
+   "hunt": "Web server logs: unauthenticated HTTP GET or POST requests targeting /install.php on active installations.",
+   "fixed_versions": null,
+   "confidence": "HIGH",
+   "primary_source": "https://www.cisa.gov/news-events/alerts/2026/11/24/cisa-adds-three-known-exploited-vulnerabilities-catalog",
+   "corroborating_sources": [
+    "https://nvd.nist.gov/vuln/detail/CVE-2026-132165"
+   ],
+   "source_tiers": [
+    "authority"
+   ],
+   "remediation": {
+    "weakness": "Unsafe deserialization",
+    "compensating_controls": [
+     "Block or filter untrusted network access to the affected endpoint (WAF rule or network ACL)",
+     "Run the service with least privilege and no outbound internet access where possible"
+    ],
+    "verify": "Hunt for unexpected child processes spawned by the application server process",
+    "fixed_versions": null
+   },
+   "risk": {
+    "kev": true,
+    "epss": {
+     "score": 0.0061,
+     "percentile": 0.502
+    },
+    "ssvc": {
+     "exploitation": "none",
+     "automatable": "yes",
+     "technical_impact": "total"
+    }
+   }
+  },
+  {
+   "rank": 3,
+   "headline": "Optimizely Web Experimentation Critical State Data Manipulation",
+   "category": "ACTIVE_ATTACK",
+   "severity": "HIGH",
+   "exploitation": "EXPLOITED_CONFIRMED",
+   "is_update": false,
+   "stack_match": [],
+   "target": "Optimizely Web Experimentation",
+   "identifiers": [
+    "CVE-2026-132224",
+    "CWE-642"
+   ],
+   "kev_due_date": "2026-11-27",
+   "summary": "An external control of critical state data flaw in Optimizely Web Experimentation's signup flow permits customer account impersonation and distribution of malicious JavaScript via hosted assets.",
+   "action": "Audit Optimizely user accounts and verify integrity of project JavaScript files delivered to end users.",
+   "hunt": "HTTP response logs: unexpected modifications or unauthorized scripts hosted within Optimizely JavaScript bundles.",
+   "fixed_versions": null,
+   "confidence": "HIGH",
+   "primary_source": "https://www.cisa.gov/news-events/alerts/2026/11/24/cisa-adds-three-known-exploited-vulnerabilities-catalog",
+   "corroborating_sources": [
+    "https://nvd.nist.gov/vuln/detail/CVE-2026-132224"
+   ],
+   "source_tiers": [
+    "authority"
+   ],
+   "remediation": {
+    "weakness": "Unsafe deserialization",
+    "compensating_controls": [
+     "Block or filter untrusted network access to the affected endpoint (WAF rule or network ACL)",
+     "Run the service with least privilege and no outbound internet access where possible"
+    ],
+    "verify": "Hunt for unexpected child processes spawned by the application server process",
+    "fixed_versions": null
+   },
+   "risk": {
+    "kev": true,
+    "epss": {
+     "score": 0.0061,
+     "percentile": 0.502
+    },
+    "ssvc": {
+     "exploitation": "none",
+     "automatable": "yes",
+     "technical_impact": "total"
+    }
+   }
+  },
+  {
+   "rank": 4,
+   "headline": "Unauthenticated RCE in Ruflo MCP Bridge Default Docker Deployment",
+   "category": "SUPPLY_CHAIN",
+   "severity": "CRITICAL",
+   "exploitation": "NO_KNOWN_EXPLOIT",
+   "is_update": false,
+   "stack_match": [
+    "Docker",
+    "npm"
+   ],
+   "target": "npm / ruflo",
+   "identifiers": [
+    "CVE-2026-59726",
+    "GHSA-c4hm-4h84-2cf3",
+    "CWE-78",
+    "CWE-306",
+    "CWE-942"
+   ],
+   "kev_due_date": null,
+   "summary": "Default docker-compose configurations bind the unauthenticated MCP bridge to all interfaces, allowing remote attackers to execute commands via POST /mcp tools/call terminal_execute and extract API keys.",
+   "action": "Ensure MCP bridge interfaces are bound to localhost or protected behind strong authentication.",
+   "hunt": "Container network logs: HTTP POST requests to /mcp containing terminal_execute tool calls from untrusted IPs.",
+   "fixed_versions": null,
+   "confidence": "HIGH",
+   "primary_source": "https://github.com/advisories/GHSA-c4hm-4h84-2cf3",
+   "corroborating_sources": [],
+   "source_tiers": [
+    "authority"
+   ],
+   "remediation": {
+    "weakness": "Authentication bypass",
+    "compensating_controls": [
+     "Restrict management and admin interfaces to a dedicated admin network or VPN; block them from the internet",
+     "Require phishing-resistant MFA for administrative access where the product supports it",
+     "Rotate admin credentials and API keys, and remove unknown admin accounts"
+    ],
+    "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event",
+    "fixed_versions": null
+   },
+   "risk": {
+    "epss": {
+     "score": 0.0624,
+     "percentile": 0.937
+    }
+   }
+  },
+  {
+   "rank": 5,
+   "headline": "ThreatDefence Agentic Attack Detections Repository",
+   "category": "GITHUB_REPO",
+   "severity": "INFO",
+   "exploitation": "N/A",
+   "is_update": false,
+   "stack_match": [
+    "Splunk",
+    "LLM"
+   ],
+   "target": "ThreatDefence/agentic-attack-detections",
+   "identifiers": [
+    "ThreatDefence/agentic-attack-detections"
+   ],
+   "kev_due_date": null,
+   "summary": "Detection rules and IOCs covering offensive AI agent frameworks (ARTEX, PentAGI, HexStrike) formatted for Microsoft Sentinel, Defender XDR, Splunk, Sigma, Suricata, and Zeek.",
+   "action": "Evaluate detection rules against SIEM telemetry for coverage against agentic AI exploitation framework TTPs.",
+   "hunt": null,
+   "fixed_versions": null,
+   "confidence": "HIGH",
+   "primary_source": "https://github.com/ThreatDefence/agentic-attack-detections",
+   "corroborating_sources": [],
+   "source_tiers": [
+    "data"
+   ],
+   "risk": null
+  }
+ ],
+ "notes": "",
+ "meta": {
+  "generated_at": "2026-11-25T11:25:20+00:00",
+  "mode": "analyst",
+  "prompt_version": "v2.1",
+  "model": "Gemini Flash (free tier)",
+  "provider": "gemini",
+  "window_start": "2026-11-24 05:25 UTC",
+  "window_end": "2026-11-25 11:25 UTC",
+  "items_screened": 40,
+  "dropped": [],
+  "sources": {
+   "CISA KEV": "ok (3 new)",
+   "NVD": "ok (28)",
+   "GitHub Advisory": "ok (4)",
+   "GitHub": "ok (9)",
+   "CISA Advisories": "ok (4)",
+   "Microsoft MSRC": "ok (1)",
+   "Microsoft Security": "ok (0)",
+   "Palo Alto PSIRT": "ok (3)",
+   "Fortinet PSIRT": "ok (0)",
+   "Cisco PSIRT": "ok (4)",
+   "AWS Security Bulletins": "ok (4)",
+   "Unit 42": "ok (2)",
+   "Google Threat Intel": "ok (0)",
+   "BleepingComputer": "ok (14)",
+   "The Hacker News": "ok (15)",
+   "SecurityWeek": "ok (10)",
+   "The Record": "ok (5)",
+   "Krebs on Security": "ok (0)"
+  },
+  "perf": {
+   "collect_s": 18.0,
+   "llm_s": 103.3,
+   "total_s": 121.3,
+   "attempts": [
+    {
+     "provider": "gemini",
+     "model": "gemini-3.5-flash",
+     "attempt": 1,
+     "seconds": 103.2,
+     "ok": true
+    }
+   ],
+   "runner": "github",
+   "schedule_delay_min": null
+  }
+ }
+}
