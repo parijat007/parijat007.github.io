@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-25T01:20:34+00:00",
+ "updated": "2026-11-25T02:20:23+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
@@ -1694,7 +1694,7 @@
    "summary": "",
    "source": "Palo Alto PSIRT",
    "url": "https://security.paloaltonetworks.com/CVE-2026-123633",
-   "published": "2026-11-24T19:00:00+00:00",
+   "published": "2026-11-24T23:10:00+00:00",
    "cves": [
     "CVE-2026-123007",
     "CVE-2026-123633"
