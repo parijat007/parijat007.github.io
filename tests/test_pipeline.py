@@ -933,3 +933,22 @@ def test_cve_timeline_records_earliest_facts_offline(tmp_path, monkeypatch):
     monkeypatch.setattr(T.requests, "get", lambda *a, **k: R())
     idx = T.detection_index()
     assert {d["kind"] for d in idx["CVE-2026-1111"]} == {"Sigma", "Nuclei"} and len(idx["CVE-2026-1111"]) == 4  # 2 files x 2 repos (mocked)
+
+
+def test_openrouter_discovery_accepts_switchable_reasoning_models(monkeypatch):
+    from digest import llm
+    data = {"data": [
+        {"id": "a/fast:free", "supported_parameters": ["response_format"], "context_length": 131072},
+        {"id": "b/think:free", "supported_parameters": ["response_format", "reasoning"], "context_length": 262144},
+        {"id": "c/structured:free", "supported_parameters": ["structured_outputs", "reasoning"], "context_length": 64000},
+        {"id": "d/nojson:free", "supported_parameters": ["temperature"], "context_length": 131072},
+        {"id": "e/small:free", "supported_parameters": ["response_format"], "context_length": 8192},
+        {"id": "openrouter/free", "supported_parameters": ["response_format"], "context_length": 200000, "pricing": {"prompt": "0", "completion": "0"}},
+        {"id": "f/paid", "supported_parameters": ["response_format"], "context_length": 200000, "pricing": {"prompt": "0.000001", "completion": "0.000002"}}]}
+
+    class R:
+        def json(self): return data
+    monkeypatch.setattr(llm.requests, "get", lambda *a, **k: R())
+    llm._DISCOVERED.clear()
+    assert llm.discover_free_models({"base_url": "https://x.test/api/v1"}) == ["a/fast:free", "b/think:free", "c/structured:free"]
+    llm._DISCOVERED.clear()
