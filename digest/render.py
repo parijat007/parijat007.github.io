@@ -118,6 +118,9 @@ def validate(digest: dict, items: list[dict], tiers: dict | None = None) -> tupl
     for e in digest.get("items", []):
         for f in ("hunt", "fixed_versions", "action", "target", "kev_due_date"):
             e[f] = _nullish(e.get(f))
+        if e.get("category") == "GITHUB_REPO" and e.get("hunt"):   # tooling has no hunt query (prompt rule)
+            e["hunt"] = None
+            problems.append(f"cleared hunt line on repo item: {e.get('headline', '?')[:60]}")
         if e.get("primary_source") not in allowed:
             problems.append(f"dropped (URL not in input): {e.get('headline', '?')[:60]}")
             continue

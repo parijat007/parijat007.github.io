@@ -12,7 +12,7 @@
 {% if brief.meta %}
 <section class="block prose"><h2>Run details</h2>
 <p>Window {{ brief.meta.window_start }} to {{ brief.meta.window_end }}. {{ brief.meta.items_screened }} items screened.
-{% if brief.meta.mode == "fallback" %}Automated fallback: the analyst model was offline, so this lists confirmed items without commentary.{% else %}Analyst model: {{ brief.meta.model }}, prompt {{ brief.meta.prompt_version }}.{% endif %}{{ " " }}
+{% if brief.meta.mode == "fallback" %}Automated fallback: the analyst model was offline, so this lists confirmed items without commentary.{% else %}Analyst model: {{ brief.meta.model }}, prompt {{ brief.meta.prompt_version }}.{% endif %}{{ " " }}{% set v = brief.meta.verification %}{% if v and v.status == "checked" %}Checked against its sources by a second model ({{ v.verifier }}): {% if v.flagged %}{{ v.flagged | length }} item{{ '' if v.flagged | length == 1 else 's' }} flagged and marked low confidence.{% else %}nothing flagged.{% endif %}{{ " " }}{% endif %}
 {% if brief.meta.dropped %}{{ brief.meta.dropped | length }} model output(s) rejected by source validation.{% endif %}</p>
 </section>{% endif %}
 {% endblock %}

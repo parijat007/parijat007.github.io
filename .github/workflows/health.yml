@@ -50,6 +50,14 @@ jobs:
         if: steps.h.outputs.rerun_patchday == 'true'
         env: { GH_TOKEN: "${{ github.token }}" }
         run: gh api -X POST "repos/${{ github.repository }}/actions/workflows/patchday.yml/dispatches" -f ref=main -F "inputs[dry_run]=false"
+      - name: Re-run the Cisco check (if yesterday was not checked)
+        if: steps.h.outputs.rerun_cisco == 'true'
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: gh api -X POST "repos/${{ github.repository }}/actions/workflows/vendor_patchday.yml/dispatches" -f ref=main -f "inputs[vendor]=cisco" -F "inputs[dry_run]=false"
+      - name: Re-run the Oracle edition (if this month's is missing after release day)
+        if: steps.h.outputs.rerun_oracle == 'true'
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: gh api -X POST "repos/${{ github.repository }}/actions/workflows/vendor_patchday.yml/dispatches" -f ref=main -f "inputs[vendor]=oracle" -f "inputs[month]=${{ steps.h.outputs.oracle_month }}" -F "inputs[dry_run]=false"
       - name: Re-run weekly backup (if none in 8 days)
         env: { GH_TOKEN: "${{ github.token }}" }
         run: |

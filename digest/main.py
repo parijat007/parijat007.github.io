@@ -308,8 +308,10 @@ def run(args) -> int:
 
     seen = load_state()
     recent_cut = (now - timedelta(days=cfg["repeat_suppression_days"])).date().isoformat()
+    newly_kev = must_report(items)   # a CVE newly listed in KEV is news again, whatever was said before
     recent_ids = sorted(k for k, v in seen.items() if v >= recent_cut and not k.startswith("http")
-                        and not (prior == "stale" and v == run_date))   # the stale brief's items are re-judged
+                        and not (prior == "stale" and v == run_date)    # the stale brief's items are re-judged
+                        and k.upper() not in newly_kev)
     ctx = {
         "RUN_DATE": run_date,
         "WINDOW_START": since.strftime("%Y-%m-%d %H:%M UTC"),
@@ -330,6 +332,10 @@ def run(args) -> int:
         except Exception as e:  # noqa: BLE001
             log.error("analyst models unavailable (%s); publishing facts-only brief", e)
             mode, provider = "fallback", None
+    verification = None
+    if digest is not None and provider and not args.llm_fixture:   # a different model checks the prose
+        from .verify import verify
+        verification = verify(digest, items, cfg, provider)
     t_llm = time.monotonic()
     if digest is None:
         digest, problems = validate(fallback_digest(items, run_date), items, sources_by_name(cfg))
@@ -348,7 +354,7 @@ def run(args) -> int:
             "model": (cfg["llm"]["providers"].get(provider, {}).get("label") if provider else None),
             "provider": provider,
             "window_start": ctx["WINDOW_START"], "window_end": ctx["WINDOW_END"],
-            "items_screened": len(items), "dropped": problems, "sources": status,
+            "items_screened": len(items), "dropped": problems, "sources": status, "verification": verification,
             "perf": {"collect_s": round(t_collected - t_start, 1), "llm_s": round(t_llm - t_collected, 1),
                      "total_s": round(time.monotonic() - t_start, 1), "attempts": PERF,
                      "runner": "github" if os.environ.get("GITHUB_ACTIONS") else "mac",
