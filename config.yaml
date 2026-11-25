@@ -67,6 +67,8 @@ llm:
       json: object
       max_items: 30
       max_text_chars: 300
+      max_output_tokens: 8000          # headroom if a model reasons despite the switch below
+      extra_body: {reasoning: {enabled: false}}   # free models that can think answer directly instead
       max_output_tokens: 8000
       extra_body: {reasoning: {effort: low, exclude: true}}   # free routed models may "think" first
       timeout_seconds: 180

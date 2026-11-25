@@ -169,13 +169,27 @@ def discover_free_models(pc: dict, limit: int = 4) -> list[str]:
         data = requests.get(pc["base_url"].rstrip("/") + "/models", timeout=20).json().get("data", [])
     except (requests.RequestException, ValueError):
         return []
-    picks = []
+    picks, seen = [], {"free": 0, "json": 0, "context": 0}
     for m in data:
         sp = set(m.get("supported_parameters") or [])
-        if (m.get("id", "").endswith(":free") and "response_format" in sp and "reasoning" not in sp
-                and (m.get("context_length") or 0) >= 32000):
-            picks.append((m.get("context_length") or 0, m["id"]))
-    _DISCOVERED[key] = [i for _, i in sorted(picks, reverse=True)[:limit]]
+        price = m.get("pricing") or {}
+        free = m.get("id", "").endswith(":free") or (str(price.get("prompt")) == "0" and str(price.get("completion")) == "0")
+        arch = m.get("architecture") or {}
+        if not free or m.get("id") == "openrouter/free" or arch.get("output_modalities") not in (None, ["text"]):
+            continue                                   # skip music, image and other non-text models
+        seen["free"] += 1
+        if not ({"response_format", "structured_outputs"} & sp):
+            continue
+        seen["json"] += 1
+        if (m.get("context_length") or 0) < 32000:
+            continue
+        seen["context"] += 1
+        # Prefer models without reasoning; a model that can reason is still usable because every request
+        # switches reasoning off (config extra_body), and one that insists simply fails over to the next.
+        picks.append(("reasoning" not in sp, m.get("context_length") or 0, m["id"]))
+    log.info("%s: %d free models, %d with JSON output, %d with 32k+ context", pc.get("label", key),
+             seen["free"], seen["json"], seen["context"])
+    _DISCOVERED[key] = [p[-1] for p in sorted(picks, reverse=True)[:limit]]
     log.info("%s: discovered free models %s", pc.get("label", key), _DISCOVERED[key])
     return _DISCOVERED[key]
 
