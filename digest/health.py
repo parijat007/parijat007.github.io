@@ -34,7 +34,7 @@ def brief_status(run_date: str, root: Path = ROOT) -> str:
     try:
         meta = json.loads(f.read_text()).get("meta") or {}
         gen = meta.get("generated_at") or ""
-        if len(gen) >= 13 and gen[11:13].isdigit() and not 10 <= int(gen[11:13]) < 17:
+        if len(gen) >= 13 and gen[11:13].isdigit() and not 9 <= int(gen[11:13]) < 17:
             return "stale"     # written by a schedule GitHub ran hours late; the morning run replaces it
         return meta.get("mode") or "unreadable"
     except (OSError, ValueError):

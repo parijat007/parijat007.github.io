@@ -39,7 +39,7 @@ jobs:
       - name: Write brief, or upgrade a facts-only one
         env:
           WF_LLM_CHAIN:       gemini,groq,cloudflare,openrouter
-          WF_BRIEF_WINDOW_UTC: "10-17"   # 5 AM-noon EST; a schedule GitHub runs later than that is skipped
+          WF_BRIEF_WINDOW_UTC: "9-17"    # 4 AM-noon EST; a schedule GitHub runs later than that is skipped
           WF_SCHEDULE:        ${{ github.event.schedule }}   # for the schedule-delay metric
           GITHUB_TOKEN:       ${{ secrets.GITHUB_TOKEN }}
           GEMINI_API_KEY:     ${{ secrets.GEMINI_API_KEY }}
