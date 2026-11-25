@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Corrections — {{ p.name }}{% endblock %}
+{% block desc %}Every brief that was replaced or corrected after publication, with the date and the record that proves it.{% endblock %}
+{% block main %}
+<section class="page-head"><h1>Corrections</h1>
+<p class="lede">{% if ledger.fixes %}{{ ledger.fixes | length }} brief{{ '' if ledger.fixes | length == 1 else 's' }} replaced or corrected after publication.{% else %}No brief has been replaced or corrected since the record began.{% endif %} Every change is logged; nothing is edited quietly.</p></section>
+{% if ledger.fixes %}
+<div class="table-scroll"><table class="watch">
+<thead><tr><th scope="col">Brief</th><th scope="col">Changed</th><th scope="col">Why</th><th scope="col">Record</th></tr></thead>
+<tbody>
+{% for e in ledger.fixes %}{% set d = e.file.split('/')[-1][:-5] %}<tr>
+<td><a href="{{ root }}brief/{{ d }}/">{{ d | longdate }}</a></td>
+<td class="num">{{ e.at[:16] | replace('T', ' ') }} UTC</td>
+<td>{% if e.reason == 'replaced' %}Replaced by a later run (for example a full brief replacing a facts-only one){% else %}Corrected{% endif %}</td>
+<td class="num"><code>#{{ e.seq }} {{ e.hash[:12] }}</code></td>
+</tr>{% endfor %}
+</tbody></table></div>
+{% endif %}
+<div class="prose">
+<h2>How the record works</h2>
+<p>Each time a brief is published or changed, a line is added to a public log: the file, its SHA-256 fingerprint, and the fingerprint of the line before it. Editing or deleting any earlier line breaks every line after it, and a brief changed without a new line no longer matches its fingerprint. The log holds {{ ledger.total }} entries for {{ ledger.briefs }} briefs.</p>
+<p>Read it as <a href="{{ root }}api/ledger.jsonl">ledger.jsonl</a>, or see <a href="{{ root }}security/">how to verify this site</a>.</p>
+<h2>Report an error</h2>
+<p>Every item has a "Report an error" link that opens a public issue. Corrections are made in the open.</p>
+</div>
+{% endblock %}

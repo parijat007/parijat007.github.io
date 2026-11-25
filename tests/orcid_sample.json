@@ -1,0 +1,16 @@
+{"group": [
+ {"work-summary": [{"put-code": 101, "type": "journal-article",
+   "title": {"title": {"value": "Detection Confidence as the Authorization Gate (ORCID wording)"}},
+   "journal-title": {"value": "International Journal of Artificial Intelligence, Data Science, and Machine Learning"},
+   "publication-date": {"year": {"value": "2026"}},
+   "external-ids": {"external-id": [{"external-id-type": "doi", "external-id-value": "https://doi.org/10.63282/3050-9262.IJAIDSML-V7I3P111"}]}}]},
+ {"work-summary": [{"put-code": 102, "type": "conference-paper",
+   "title": {"title": {"value": "Sample Work Only In ORCID"}},
+   "journal-title": {"value": "Sample Venue"},
+   "publication-date": {"year": {"value": "2025"}},
+   "external-ids": {"external-id": [{"external-id-type": "doi", "external-id-value": "10.1234/sample.1"}]}}]},
+ {"work-summary": [{"put-code": 103, "type": "other",
+   "title": {"title": {"value": "Insecure Link Work"}},
+   "url": {"value": "http://example.com/x"}}]},
+ {"work-summary": [{"put-code": 104, "title": null}]}
+]}

@@ -69,6 +69,16 @@ else
   curl -fsS -m 2 "http://127.0.0.1:${LLAMA_PORT}/health" >/dev/null 2>&1 || { echo "llama-server failed to start; using cloud models"; export WF_LLM_CHAIN="gemini,groq,cloudflare,openrouter"; }
 fi
 
+# Dependencies: reinstall from the hash-locked file only when it changed. A package whose fingerprint does not
+# match is refused; if that happens the run keeps the existing environment rather than missing the brief.
+if ! shasum -a 256 -c "$REPO_DIR/.venv/.lock-sha" >/dev/null 2>&1; then
+  if "$REPO_DIR/.venv/bin/pip" install -q --require-hashes -r "$REPO_DIR/requirements.lock"; then
+    (cd "$REPO_DIR" && shasum -a 256 requirements.lock > .venv/.lock-sha); echo "dependencies updated from requirements.lock"
+  else
+    echo "WARNING: hash-locked install failed; keeping the current environment"
+  fi
+fi
+
 # caffeinate keeps the Mac awake for the duration of the run only
 export WF_BRIEF_WINDOW_UTC="10-17"   # a run outside 5 AM-noon EST is not the morning brief
 caffeinate -i "$REPO_DIR/.venv/bin/python" -m digest.main --skip-if-exists
