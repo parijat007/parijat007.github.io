@@ -334,6 +334,10 @@
      "date": "2026-11-05",
      "count": 4,
      "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-76466.json"
+    },
+    "published": {
+     "date": "2026-10-21",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-76466"
     }
    },
    "epss": [
@@ -368,6 +372,10 @@
     "detection_seen": {
      "date": "2026-11-25",
      "count": 1
+    },
+    "published": {
+     "date": "2026-11-17",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-129448"
     }
    },
    "epss": [
@@ -404,6 +412,10 @@
      "date": "2026-11-24",
      "count": 1,
      "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-134624.json"
+    },
+    "published": {
+     "date": "2026-11-22",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-134624"
     }
    },
    "epss": [
@@ -438,6 +450,10 @@
     "detection_seen": {
      "date": "2026-11-25",
      "count": 1
+    },
+    "published": {
+     "date": "2026-11-20",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-133968"
     }
    },
    "epss": [
@@ -479,6 +495,10 @@
      "date": "2026-11-24",
      "source": "CISA Advisories",
      "url": "https://www.cisa.gov/news-events/alerts/2026/11/24/cisa-adds-three-known-exploited-vulnerabilities-catalog"
+    },
+    "published": {
+     "date": "2026-11-19",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-131914"
     }
    },
    "epss": [
@@ -544,6 +564,10 @@
      "date": "2026-11-23",
      "count": 4,
      "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-132224.json"
+    },
+    "published": {
+     "date": "2026-11-18",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-132224"
     }
    },
    "epss": [
@@ -577,6 +601,10 @@
     "detection_seen": {
      "date": "2026-11-25",
      "count": 1
+    },
+    "published": {
+     "date": "2026-07-09",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-59726"
     }
    },
    "epss": [
@@ -607,6 +635,10 @@
      "date": "2026-11-25",
      "source": "GitHub Advisory",
      "url": "https://github.com/advisories/GHSA-crj3-q72p-ggqm"
+    },
+    "published": {
+     "date": "2026-11-11",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-64670"
     }
    },
    "epss": [
@@ -630,6 +662,10 @@
      "due": "2026-11-28",
      "ransomware": "Unknown",
      "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    },
+    "published": {
+     "date": "2026-10-28",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-103406"
     }
    },
    "epss": [
@@ -1385,5 +1421,5 @@
   }
  },
  "detections_checked": "2026-11-25",
- "updated": "2026-11-25T16:19:43+00:00"
+ "updated": "2026-11-25T16:21:13+00:00"
 }
