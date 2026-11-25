@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-25T22:20:26+00:00",
+ "updated": "2026-11-25T23:05:14+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
@@ -11,6 +11,63 @@
   "AWS Security Bulletins": "ok (5)"
  },
  "entries": [
+  {
+   "id": "GHSA-7wwv-x6mc-pxqx",
+   "kind": "GHSA",
+   "title": "TastyIgniter allows Remote Code Execution (RCE) via Unrestricted file upload in Media Manager",
+   "summary": "Packages: composer:tastyigniter/tastyigniter. ### Summary Media manager accepts `.htaccess` file which can be used to perform RCE. ### Details The file upload functionality from media manager somehow accepts `.htaccess` file. This file could be used to allow any extension to run ",
+   "source": "GitHub Advisory",
+   "url": "https://github.com/advisories/GHSA-7wwv-x6mc-pxqx",
+   "published": "2026-11-25T22:24:36Z",
+   "cves": [
+    "CVE-2026-69179"
+   ],
+   "cvss": 9.1,
+   "epss": null,
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-25T23:05:14+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Unrestricted file upload",
+    "compensating_controls": [
+     "Disable or restrict the upload feature, or block it at the WAF",
+     "Prevent execution in upload directories"
+    ],
+    "verify": "Search web roots for recently created script files"
+   }
+  },
+  {
+   "id": "GHSA-743w-g9pf-8p94",
+   "kind": "GHSA",
+   "title": "TastyIgniter mail template editor allows remote code execution via server-side template injection",
+   "summary": "Packages: composer:tastyigniter/tastyigniter. ### Summary **Where:** `POST /admin/mail_templates/edit/{id}` → body field **Who can trigger:** Any admin user with `Admin.MailTemplates` permission **Impact:** Arbitrary PHP execution on the server — full RCE ### Details The Mail tem",
+   "source": "GitHub Advisory",
+   "url": "https://github.com/advisories/GHSA-743w-g9pf-8p94",
+   "published": "2026-11-25T22:24:13Z",
+   "cves": [
+    "CVE-2026-69178"
+   ],
+   "cvss": 9.1,
+   "epss": null,
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-25T23:05:14+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode",
+     "Run the service as a non-privileged user and restrict outbound connections"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
+   }
+  },
   {
    "id": "CVE-2026-133469",
    "kind": "KEV",

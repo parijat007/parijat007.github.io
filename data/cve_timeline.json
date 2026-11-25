@@ -1960,8 +1960,42 @@
    "briefs": [],
    "detections": [],
    "title": "Mitel MiCollab OS Command Injection Vulnerability"
+  },
+  "CVE-2026-69179": {
+   "cve": "CVE-2026-69179",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-25"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-25",
+     "source": "GitHub Advisory",
+     "url": "https://github.com/advisories/GHSA-7wwv-x6mc-pxqx"
+    }
+   },
+   "epss": [],
+   "briefs": [],
+   "detections": [],
+   "title": "TastyIgniter allows Remote Code Execution (RCE) via Unrestricted file upload in Media Manager"
+  },
+  "CVE-2026-69178": {
+   "cve": "CVE-2026-69178",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-25"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-25",
+     "source": "GitHub Advisory",
+     "url": "https://github.com/advisories/GHSA-743w-g9pf-8p94"
+    }
+   },
+   "epss": [],
+   "briefs": [],
+   "detections": [],
+   "title": "TastyIgniter mail template editor allows remote code execution via server-side template injection"
   }
  },
  "detections_checked": "2026-11-25",
- "updated": "2026-11-25T22:20:26+00:00"
+ "updated": "2026-11-25T23:05:14+00:00"
 }
