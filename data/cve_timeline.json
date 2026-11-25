@@ -671,6 +671,11 @@
      "date": "2026-11-25",
      "count": 1,
      "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-103406.json"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-25",
+     "source": "CISA Advisories",
+     "url": "https://www.cisa.gov/news-events/alerts/2026/11/25/cisa-adds-10-known-exploited-vulnerabilities-catalog"
     }
    },
    "epss": [
@@ -1103,6 +1108,12 @@
     "published": {
      "date": "2026-11-23",
      "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-133469"
+    },
+    "kev_added": {
+     "date": "2026-11-25",
+     "due": "2026-11-28",
+     "ransomware": "Unknown",
+     "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
     }
    },
    "epss": [
@@ -1688,8 +1699,269 @@
    "briefs": [],
    "detections": [],
    "title": "CVE-2026-136267 - Improper neutralization of special elements used in an OS command in Kiro Web"
+  },
+  "CVE-2025-41450": {
+   "cve": "CVE-2025-41450",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-25"
+    },
+    "kev_added": {
+     "date": "2026-11-25",
+     "due": "2026-12-09",
+     "ransomware": "Unknown",
+     "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    },
+    "poc_first_seen": {
+     "date": "2026-10-13",
+     "count": 3,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2025/CVE-2025-41450.json"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-25",
+     "source": "CISA Advisories",
+     "url": "https://www.cisa.gov/news-events/alerts/2026/11/25/cisa-adds-10-known-exploited-vulnerabilities-catalog"
+    },
+    "published": {
+     "date": "2025-05-08",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-41450"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0051
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Danfoss AK-SM 800A Series Improper Authentication Vulnerability"
+  },
+  "CVE-2023-25914": {
+   "cve": "CVE-2023-25914",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-25"
+    },
+    "kev_added": {
+     "date": "2026-11-25",
+     "due": "2026-11-28",
+     "ransomware": "Unknown",
+     "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-25",
+     "source": "CISA Advisories",
+     "url": "https://www.cisa.gov/news-events/alerts/2026/11/25/cisa-adds-10-known-exploited-vulnerabilities-catalog"
+    },
+    "poc_first_seen": {
+     "date": "2026-10-13",
+     "count": 3,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2023/CVE-2023-25914.json"
+    },
+    "published": {
+     "date": "2023-08-21",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-25914"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0108
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Danfoss AK-SM 800A Series Path Traversal Vulnerability"
+  },
+  "CVE-2023-25915": {
+   "cve": "CVE-2023-25915",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-25"
+    },
+    "kev_added": {
+     "date": "2026-11-25",
+     "due": "2026-11-28",
+     "ransomware": "Unknown",
+     "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-25",
+     "source": "CISA Advisories",
+     "url": "https://www.cisa.gov/news-events/alerts/2026/11/25/cisa-adds-10-known-exploited-vulnerabilities-catalog"
+    },
+    "poc_first_seen": {
+     "date": "2026-10-13",
+     "count": 3,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2023/CVE-2023-25915.json"
+    },
+    "published": {
+     "date": "2023-08-21",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-25915"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0143
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Danfoss AK-SM 800A Series Improper Input Validation Vulnerability"
+  },
+  "CVE-2026-133324": {
+   "cve": "CVE-2026-133324",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-25"
+    },
+    "kev_added": {
+     "date": "2026-11-25",
+     "due": "2026-11-28",
+     "ransomware": "Unknown",
+     "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    },
+    "published": {
+     "date": "2026-11-19",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-133324"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0041
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Mitel MiCollab Not Failing Securely Vulnerability"
+  },
+  "CVE-2026-133275": {
+   "cve": "CVE-2026-133275",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-25"
+    },
+    "kev_added": {
+     "date": "2026-11-25",
+     "due": "2026-11-28",
+     "ransomware": "Unknown",
+     "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-25",
+     "source": "CISA Advisories",
+     "url": "https://www.cisa.gov/news-events/alerts/2026/11/25/cisa-adds-10-known-exploited-vulnerabilities-catalog"
+    },
+    "poc_first_seen": {
+     "date": "2026-10-13",
+     "count": 3,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-133275.json"
+    },
+    "published": {
+     "date": "2026-11-19",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-133275"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0032
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Mitel MiCollab Unrestricted Upload of File with Dangerous Type Vulnerability"
+  },
+  "CVE-2026-133311": {
+   "cve": "CVE-2026-133311",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-25"
+    },
+    "kev_added": {
+     "date": "2026-11-25",
+     "due": "2026-12-09",
+     "ransomware": "Unknown",
+     "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    },
+    "published": {
+     "date": "2026-11-19",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-133311"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.004
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Mitel MiCollab Weak Authentication Vulnerability"
+  },
+  "CVE-2026-133303": {
+   "cve": "CVE-2026-133303",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-25"
+    },
+    "kev_added": {
+     "date": "2026-11-25",
+     "due": "2026-11-28",
+     "ransomware": "Unknown",
+     "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    },
+    "published": {
+     "date": "2026-11-19",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-133303"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0052
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Mitel MiCollab XML Injection Vulnerability"
+  },
+  "CVE-2026-133323": {
+   "cve": "CVE-2026-133323",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-25"
+    },
+    "kev_added": {
+     "date": "2026-11-25",
+     "due": "2026-11-28",
+     "ransomware": "Unknown",
+     "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-24",
+     "count": 1,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-133323.json"
+    },
+    "published": {
+     "date": "2026-11-19",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-133323"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0255
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Mitel MiCollab OS Command Injection Vulnerability"
   }
  },
  "detections_checked": "2026-11-25",
- "updated": "2026-11-25T20:20:23+00:00"
+ "updated": "2026-11-25T21:20:24+00:00"
 }

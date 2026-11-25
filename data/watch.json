@@ -1,16 +1,333 @@
 {
- "updated": "2026-11-25T20:20:23+00:00",
+ "updated": "2026-11-25T21:20:24+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
-  "CISA Advisories": "ok (4)",
+  "CISA Advisories": "ok (5)",
   "Microsoft MSRC": "ok (1)",
   "Palo Alto PSIRT": "ok (3)",
   "Fortinet PSIRT": "ok (0)",
   "Cisco PSIRT": "ok (6)",
-  "AWS Security Bulletins": "ok (7)"
+  "AWS Security Bulletins": "ok (6)"
  },
  "entries": [
+  {
+   "id": "CVE-2026-133469",
+   "kind": "KEV",
+   "title": "Vates Xen Orchestra Improper Validation of Specified Type of Input Vulnerability",
+   "summary": "Vates Xen Orchestra contains an improper validation of specified type of input vulnerability that could allow an unauthenticated attacker to bypass authentication and perform actions with administrative privileges via a specially crafted authentication token containing an empty J",
+   "source": "CISA KEV",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-133469",
+   "published": "2026-11-25",
+   "cves": [
+    "CVE-2026-133469"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.011,
+    "percentile": 0.653
+   },
+   "poc": 1,
+   "kev_due": "2026-11-28",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-25T21:20:24+00:00",
+   "required_action": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discon",
+   "fix": {
+    "weakness": "Authentication bypass",
+    "compensating_controls": [
+     "Restrict management and admin interfaces to a dedicated admin network or VPN; block them from the internet",
+     "Require phishing-resistant MFA for administrative access where the product supports it",
+     "Rotate admin credentials and API keys, and remove unknown admin accounts"
+    ],
+    "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event"
+   }
+  },
+  {
+   "id": "CVE-2025-41450",
+   "kind": "KEV",
+   "title": "Danfoss AK-SM 800A Series Improper Authentication Vulnerability",
+   "summary": "Danfoss AK-SM 800A Series contains an improper authentication vulnerability that could allow an attacker to generate a web report exposing sensitive information, including internal IP addresses, usernames, and store names.",
+   "source": "CISA KEV",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-41450",
+   "published": "2026-11-25",
+   "cves": [
+    "CVE-2025-41450"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0051,
+    "percentile": 0.37
+   },
+   "poc": 3,
+   "kev_due": "2026-12-09",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-25T21:20:24+00:00",
+   "required_action": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discon",
+   "fix": {
+    "weakness": "Authentication bypass",
+    "compensating_controls": [
+     "Restrict management and admin interfaces to a dedicated admin network or VPN; block them from the internet",
+     "Require phishing-resistant MFA for administrative access where the product supports it",
+     "Rotate admin credentials and API keys, and remove unknown admin accounts"
+    ],
+    "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event"
+   }
+  },
+  {
+   "id": "CVE-2023-25914",
+   "kind": "KEV",
+   "title": "Danfoss AK-SM 800A Series Path Traversal Vulnerability",
+   "summary": "Danfoss AK-SM 800A Series contains a path traversal vulnerability that could allow an attacker to access and read underlying server system files via the XML interface.",
+   "source": "CISA KEV",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-25914",
+   "published": "2026-11-25",
+   "cves": [
+    "CVE-2023-25914"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0108,
+    "percentile": 0.646
+   },
+   "poc": 0,
+   "kev_due": "2026-11-28",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-25T21:20:24+00:00",
+   "required_action": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discon",
+   "fix": {
+    "weakness": "Path traversal",
+    "compensating_controls": [
+     "Block requests containing traversal sequences at the WAF or reverse proxy",
+     "Restrict the service account's file system permissions"
+    ],
+    "verify": "Search web logs for '../' and encoded variants against the affected paths"
+   }
+  },
+  {
+   "id": "CVE-2023-25915",
+   "kind": "KEV",
+   "title": "Danfoss AK-SM 800A Series Improper Input Validation Vulnerability",
+   "summary": "Danfoss AK-SM 800A Series contains an improper input validation vulnerability that could allow a remote attacker to run arbitrary commands on the affected system.",
+   "source": "CISA KEV",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-25915",
+   "published": "2026-11-25",
+   "cves": [
+    "CVE-2023-25915"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0143,
+    "percentile": 0.732
+   },
+   "poc": 0,
+   "kev_due": "2026-11-28",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-25T21:20:24+00:00",
+   "required_action": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discon",
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
+  {
+   "id": "CVE-2026-133324",
+   "kind": "KEV",
+   "title": "Mitel MiCollab Not Failing Securely Vulnerability",
+   "summary": "Mitel MiCollab contains a not failing securely vulnerability in the Audio, Web and Video Conferencing (AWV) component that could allow an unauthenticated attacker to bypass authentication controls and perform unauthorized actions.",
+   "source": "CISA KEV",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-133324",
+   "published": "2026-11-25",
+   "cves": [
+    "CVE-2026-133324"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0041,
+    "percentile": 0.273
+   },
+   "poc": 0,
+   "kev_due": "2026-11-28",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-25T21:20:24+00:00",
+   "required_action": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discon",
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
+  {
+   "id": "CVE-2026-133275",
+   "kind": "KEV",
+   "title": "Mitel MiCollab Unrestricted Upload of File with Dangerous Type Vulnerability",
+   "summary": "Mitel MiCollab contains an unrestricted upload of file with dangerous type vulnerability in the Audio, Web and Video Conferencing (AWV) component due to insufficient file type validation that could allow an unauthenticated attacker to upload arbitrary files.",
+   "source": "CISA KEV",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-133275",
+   "published": "2026-11-25",
+   "cves": [
+    "CVE-2026-133275"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0032,
+    "percentile": 0.169
+   },
+   "poc": 0,
+   "kev_due": "2026-11-28",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-25T21:20:24+00:00",
+   "required_action": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discon",
+   "fix": {
+    "weakness": "Unrestricted file upload",
+    "compensating_controls": [
+     "Disable or restrict the upload feature, or block it at the WAF",
+     "Prevent execution in upload directories"
+    ],
+    "verify": "Search web roots for recently created script files"
+   }
+  },
+  {
+   "id": "CVE-2026-133311",
+   "kind": "KEV",
+   "title": "Mitel MiCollab Weak Authentication Vulnerability",
+   "summary": "Mitel MiCollab contains a weak authentication vulnerability in the Audio, Web and Video Conferencing (AWV) component that could allow an unauthenticated attacker to access sensitive information using a specific system-generated random identifier or pre-staged content.",
+   "source": "CISA KEV",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-133311",
+   "published": "2026-11-25",
+   "cves": [
+    "CVE-2026-133311"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.004,
+    "percentile": 0.254
+   },
+   "poc": 0,
+   "kev_due": "2026-12-09",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-25T21:20:24+00:00",
+   "required_action": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discon",
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
+  {
+   "id": "CVE-2026-133303",
+   "kind": "KEV",
+   "title": "Mitel MiCollab XML Injection Vulnerability",
+   "summary": "Mitel MiCollab contains an XML injection vulnerability in its Audio, Web, and Video Conferencing (AWV) component that could allow an unauthenticated attacker to execute arbitrary commands using pre-staged malicious content.",
+   "source": "CISA KEV",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-133303",
+   "published": "2026-11-25",
+   "cves": [
+    "CVE-2026-133303"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0052,
+    "percentile": 0.371
+   },
+   "poc": 0,
+   "kev_due": "2026-11-28",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-25T21:20:24+00:00",
+   "required_action": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discon",
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
+  {
+   "id": "CVE-2026-133323",
+   "kind": "KEV",
+   "title": "Mitel MiCollab OS Command Injection Vulnerability",
+   "summary": "Mitel MiCollab contains an improper neutralization of special elements used in an OS command (OS command injection) vulnerability in its Audio, Web, and Video Conferencing (AWV) component that could allow an unauthenticated attacker to execute arbitrary system commands.",
+   "source": "CISA KEV",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-133323",
+   "published": "2026-11-25",
+   "cves": [
+    "CVE-2026-133323"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0255,
+    "percentile": 0.857
+   },
+   "poc": 1,
+   "kev_due": "2026-11-28",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-25T21:20:24+00:00",
+   "required_action": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discon",
+   "fix": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode",
+     "Run the service as a non-privileged user and restrict outbound connections"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
+   }
+  },
+  {
+   "id": "/node/25859",
+   "kind": "ADVISORY",
+   "title": "CISA Adds 10 Known Exploited Vulnerabilities to Catalog",
+   "summary": "CISA has added 10 new vulnerabilities to its Known Exploited Vulnerabilities (KEV) Catalog , based on evidence of active exploitation. CVE-2023-25914 Danfoss AK-SM 800A Series Path Traversal Vulnerability CVE-2023-25915 Danfoss AK-SM 800A Series Improper Input Validation Vulnerab",
+   "source": "CISA Advisories",
+   "url": "https://www.cisa.gov/news-events/alerts/2026/11/25/cisa-adds-10-known-exploited-vulnerabilities-catalog",
+   "published": "2026-11-25T12:00:00+00:00",
+   "cves": [
+    "CVE-2023-25914",
+    "CVE-2023-25915",
+    "CVE-2025-41450",
+    "CVE-2026-103406"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0143,
+    "percentile": 0.732
+   },
+   "poc": 3,
+   "kev_due": "2026-11-28",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-25T21:20:24+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Authentication bypass",
+    "compensating_controls": [
+     "Restrict management and admin interfaces to a dedicated admin network or VPN; block them from the internet",
+     "Require phishing-resistant MFA for administrative access where the product supports it",
+     "Rotate admin credentials and API keys, and remove unknown admin accounts"
+    ],
+    "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event"
+   }
+  },
   {
    "id": "8a3ba16e94b79cd525d1214a165327e022b528b7",
    "kind": "ADVISORY",
@@ -1190,9 +1507,9 @@
     "score": 0.011,
     "percentile": 0.653
    },
-   "poc": 0,
-   "kev_due": null,
-   "ransomware": null,
+   "poc": 1,
+   "kev_due": "2026-11-28",
+   "ransomware": "Unknown",
    "stack_match": [
     "npm"
    ],
@@ -2125,7 +2442,7 @@
    "summary": "Between October 17 and October 20, 2026, a critical security compromise involving Certificate Authorities that are managed by eMudhra was uncovered. A security researcher demonstrated that the private keys for eight eMudhra intermediate certificates were fundamentally broken due ",
    "source": "Cisco PSIRT",
    "url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-emudhra-info-ScS22A1r",
-   "published": "2026-11-20T15:13:54+00:00",
+   "published": "2026-11-25T21:11:32+00:00",
    "cves": [],
    "cvss": null,
    "epss": null,
