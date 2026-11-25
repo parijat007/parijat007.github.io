@@ -237,8 +237,8 @@ def run_cisco(args, now: datetime) -> int:
         print(f"Cisco {day} already sent")
         return 0
     docs = [json.loads(Path(args.fixture).read_text())] if args.fixture else cisco_advisories_for(day)
-    if len(docs) < (1 if args.fixture else CISCO_BUNDLE):
-        print(f"Cisco {day}: {len(docs)} new advisories, below the bundle threshold of {CISCO_BUNDLE}")
+    if len(docs) < (1 if args.fixture else args.min_advisories):
+        print(f"Cisco {day}: {len(docs)} new advisories, below the bundle threshold of {args.min_advisories}")
         return 0
     s = summarize_csaf(docs, set() if args.fixture else kev_ids())
     label = f"security advisory bundle, {day.strftime('%d %B %Y')}"
@@ -256,6 +256,7 @@ def main() -> int:
     ap.add_argument("--day", help="Cisco publication day, YYYY-MM-DD")
     ap.add_argument("--fixture")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--min-advisories", type=int, default=CISCO_BUNDLE, help="Cisco bundle threshold (tests)")
     args = ap.parse_args()
     now = datetime.now(timezone.utc)
     return run_oracle(args, now) if args.vendor == "oracle" else run_cisco(args, now)
