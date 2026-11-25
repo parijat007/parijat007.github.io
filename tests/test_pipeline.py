@@ -746,3 +746,24 @@ def test_corrections_view_lists_only_changes_newest_first():
           {"seq": 4, "file": "data/briefs/a.json", "reason": "correction", "hash": "h4"}]
     v = ledger_view(es)
     assert [e["seq"] for e in v["fixes"]] == [4, 3] and v["briefs"] == 2 and v["head"] == "h4"
+
+
+def test_channel_post_is_plain_once_per_date(tmp_path, monkeypatch):
+    from digest import channel
+    d = {"executive_pulse": "Two exploited flaws.", "items": [
+        {"headline": "Flaw *with* _markdown_ [x]", "exploitation": "EXPLOITED_CONFIRMED"},
+        {"headline": "Tool", "exploitation": "N/A"}]}
+    text = channel.message(d, "2026-11-24", "https://theparijat.com")
+    assert text.startswith("Watchfloor threat brief, Tuesday 24 November 2026")
+    assert "• Flaw *with* _markdown_ [x] (Exploited (confirmed))" in text and "• Tool\n" in text
+    assert text.endswith("https://theparijat.com/brief/2026-11-24/")
+    sent = []
+
+    class R:
+        status_code = 200
+        text = ""
+    monkeypatch.setattr(channel.requests, "post", lambda url, **k: sent.append(k["json"]) or R())
+    monkeypatch.setenv("TELEGRAM_CHANNEL_ID", "@test"); monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "t")
+    assert channel.post(d, "2026-11-24", "https://x.test", tmp_path) is True
+    assert channel.post(d, "2026-11-24", "https://x.test", tmp_path) is False      # second runner: no repost
+    assert len(sent) == 1 and "parse_mode" not in sent[0]

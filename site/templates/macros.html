@@ -39,3 +39,20 @@
   </details>
 </li>
 {%- endmacro %}
+
+{# Plain share links: no third-party scripts, no tracking. share.js adds Copy link and the phone's own share menu. #}
+{% macro share(p, path, title) -%}
+{% if p.site_url %}{% set url = p.site_url ~ '/' ~ path %}
+<nav class="share" aria-label="Share this page">
+  <span class="share-label">Share</span>
+  <button type="button" class="share-btn share-native" data-url="{{ url }}" data-title="{{ title }}" hidden>Share…</button>
+  <a class="share-btn" href="https://www.linkedin.com/sharing/share-offsite/?url={{ url | urlencode }}" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+  <a class="share-btn" href="https://x.com/intent/post?url={{ url | urlencode }}&amp;text={{ title | urlencode }}" target="_blank" rel="noopener noreferrer">X</a>
+  <a class="share-btn" href="https://www.reddit.com/submit?url={{ url | urlencode }}&amp;title={{ title | urlencode }}" target="_blank" rel="noopener noreferrer">Reddit</a>
+  <a class="share-btn" href="https://www.facebook.com/sharer/sharer.php?u={{ url | urlencode }}" target="_blank" rel="noopener noreferrer">Facebook</a>
+  <a class="share-btn" href="mailto:?subject={{ title | urlencode }}&amp;body={{ url | urlencode }}">Email</a>
+  <button type="button" class="share-btn share-copy" data-url="{{ url }}" hidden>Copy link</button>
+  <span class="share-status" role="status" aria-live="polite"></span>
+</nav>
+{% endif %}
+{%- endmacro %}

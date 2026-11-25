@@ -352,6 +352,14 @@ def run(args) -> int:
     if args.no_deliver:
         return 0
     errors = send(blocks, cfg, f"Watchfloor brief {run_date}", dry_run=args.dry_run, digest=digest, run_date=run_date)
+    if not args.llm_fixture:   # public channel: after the brief is written, once per date (digest/channel.py)
+        from .channel import post as post_channel
+        try:
+            if cfg.get("delivery", {}).get("telegram_channel"):
+                os.environ.setdefault("TELEGRAM_CHANNEL_ID", cfg["delivery"]["telegram_channel"])
+            post_channel(digest, run_date, (cfg.get("site", {}).get("url") or "").rstrip("/"), ROOT, dry_run=args.dry_run)
+        except Exception as e:   # never fail a published brief over the channel
+            log.warning("channel post failed: %s", e)
     if not args.dry_run and not args.llm_fixture:
         save_state(seen, digest, run_date, cfg["repeat_suppression_days"])
     (ROOT / "state" / "last_digest.json").write_text(json.dumps(digest, indent=1))

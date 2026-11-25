@@ -132,6 +132,7 @@ delivery:
   channels: [callmebot, telegram, teams]   # unconfigured channels are skipped automatically
   callmebot_max_chars: 1400 # CallMeBot uses GET; keep chunks small so the URL stays short
   telegram_max_chars: 3800
+  telegram_channel: "@watchfloor_watch"   # public channel handle, e.g. "@watchfloor" (bot must be an admin); empty = off
   pause_seconds: 4          # gap between WhatsApp messages
   on_failure_alert: true    # send a one-line alert if the run fails
 
