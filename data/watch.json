@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-25T14:20:26+00:00",
+ "updated": "2026-11-25T15:20:25+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
@@ -11,6 +11,38 @@
   "AWS Security Bulletins": "ok (2)"
  },
  "entries": [
+  {
+   "id": "CVE-2026-103406",
+   "kind": "KEV",
+   "title": "Hewlett Packard Enterprise (HPE) Juniper Session Smart Conductor and Session Smart Router OS Command Injection Vulnerability",
+   "summary": "Hewlett Packard Enterprise (HPE) Juniper Session Smart Conductor and Session Smart Router contain an OS command injection vulnerability that could allow a remote attacker to execute arbitrary commands as root via a specially crafted salt minion ID.",
+   "source": "CISA KEV",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-103406",
+   "published": "2026-11-25",
+   "cves": [
+    "CVE-2026-103406"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0086,
+    "percentile": 0.56
+   },
+   "poc": 0,
+   "kev_due": "2026-11-28",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-25T15:20:25+00:00",
+   "required_action": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discon",
+   "fix": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Restrict the device's management interface to an admin network; check for new admin accounts and config changes",
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
+   }
+  },
   {
    "id": "https://security.paloaltonetworks.com/PAN-SA-2026-0015",
    "kind": "ADVISORY",
@@ -80,8 +112,8 @@
    ],
    "cvss": null,
    "epss": {
-    "score": 0.0061,
-    "percentile": 0.502
+    "score": 0.0429,
+    "percentile": 0.919
    },
    "poc": 4,
    "kev_due": "2026-11-27",
@@ -111,8 +143,8 @@
    ],
    "cvss": null,
    "epss": {
-    "score": 0.9999,
-    "percentile": 1.0
+    "score": 0.3298,
+    "percentile": 0.987
    },
    "poc": 94,
    "kev_due": "2026-11-10",
@@ -146,7 +178,7 @@
    "cvss": 10.0,
    "epss": {
     "score": 0.0624,
-    "percentile": 0.937
+    "percentile": 0.943
    },
    "poc": 0,
    "kev_due": null,
@@ -179,7 +211,10 @@
     "CVE-2026-112732"
    ],
    "cvss": null,
-   "epss": null,
+   "epss": {
+    "score": 0.0134,
+    "percentile": 0.714
+   },
    "poc": 0,
    "kev_due": null,
    "ransomware": null,
@@ -210,7 +245,7 @@
    "cvss": null,
    "epss": {
     "score": 0.0068,
-    "percentile": 0.532
+    "percentile": 0.476
    },
    "poc": 0,
    "kev_due": null,
@@ -242,8 +277,8 @@
    ],
    "cvss": null,
    "epss": {
-    "score": 0.0014,
-    "percentile": 0.033
+    "score": 0.0027,
+    "percentile": 0.123
    },
    "poc": 0,
    "kev_due": null,
@@ -275,8 +310,8 @@
    ],
    "cvss": null,
    "epss": {
-    "score": 0.0041,
-    "percentile": 0.358
+    "score": 0.0078,
+    "percentile": 0.525
    },
    "poc": 0,
    "kev_due": "2026-11-27",
@@ -306,8 +341,8 @@
    ],
    "cvss": null,
    "epss": {
-    "score": 0.0061,
-    "percentile": 0.502
+    "score": 0.0429,
+    "percentile": 0.919
    },
    "poc": 4,
    "kev_due": "2026-11-27",
@@ -392,8 +427,8 @@
    ],
    "cvss": null,
    "epss": {
-    "score": 0.0096,
-    "percentile": 0.624
+    "score": 0.0098,
+    "percentile": 0.609
    },
    "poc": 0,
    "kev_due": null,
@@ -478,8 +513,8 @@
    ],
    "cvss": null,
    "epss": {
-    "score": 0.133,
-    "percentile": 0.965
+    "score": 0.3377,
+    "percentile": 0.988
    },
    "poc": 6,
    "kev_due": null,
@@ -546,7 +581,7 @@
    "cvss": null,
    "epss": {
     "score": 0.0082,
-    "percentile": 0.58
+    "percentile": 0.542
    },
    "poc": 0,
    "kev_due": null,
@@ -578,7 +613,7 @@
    "cvss": null,
    "epss": {
     "score": 0.0076,
-    "percentile": 0.559
+    "percentile": 0.514
    },
    "poc": 0,
    "kev_due": null,
@@ -610,7 +645,7 @@
    "cvss": null,
    "epss": {
     "score": 0.0033,
-    "percentile": 0.269
+    "percentile": 0.191
    },
    "poc": 0,
    "kev_due": null,
@@ -641,8 +676,8 @@
    ],
    "cvss": null,
    "epss": {
-    "score": 0.0084,
-    "percentile": 0.587
+    "score": 0.0132,
+    "percentile": 0.709
    },
    "poc": 0,
    "kev_due": null,
@@ -674,7 +709,7 @@
    "cvss": null,
    "epss": {
     "score": 0.0073,
-    "percentile": 0.55
+    "percentile": 0.501
    },
    "poc": 0,
    "kev_due": null,
@@ -705,8 +740,8 @@
    ],
    "cvss": null,
    "epss": {
-    "score": 0.0084,
-    "percentile": 0.588
+    "score": 0.0072,
+    "percentile": 0.499
    },
    "poc": 0,
    "kev_due": null,
@@ -737,8 +772,8 @@
    ],
    "cvss": null,
    "epss": {
-    "score": 0.0041,
-    "percentile": 0.358
+    "score": 0.0038,
+    "percentile": 0.238
    },
    "poc": 0,
    "kev_due": null,
@@ -769,8 +804,8 @@
    ],
    "cvss": null,
    "epss": {
-    "score": 0.0099,
-    "percentile": 0.632
+    "score": 0.012,
+    "percentile": 0.681
    },
    "poc": 0,
    "kev_due": null,
@@ -801,8 +836,8 @@
    ],
    "cvss": null,
    "epss": {
-    "score": 0.0034,
-    "percentile": 0.283
+    "score": 0.0029,
+    "percentile": 0.139
    },
    "poc": 0,
    "kev_due": null,
@@ -865,8 +900,8 @@
    ],
    "cvss": null,
    "epss": {
-    "score": 0.498,
-    "percentile": 0.989
+    "score": 0.2716,
+    "percentile": 0.985
    },
    "poc": 3,
    "kev_due": "2026-11-26",
@@ -897,8 +932,8 @@
    ],
    "cvss": null,
    "epss": {
-    "score": 0.0062,
-    "percentile": 0.503
+    "score": 0.0179,
+    "percentile": 0.789
    },
    "poc": 1,
    "kev_due": "2026-11-26",
@@ -928,8 +963,8 @@
    ],
    "cvss": 9.8,
    "epss": {
-    "score": 0.0078,
-    "percentile": 0.567
+    "score": 0.011,
+    "percentile": 0.653
    },
    "poc": 0,
    "kev_due": null,
@@ -1701,10 +1736,10 @@
    ],
    "cvss": null,
    "epss": {
-    "score": 0.447,
-    "percentile": 0.988
+    "score": 0.4559,
+    "percentile": 0.991
    },
-   "poc": 38,
+   "poc": 39,
    "kev_due": null,
    "ransomware": null,
    "stack_match": [
@@ -1804,10 +1839,10 @@
    ],
    "cvss": null,
    "epss": {
-    "score": 0.447,
-    "percentile": 0.988
+    "score": 0.4559,
+    "percentile": 0.991
    },
-   "poc": 38,
+   "poc": 39,
    "kev_due": null,
    "ransomware": null,
    "stack_match": [
@@ -1839,7 +1874,7 @@
    "cvss": null,
    "epss": {
     "score": 0.5927,
-    "percentile": 0.991
+    "percentile": 0.993
    },
    "poc": 83,
    "kev_due": null,
