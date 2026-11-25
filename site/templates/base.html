@@ -13,10 +13,13 @@
 <meta property="og:title" content="{{ self.title() | trim }}">
 <meta property="og:description" content="{{ self.desc() | trim | truncate(300) }}">
 {% if path is not none %}<meta property="og:url" content="{{ p.site_url }}/{{ path }}">{% endif %}
-<meta property="og:image" content="{{ p.site_url }}/static/portrait-og.jpg">
+{% if page == "" and not og_image %}<meta property="og:image" content="{{ p.site_url }}/static/portrait-og.jpg">
 <meta property="og:image:width" content="600"><meta property="og:image:height" content="600">
 <meta property="og:image:alt" content="Portrait of {{ p.name }}">
-<meta name="twitter:card" content="summary">{% endif %}
+<meta name="twitter:card" content="summary">{% else %}<meta property="og:image" content="{{ p.site_url }}/{{ og_image or 'og/site.png' }}">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{{ self.title() | trim }}">
+<meta name="twitter:card" content="summary_large_image">{% endif %}{% endif %}
 <link rel="icon" href="{{ root }}static/logo.svg" type="image/svg+xml">
 <link rel="alternate" type="application/rss+xml" title="{{ p.site_title }}" href="{{ root }}feed.xml">
 <link rel="preload" href="{{ root }}static/fonts/archivo-wdth.woff2" as="font" type="font/woff2" crossorigin>
@@ -39,7 +42,7 @@
 <footer><div class="wrap">
   <p>{{ p.disclaimer }} Briefs are AI-assisted and checked automatically against their sources. Content CC BY 4.0, code MIT.</p>
   <nav aria-label="Feeds">
-    <a href="{{ root }}feed.xml">RSS</a><a href="{{ root }}api/latest.json">JSON</a><a href="{{ root }}api/watch.json">Watch JSON</a><a href="{{ p.repo_url }}">Source</a><a href="{{ root }}corrections/">Corrections</a><a href="{{ root }}security/">Security</a>
+    <a href="{{ root }}feeds/">RSS feeds</a><a href="{{ root }}api/latest.json">JSON</a><a href="{{ root }}api/watch.json">Watch JSON</a><a href="{{ p.repo_url }}">Source</a><a href="{{ root }}corrections/">Corrections</a><a href="{{ root }}security/">Security</a><a href="{{ root }}status/">Site speed</a>
   </nav>
 </div></footer>
 {% block scripts %}{% endblock %}

@@ -6,4 +6,5 @@ requests>=2.31
 PyYAML>=6.0
 Jinja2>=3.1
 MarkupSafe>=2.1
+Pillow>=11.0       # link-preview cards (site/og/cards.py)
 markdown-it-py>=3.0

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Feeds — {{ p.name }}{% endblock %}
+{% block desc %}Follow only what you run: RSS feeds per product and for AI security, from the daily brief and hourly watch.{% endblock %}
+{% block main %}
+<section class="page-head"><h1>Feeds</h1>
+<p class="lede">Follow only what you run. Each feed carries brief items and hourly-watch entries tagged with that product. No account needed; add the link to any RSS reader.</p></section>
+<div class="prose">
+<h2>Everything</h2>
+<p><a href="{{ root }}feed.xml">Daily brief (all items)</a></p>
+<h2>By product</h2>
+</div>
+<ul class="feeds">{% for slug, t in topics.items() | sort(attribute='1.name') %}{% if t.name != "AI Security" %}
+<li><a href="{{ root }}feeds/{{ slug }}.xml">{{ t.name }}</a><span class="count">{{ t["items"] | length }} recent item{{ '' if t["items"] | length == 1 else 's' }}</span></li>{% endif %}{% endfor %}
+</ul>
+<div class="prose">
+<h2>AI security</h2>
+<p><a href="{{ root }}feeds/ai-security.xml">AI Security</a>: attacks on AI systems, LLM tooling and agents ({{ topics['ai-security']['items'] | length }} recent items).</p>
+</div>
+{% endblock %}

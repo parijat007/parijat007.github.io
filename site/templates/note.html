@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% from "macros.html" import share %}
 {% block title %}{{ n.title }} — {{ p.brand }}{% endblock %}
 {% block desc %}{{ n.summary }}{% endblock %}
 {% block main %}
@@ -9,6 +9,7 @@
     <p class="lede">{{ n.summary }}</p>
     {% if n.tags %}<ul class="tags">{% for t in n.tags %}<li class="tag">{{ t }}</li>{% endfor %}</ul>{% endif %}
   </header>
+  {{ share(p, 'notes/' ~ n.slug ~ '/', n.title) }}
   {% if n.status %}
   <section class="claims" aria-labelledby="claims-h">
     <h2 id="claims-h">What is confirmed</h2>
@@ -25,3 +26,4 @@
   <p class="report"><a href="{{ p.repo_url }}/issues/new?title={{ ('Correction: ' ~ n.slug) | urlencode }}&labels=correction">Report an error in this note</a></p>
 </article>
 {% endblock %}
+{% block scripts %}<script src="{{ root }}static/share.js" defer></script>{% endblock %}

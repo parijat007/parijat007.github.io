@@ -361,3 +361,16 @@ h3.sub + .creds + h3.sub { margin-top: 1.4rem; }
 
 .button.ghost { background: transparent; color: var(--text); border: 1px solid var(--rule); margin-left: .5rem; }
 .button.ghost:hover { border-color: var(--text); background: transparent; }
+
+/* Share row */
+.share { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: 1.25rem 0 2rem; }
+.share-label { color: var(--muted); font-size: .9rem; margin-right: .25rem; }
+.share-btn { font: inherit; font-size: .9rem; color: var(--text); background: var(--panel); border: 1px solid var(--rule);
+  border-radius: var(--radius-s); padding: .35rem .75rem; text-decoration: none; cursor: pointer; line-height: 1.4; }
+.share-btn:hover { border-color: var(--muted); }
+.share-btn:focus-visible { outline: 2px solid var(--info); outline-offset: 2px; }
+.share-status { color: var(--tooling); font-size: .9rem; }
+/* Feeds page */
+.feeds { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); gap: .5rem; }
+.feeds li { background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius-s); padding: .6rem .8rem; }
+.feeds .count { color: var(--muted); font-size: .85rem; display: block; }

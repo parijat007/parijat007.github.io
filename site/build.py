@@ -126,6 +126,54 @@ def rss(briefs: list[dict], p: dict, base: str) -> str:
             f"<description>Daily source-checked threat brief</description>{''.join(items)}</channel></rss>")
 
 
+def slugify(t: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", t.lower()).strip("-")
+
+
+AI_TOPIC = "AI Security"
+
+
+def topic_feeds(briefs: list[dict], watch: dict, watchlist: list[str], base: str) -> dict[str, dict]:
+    """One feed per watchlist product plus AI Security: brief items and watch entries tagged with it."""
+    topics = {slugify(n): {"name": n, "items": []} for n in [*watchlist, AI_TOPIC]}
+    by_name = {n.lower(): slugify(n) for n in watchlist}
+    for b in briefs[:60]:
+        pub = datetime.fromisoformat(b["run_date"]).replace(hour=12, tzinfo=timezone.utc)
+        for e in b.get("items", []):
+            keys = {by_name[m.lower()] for m in e.get("stack_match") or [] if m.lower() in by_name}
+            if e.get("category") == "AI_THREAT" or "llm" in {m.lower() for m in e.get("stack_match") or []}:
+                keys.add(slugify(AI_TOPIC))
+            link = f"{base}/brief/{b['run_date']}/#item-{e['rank']}"
+            for k in keys:
+                topics[k]["items"].append({"title": e["headline"], "link": link, "pub": pub, "desc": e.get("summary", "")})
+    for w in watch.get("entries", []):
+        try:
+            pub = datetime.fromisoformat((w.get("first_seen") or w.get("published") or "").replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        for m in w.get("stack_match") or []:
+            k = by_name.get(m.lower())
+            if k:
+                topics[k]["items"].append({"title": w.get("title", ""), "link": safe_url(w.get("url")) or f"{base}/watch/",
+                                           "pub": pub, "desc": w.get("summary", "")})
+    for t in topics.values():
+        t["items"].sort(key=lambda i: i["pub"], reverse=True)
+        t["items"] = t["items"][:40]
+    return topics
+
+
+def topic_rss(t: dict, slug: str, p: dict, base: str) -> str:
+    items = "".join(
+        f"<item><title>{escape(i['title'])}</title><link>{escape(i['link'])}</link>"
+        f"<guid isPermaLink=\"false\">{escape(i['link'] + '|' + i['title'][:60])}</guid>"
+        f"<pubDate>{format_datetime(i['pub'])}</pubDate><description>{escape(i['desc'])}</description></item>"
+        for i in t["items"])
+    return ('<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel>'
+            f"<title>{escape(p['site_title'])}: {escape(t['name'])}</title><link>{base}/feeds/</link>"
+            f"<description>Exploited and critical issues touching {escape(t['name'])}, from the daily brief and hourly watch</description>"
+            f"{items}</channel></rss>")
+
+
 MD = MarkdownIt("commonmark", {"html": False, "linkify": False}).enable("table")   # raw HTML in notes is escaped
 
 
@@ -238,9 +286,20 @@ def build(out: Path) -> None:
         ld["url"] = base + "/"
     page("home.html", "", "", og_type="profile", brief=today, watch=watch, cells=cells, watch_due_soon=due_soon,
          brief_count=len(briefs), latest_note=(load_notes() or [None])[0], person_ld=Markup(json.dumps(ld).replace("</", "<\\/")))
-    page("today.html", "today/", "today/", brief=today, watch=watch, cells=cells, watch_due_soon=due_soon)
+    page("today.html", "today/", "today/", brief=today, watch=watch, cells=cells, watch_due_soon=due_soon,
+         og_image=f"og/brief-{today['run_date']}.png" if today else None)
+    sys.path.insert(0, str(SITE / "og"))
+    from cards import TOOLING, card  # noqa: PLC0415
+    card(out / "og" / "site.png", "Daily threat brief · hourly watch", "Exploited vulnerabilities and attacks, checked against their sources",
+         "Free, public sources only. No trackers.")
     for b in briefs:
-        page("brief.html", f"brief/{b['run_date']}/", "archive/", lastmod=b["run_date"], og_type="article", brief=b)
+        n = len(b.get("items", []))
+        ex = sum(e.get("exploitation") == "EXPLOITED_CONFIRMED" for e in b.get("items", []))
+        top = b["items"][0]["headline"] if n else "Quiet day: nothing met the bar."
+        detail = (f"{n} item{'s' if n != 1 else ''}" + (f", {ex} exploited (confirmed)" if ex else "") + f". {top}") if n else top
+        card(out / "og" / f"brief-{b['run_date']}.png", "Threat brief", longdate(b["run_date"]), detail)
+        page("brief.html", f"brief/{b['run_date']}/", "archive/", lastmod=b["run_date"], og_type="article", brief=b,
+             og_image=f"og/brief-{b['run_date']}.png")
     page("archive.html", "archive/", "archive/", briefs=briefs)
     page("watch.html", "watch/", "watch/", watch=watch, retain_days=cfg.get("watch", {}).get("retain_days", 7))
     health = json.loads((DATA / "sources.json").read_text()) if (DATA / "sources.json").exists() else {}
@@ -249,12 +308,18 @@ def build(out: Path) -> None:
     notes = load_notes()
     page("notes.html", "notes/", "notes/", notes=notes)
     for n in notes:
-        page("note.html", f"notes/{n['slug']}/", "notes/", lastmod=str(n["date"]), og_type="article", n=n)
+        card(out / "og" / f"note-{n['slug']}.png", "Analyst note", n["title"], n.get("summary", ""), accent=TOOLING)
+        page("note.html", f"notes/{n['slug']}/", "notes/", lastmod=str(n["date"]), og_type="article", n=n,
+             og_image=f"og/note-{n['slug']}.png")
     from digest.ledger import read as read_ledger  # noqa: PLC0415
     ledger = read_ledger(ROOT)
     page("corrections.html", "corrections/", "corrections/", ledger=ledger_view(ledger))
     page("security.html", "security/", "security/", ledger=ledger_view(ledger),
          repo=(p.get("repo_url") or "").removeprefix("https://github.com/").strip("/"))
+    perf = json.loads((DATA / "perf.json").read_text()) if (DATA / "perf.json").exists() else None
+    page("status.html", "status/", "status/", perf=perf)
+    topics = topic_feeds(briefs, watch, cfg.get("stack_watchlist", []), base)
+    page("feeds.html", "feeds/", "feeds/", topics=topics)
     page("404.html", "", "")
 
     (out / "api").mkdir()
@@ -263,6 +328,9 @@ def build(out: Path) -> None:
     if (DATA / "ledger.jsonl").exists():   # the public copy anyone can verify against
         shutil.copyfile(DATA / "ledger.jsonl", out / "api" / "ledger.jsonl")
     (out / "feed.xml").write_text(rss(briefs, p, base))
+    (out / "feeds").mkdir(exist_ok=True)
+    for slug, t in topics.items():
+        (out / "feeds" / f"{slug}.xml").write_text(topic_rss(t, slug, p, base))
     robots = "User-agent: *\nAllow: /\n" + (f"Sitemap: {base}/sitemap.xml\n" if base else "")
     (out / "robots.txt").write_text(robots)
     if base:

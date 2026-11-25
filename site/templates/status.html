@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Site speed — {{ p.name }}{% endblock %}
+{% block desc %}How fast and accessible this site is, measured daily with Lighthouse against the live pages.{% endblock %}
+{% block main %}
+{% set below = [] %}{% if perf %}{% for name, v in perf.site.items() %}{% for c in ["performance", "accessibility", "best-practices", "seo"] %}{% if (v.scores[c] or 0) < (0.95 if c == "accessibility" else 0.9) %}{% set _ = below.append(name) %}{% endif %}{% endfor %}{% endfor %}{% endif %}
+<section class="page-head"><h1>Site speed</h1>
+<p class="lede">{% if perf %}Measured {{ perf.updated | ago }}. {% if below %}{{ below | unique | list | length }} page{{ '' if below | unique | list | length == 1 else 's' }} below target.{% else %}Every page measured is within its targets.{% endif %}{% else %}No measurements yet.{% endif %}</p></section>
+{% if perf %}
+<section class="block"><h2 class="vh">Scores</h2>
+<p class="note">Lighthouse, run daily against the live site. Scores are out of 100; targets are 90 or more (95 for accessibility).</p>
+<div class="table-scroll" role="region" aria-label="Site speed" tabindex="0"><table class="watch">
+<thead><tr><th scope="col">Page</th><th scope="col" class="num">Performance</th><th scope="col" class="num">Accessibility</th><th scope="col" class="num">Best practices</th><th scope="col" class="num">SEO</th><th scope="col" class="num">Largest paint</th><th scope="col" class="num">Page weight</th></tr></thead>
+<tbody>{% for name, v in perf.site.items() %}<tr><th scope="row">{{ {"home": "Profile", "today": "Today's brief", "watch": "Hourly watch"}.get(name, name | title) }}</th>
+{% for c in ["performance", "accessibility", "best-practices", "seo"] %}<td class="num">{{ "%.0f" | format((v.scores[c] or 0) * 100) }}</td>{% endfor %}
+<td class="num">{{ "%.1f" | format(v.lcp_ms / 1000) }} s</td><td class="num">{{ v.bytes // 1024 }} KB</td></tr>{% endfor %}</tbody>
+</table></div></section>
+{% endif %}
+{% endblock %}
