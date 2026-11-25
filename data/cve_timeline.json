@@ -1501,6 +1501,10 @@
    "events": {
     "watchfloor_first": {
      "date": "2026-11-21"
+    },
+    "published": {
+     "date": "2024-08-06",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-7533"
     }
    },
    "epss": [
@@ -1518,6 +1522,10 @@
    "events": {
     "watchfloor_first": {
      "date": "2026-11-21"
+    },
+    "published": {
+     "date": "2023-03-21",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-1531"
     }
    },
    "epss": [
@@ -1535,6 +1543,10 @@
    "events": {
     "watchfloor_first": {
      "date": "2026-11-21"
+    },
+    "published": {
+     "date": "2026-11-18",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-118899"
     }
    },
    "epss": [
@@ -1557,6 +1569,10 @@
      "date": "2026-11-24",
      "source": "AWS Security Bulletins",
      "url": "https://aws.amazon.com/security/security-bulletins/rss/2026-198-aws/"
+    },
+    "published": {
+     "date": "2026-11-24",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-134068"
     }
    },
    "epss": [
@@ -1568,8 +1584,107 @@
    "briefs": [],
    "detections": [],
    "title": "CVE-2026-134068 - Stack-based buffer overflow in replication origin name parsing in AWS pgactive"
+  },
+  "CVE-2026-134066": {
+   "cve": "CVE-2026-134066",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-25"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-24",
+     "source": "AWS Security Bulletins",
+     "url": "https://aws.amazon.com/security/security-bulletins/rss/2026-199-aws/"
+    },
+    "published": {
+     "date": "2026-11-24",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-134066"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0088
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "CVE-2026-134066 - Query injection via schema-derived identifiers in Graph Explorer"
+  },
+  "CVE-2026-135614": {
+   "cve": "CVE-2026-135614",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-25"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-24",
+     "source": "AWS Security Bulletins",
+     "url": "https://aws.amazon.com/security/security-bulletins/rss/2026-200-aws/"
+    },
+    "published": {
+     "date": "2026-11-24",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-135614"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.0043
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "CVE-2026-135614 - Sensitive data redaction bypass in the troubleshooting tool in Amazon ECS MCP Server"
+  },
+  "CVE-2026-135414": {
+   "cve": "CVE-2026-135414",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-25"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-24",
+     "source": "AWS Security Bulletins",
+     "url": "https://aws.amazon.com/security/security-bulletins/rss/2026-201-aws/"
+    },
+    "published": {
+     "date": "2026-11-24",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-135414"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-25",
+     "score": 0.003
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "CVE-2026-135414 - Server-side request forgery in snapshot repository registration in Amazon OpenSearch Service"
+  },
+  "CVE-2026-136267": {
+   "cve": "CVE-2026-136267",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-25"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-25",
+     "source": "AWS Security Bulletins",
+     "url": "https://aws.amazon.com/security/security-bulletins/rss/2026-202-aws/"
+    },
+    "published": {
+     "date": "2026-11-25",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-136267"
+    }
+   },
+   "epss": [],
+   "briefs": [],
+   "detections": [],
+   "title": "CVE-2026-136267 - Improper neutralization of special elements used in an OS command in Kiro Web"
   }
  },
  "detections_checked": "2026-11-25",
- "updated": "2026-11-25T19:20:23+00:00"
+ "updated": "2026-11-25T19:56:30+00:00"
 }

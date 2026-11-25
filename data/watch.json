@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-25T19:20:23+00:00",
+ "updated": "2026-11-25T19:56:30+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
@@ -8,9 +8,138 @@
   "Palo Alto PSIRT": "ok (3)",
   "Fortinet PSIRT": "ok (0)",
   "Cisco PSIRT": "ok (6)",
-  "AWS Security Bulletins": "ok (3)"
+  "AWS Security Bulletins": "ok (7)"
  },
  "entries": [
+  {
+   "id": "8a3ba16e94b79cd525d1214a165327e022b528b7",
+   "kind": "ADVISORY",
+   "title": "CVE-2026-134066 - Query injection via schema-derived identifiers in Graph Explorer",
+   "summary": "Bulletin ID: 2026-199-AWS Publication Date: 11/24/2026 10:30 AM PST Description: Graph Explorer is an open-source tool for browsing and searching graph data, which customers self-host against Amazon Neptune or other graph databases. We identified CVE-2026-134066, an issue in the ",
+   "source": "AWS Security Bulletins",
+   "url": "https://aws.amazon.com/security/security-bulletins/rss/2026-199-aws/",
+   "published": "2026-11-24T18:44:47+00:00",
+   "cves": [
+    "CVE-2026-134066"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0088,
+    "percentile": 0.567
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [
+    "AWS"
+   ],
+   "first_seen": "2026-11-25T19:56:30+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
+  {
+   "id": "b2366e512e289d41c35483befdee62c51d858f99",
+   "kind": "ADVISORY",
+   "title": "CVE-2026-135614 - Sensitive data redaction bypass in the troubleshooting tool in Amazon ECS MCP Server",
+   "summary": "Bulletin ID: 2026-200-AWS Publication Date: 11/24/2026 11:00 AM PST Description: Amazon ECS MCP Server is an open-source Model Context Protocol server that lets AI agents and assistants manage and troubleshoot Amazon ECS workloads using the operator's AWS credentials. We identifi",
+   "source": "AWS Security Bulletins",
+   "url": "https://aws.amazon.com/security/security-bulletins/rss/2026-200-aws/",
+   "published": "2026-11-24T19:27:19+00:00",
+   "cves": [
+    "CVE-2026-135614"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0043,
+    "percentile": 0.291
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [
+    "AWS"
+   ],
+   "first_seen": "2026-11-25T19:56:30+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
+  {
+   "id": "9dc239af4c7c042dbd17e3d3b2839e9f1cbf1ec2",
+   "kind": "ADVISORY",
+   "title": "CVE-2026-135414 - Server-side request forgery in snapshot repository registration in Amazon OpenSearch Service",
+   "summary": "Bulletin ID: 2026-201-AWS Publication Date: 11/24/2026 11:15 AM PST Description: Amazon OpenSearch Service is a managed service for deploying, operating, and scaling OpenSearch clusters in the AWS Cloud. We identified CVE-2026-135414, an issue in snapshot repository registration ",
+   "source": "AWS Security Bulletins",
+   "url": "https://aws.amazon.com/security/security-bulletins/rss/2026-201-aws/",
+   "published": "2026-11-24T19:27:19+00:00",
+   "cves": [
+    "CVE-2026-135414"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.003,
+    "percentile": 0.156
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [
+    "AWS"
+   ],
+   "first_seen": "2026-11-25T19:56:30+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Server-side request forgery",
+    "compensating_controls": [
+     "Restrict the server's outbound traffic to required destinations only",
+     "Block access to cloud instance metadata from the application (for example IMDSv2 with hop limit 1 on AWS)"
+    ],
+    "verify": "Review egress and metadata-service access logs from the affected host"
+   }
+  },
+  {
+   "id": "9b270cdae1efe7fb2670de7243cf455ac4fdc705",
+   "kind": "ADVISORY",
+   "title": "CVE-2026-136267 - Improper neutralization of special elements used in an OS command in Kiro Web",
+   "summary": "Bulletin ID: 2026-202-AWS Publication Date: 11/25/2026 09:00 AM PST Description: Kiro Web is a cloud-hosted, AI-powered integrated development environment where subscribers use AI agents to work on software development tasks in the browser. We are aware of CVE-2026-136267, an iss",
+   "source": "AWS Security Bulletins",
+   "url": "https://aws.amazon.com/security/security-bulletins/rss/2026-202-aws/",
+   "published": "2026-11-25T17:08:36+00:00",
+   "cves": [
+    "CVE-2026-136267"
+   ],
+   "cvss": null,
+   "epss": null,
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [
+    "AWS"
+   ],
+   "first_seen": "2026-11-25T19:56:30+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   }
+  },
   {
    "id": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-ucs-uefi-sb-bypass-eb6xC5GW",
    "kind": "ADVISORY",
