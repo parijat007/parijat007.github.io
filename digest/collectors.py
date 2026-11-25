@@ -16,6 +16,7 @@ import requests
 log = logging.getLogger("digest.collect")
 UA = {"User-Agent": "threat-digest/1.0 (personal daily digest)"}
 TIMEOUT = 30
+POC_REPO = re.compile(r"CVE-\d{4}-\d{4,}|(^|[/_-])(poc|exploits?)([_-]|$)", re.I)
 KEV_URL = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
 KEV_MIRROR = "https://raw.githubusercontent.com/cisagov/kev-data/main/known_exploited_vulnerabilities.json"
 CVE_RE = re.compile(r"CVE-\d{4}-\d{4,7}", re.I)
@@ -172,6 +173,8 @@ def repo_items(cfg: dict) -> list[dict]:
             if name in seen or not r.get("description") or not r.get("license"):
                 continue
             if re.search(r"awesome|cheat-?sheet|list", name, re.I):
+                continue
+            if POC_REPO.search(name):          # a single exploit is a PoC signal, not tooling
                 continue
             seen.add(name)
             out.append({
