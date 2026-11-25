@@ -42,5 +42,5 @@ launchctl bootout "gui/$(id -u)/com.watchfloor.watch" 2>/dev/null || true
 launchctl bootstrap "gui/$(id -u)" ~/Library/LaunchAgents/com.watchfloor.watch.plist
 
 echo "4/4 Wake the Mac at 6:30 daily (needs admin; Mac must be on power)"
-sudo pmset repeat wakeorpoweron MTWRFSU 06:30:00
+sudo pmset repeat wakeorpoweron MTWRFSU 05:40:00
 echo "Done. Test now with: zsh mac/run_brief.sh && tail -50 ~/Library/Logs/watchfloor.log"

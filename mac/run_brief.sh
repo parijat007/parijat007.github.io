@@ -80,7 +80,7 @@ if ! shasum -a 256 -c "$REPO_DIR/.venv/.lock-sha" >/dev/null 2>&1; then
 fi
 
 # caffeinate keeps the Mac awake for the duration of the run only
-export WF_BRIEF_WINDOW_UTC="10-17"   # a run outside 5 AM-noon EST is not the morning brief
+export WF_BRIEF_WINDOW_UTC="9-17"    # 4 AM-noon EST / 5 AM-1 PM EDT: covers the Mac's 5:45 AM run all year
 caffeinate -i "$REPO_DIR/.venv/bin/python" -m digest.main --skip-if-exists
 
 # Commit + push, recording the brief in the tamper-evident ledger on top of the published chain.

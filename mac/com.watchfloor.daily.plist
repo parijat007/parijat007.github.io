@@ -5,11 +5,12 @@
   <key>Label</key><string>com.watchfloor.daily</string>
   <key>ProgramArguments</key>
   <array><string>/bin/zsh</string><string>__REPO_DIR__/mac/run_brief.sh</string></array>
-  <!-- 6:35 AM local time. If the Mac was asleep, launchd runs it at next wake. -->
-  <!-- Also run at login/boot: catches up if the Mac was off at 6:35 (skips if today's brief exists). -->
+  <!-- 5:45 AM local time: the local model writes the brief before the cloud backups (6:20 and 6:25 AM ET).
+       If the Mac was asleep, launchd runs it at next wake. -->
+  <!-- Also run at login/boot: catches up if the Mac was off at 5:45 (skips if today's brief exists). -->
   <key>RunAtLoad</key><true/>
   <key>StartCalendarInterval</key>
-  <dict><key>Hour</key><integer>6</integer><key>Minute</key><integer>35</integer></dict>
+  <dict><key>Hour</key><integer>5</integer><key>Minute</key><integer>45</integer></dict>
   <key>StandardOutPath</key><string>/tmp/watchfloor.launchd.log</string>
   <key>StandardErrorPath</key><string>/tmp/watchfloor.launchd.log</string>
 </dict>
