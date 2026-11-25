@@ -622,3 +622,43 @@ def test_health_restarts_daily_jobs_github_skipped(tmp_path):
     (tmp_path / "data" / "patchday" / "2026-Dec.json").write_text("{}")
     assert missed_jobs(t(8, 20), tmp_path)["rerun_patchday"] is False                              # already sent
     assert missed_jobs(t(1, 20), tmp_path)["rerun_patchday"] is False                              # 1st Tuesday
+
+
+def test_ledger_detects_every_kind_of_tampering(tmp_path):
+    from digest import ledger as L
+    b = tmp_path / "data" / "briefs"
+    b.mkdir(parents=True)
+    for d in ("2026-11-20", "2026-11-21", "2026-11-22"):
+        (b / f"{d}.json").write_text(json.dumps({"date": d}))
+        L.add(b / f"{d}.json", root=tmp_path)
+    assert L.verify(tmp_path) == []
+    # 1. a brief edited without a record
+    (b / "2026-11-21.json").write_text(json.dumps({"date": "2026-11-21", "evil": 1}))
+    assert any("changed since its last ledger entry" in p for p in L.verify(tmp_path))
+    # ...recorded as a correction: clean again, and the change itself is on the record
+    L.add(b / "2026-11-21.json", "correction", root=tmp_path)
+    assert L.verify(tmp_path) == [] and L.read(tmp_path)[-1]["reason"] == "correction"
+    lines = L.ledger_path(tmp_path).read_text().splitlines()
+    # 2. a past line edited (hash recomputed or not, the chain breaks)
+    e = json.loads(lines[1]); e["sha256"] = "0" * 64; e["hash"] = L._entry_hash(e)
+    L.ledger_path(tmp_path).write_text("\n".join([lines[0], json.dumps(e), *lines[2:]]) + "\n")
+    assert any("does not link" in p for p in L.verify(tmp_path))
+    # 3. a line removed
+    L.ledger_path(tmp_path).write_text("\n".join([lines[0], *lines[2:]]) + "\n")
+    assert any("sequence" in p for p in L.verify(tmp_path))
+    # 4. a brief published with no entry
+    L.ledger_path(tmp_path).write_text("\n".join(lines) + "\n")
+    (b / "2026-11-23.json").write_text("{}")
+    assert any("no ledger entry" in p for p in L.verify(tmp_path))
+
+
+def test_ledger_sync_records_new_and_replaced_briefs_once(tmp_path):
+    from digest import ledger as L
+    b = tmp_path / "data" / "briefs"; b.mkdir(parents=True)
+    (b / "2026-11-20.json").write_text("{}")
+    assert [e["reason"] for e in L.sync(tmp_path)] == ["baseline"]
+    assert L.sync(tmp_path) == []                                    # nothing changed: nothing recorded
+    (b / "2026-11-20.json").write_text('{"fixed": true}')
+    (b / "2026-11-21.json").write_text("{}")
+    assert sorted(e["reason"] for e in L.sync(tmp_path)) == ["published", "replaced"]
+    assert L.verify(tmp_path) == []

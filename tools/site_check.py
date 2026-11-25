@@ -3,6 +3,7 @@
 Fails (exit 1) when the live site is not what we deployed:
   - build.json's commit is not on main
   - a live file's SHA-256 differs from build.json
+  - the ledger head the live site was built with is not in the repository's ledger (history rewritten)
   - http:// does not redirect to https://, or the Content-Security-Policy is missing
 Warns only (exit 0) on broken source links in the latest brief: many sites refuse bots.
 """
@@ -41,6 +42,15 @@ def main() -> int:
     rows.append(("deployed commit", f"{commit[:10]} built {manifest.get('built_at')}", "ok" if on_main else "NOT ON MAIN"))
     if not on_main:
         problems.append(f"live site built from {commit!r}, which is not a commit on main")
+
+    live_head = manifest.get("ledger_head")
+    if live_head:
+        sys.path.insert(0, str(ROOT))
+        from digest.ledger import GENESIS, read
+        known = {GENESIS, *(e["hash"] for e in read(ROOT))}
+        rows.append(("ledger head", live_head[:12], "ok" if live_head in known else "NOT IN LEDGER"))
+        if live_head not in known:
+            problems.append("the live site's ledger head is not in the repository's ledger: history was rewritten")
 
     for path in SAMPLE:
         want = manifest.get("files", {}).get(path)

@@ -32,6 +32,7 @@ jobs:
       published: ${{ steps.c.outputs.published }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with: { fetch-depth: 0 }     # full history so tools/publish.sh can rebase onto a concurrent push
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with: { python-version: "3.12", cache: pip }
       - run: pip install -r requirements.txt
@@ -59,13 +60,9 @@ jobs:
       - id: c
         name: Commit
         run: |
-          git config user.name  "watchfloor-bot"
-          git config user.email "watchfloor-bot@users.noreply.github.com"
-          git add data/ state/
-          if git diff --cached --quiet; then echo "published=false" >> "$GITHUB_OUTPUT"; exit 0; fi
-          git commit -m "brief (cloud): $(date -u +%F)"
-          git pull --rebase --autostash -X theirs && git push
-          echo "published=true" >> "$GITHUB_OUTPUT"
+          before=$(git rev-parse HEAD)
+          tools/publish.sh "brief (cloud): $(date -u +%F)"      # also appends to the tamper-evident ledger
+          if [ "$(git rev-parse HEAD)" = "$before" ]; then echo "published=false"; else echo "published=true"; fi >> "$GITHUB_OUTPUT"
       - name: Dead-man's switch
         if: success() && env.HC_URL != ''
         env: { HC_URL: "${{ secrets.HEALTHCHECK_URL_BRIEF }}" }
@@ -75,4 +72,4 @@ jobs:
     needs: brief
     if: needs.brief.outputs.published == 'true'
     uses: ./.github/workflows/pages.yml
-    permissions: { contents: read, pages: write, id-token: write }
+    permissions: { contents: read, pages: write, id-token: write, attestations: write }

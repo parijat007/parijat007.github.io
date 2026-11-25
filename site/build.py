@@ -255,8 +255,10 @@ def write_manifest(out: Path) -> None:
         ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
     files = {str(f.relative_to(out)): hashlib.sha256(f.read_bytes()).hexdigest()
              for f in sorted(out.rglob("*")) if f.is_file() and f.name != "build.json"}
+    sys.path.insert(0, str(ROOT))
+    from digest.ledger import head as ledger_head
     (out / "build.json").write_text(json.dumps({"commit": commit, "built_at": NOW.isoformat(timespec="seconds"),
-                                               "files": files}, indent=1))
+                                               "ledger_head": ledger_head(ROOT), "files": files}, indent=1))
 
 
 if __name__ == "__main__":

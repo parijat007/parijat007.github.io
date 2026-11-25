@@ -49,4 +49,4 @@ jobs:
   deploy:
     needs: watch
     uses: ./.github/workflows/pages.yml
-    permissions: { contents: read, pages: write, id-token: write }
+    permissions: { contents: read, pages: write, id-token: write, attestations: write }

@@ -28,6 +28,10 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write          # Sigstore signing of the build provenance
+      attestations: write
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -36,6 +40,10 @@ jobs:
         with: { python-version: "3.12", cache: pip }
       - run: pip install -r requirements.txt
       - run: python site/build.py --out _site
+      # Signed build provenance (Sigstore, public transparency log): proves build.json, and through its
+      # per-file hashes and ledger head every file of the site, came from this repository's workflow.
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
+        with: { subject-path: _site/build.json }
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with: { path: _site }
   deploy:

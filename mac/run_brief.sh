@@ -73,15 +73,12 @@ fi
 export WF_BRIEF_WINDOW_UTC="10-17"   # a run outside 5 AM-noon EST is not the morning brief
 caffeinate -i "$REPO_DIR/.venv/bin/python" -m digest.main --skip-if-exists
 
-git add data/ state/
-if ! git diff --cached --quiet; then
-  git -c user.name="watchfloor-bot" -c user.email="watchfloor-bot@users.noreply.github.com" commit -qm "brief: $(date +%F)"
-  if ! git push --quiet "$REMOTE" HEAD:main; then
-    # The cloud pushed first (e.g. the watch or a cloud brief): replay on top, published copy wins, retry once.
-    git pull --rebase -X ours --quiet "$REMOTE" main || { git rebase --abort 2>/dev/null || true; }
-    git push --quiet "$REMOTE" HEAD:main || echo "push failed twice; the cloud brief covers today"
-  fi
-  echo "pushed; GitHub Pages deploy starts automatically"
+# Commit + push, recording the brief in the tamper-evident ledger on top of the published chain.
+# On a conflict the copy already published wins (the cloud may have pushed first).
+if PYTHON="$REPO_DIR/.venv/bin/python" PUBLISH_PREFER=ours tools/publish.sh "brief: $(date +%F)" "$REMOTE"; then
+  echo "GitHub Pages deploy starts automatically if anything was pushed"
+else
+  echo "publish failed; the cloud brief covers today"
 fi
 [[ -n "$HC_URL" ]] && curl -fsS -m 10 "$HC_URL" >/dev/null || true
 echo "=== $(date '+%F %T') brief run done ==="
