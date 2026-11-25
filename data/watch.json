@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-25T19:56:30+00:00",
+ "updated": "2026-11-25T20:20:23+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
@@ -251,7 +251,7 @@
     "score": 0.0086,
     "percentile": 0.56
    },
-   "poc": 0,
+   "poc": 1,
    "kev_due": "2026-11-28",
    "ransomware": "Unknown",
    "stack_match": [],
@@ -339,7 +339,7 @@
     "score": 0.0429,
     "percentile": 0.919
    },
-   "poc": 4,
+   "poc": 5,
    "kev_due": "2026-11-27",
    "ransomware": "Unknown",
    "stack_match": [],
@@ -596,7 +596,7 @@
    ],
    "cvss": null,
    "epss": null,
-   "poc": 3,
+   "poc": 5,
    "kev_due": "2026-11-27",
    "ransomware": "Unknown",
    "stack_match": [],
@@ -2100,7 +2100,7 @@
     "score": 0.5927,
     "percentile": 0.993
    },
-   "poc": 83,
+   "poc": 84,
    "kev_due": null,
    "ransomware": null,
    "stack_match": [
