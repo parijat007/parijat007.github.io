@@ -1,18 +1,18 @@
 {
- "updated": "2026-11-24T03:38:18+00:00",
+ "updated": "2026-11-25T00:06:29+00:00",
  "site": {
   "home": {
    "url": "https://theparijat.com/",
    "scores": {
-    "performance": 0.97,
+    "performance": 1,
     "accessibility": 1,
     "best-practices": 1,
     "seo": 1
    },
-   "lcp_ms": 916,
+   "lcp_ms": 907,
    "cls": 0,
-   "tbt_ms": 187,
-   "bytes": 161945
+   "tbt_ms": 55,
+   "bytes": 162000
   },
   "today": {
    "url": "https://theparijat.com/today/",
@@ -22,10 +22,10 @@
     "best-practices": 1,
     "seo": 1
    },
-   "lcp_ms": 757,
+   "lcp_ms": 755,
    "cls": 0,
-   "tbt_ms": 42,
-   "bytes": 102091
+   "tbt_ms": 0,
+   "bytes": 101858
   },
   "watch": {
    "url": "https://theparijat.com/watch/",
@@ -35,39 +35,39 @@
     "best-practices": 1,
     "seo": 1
    },
-   "lcp_ms": 763,
+   "lcp_ms": 829,
    "cls": 0,
-   "tbt_ms": 0,
-   "bytes": 145198
+   "tbt_ms": 18,
+   "bytes": 146292
   }
  },
  "pipeline": {
   "brief": {
-   "runs": 15,
-   "success_rate": 0.867,
-   "p50_s": 63,
+   "runs": 20,
+   "success_rate": 0.9,
+   "p50_s": 29,
    "max_s": 250,
-   "scheduled_runs": 2,
-   "schedule_delay_p50_min": 518,
+   "scheduled_runs": 5,
+   "schedule_delay_p50_min": 556,
    "schedule_delay_max_min": 644
   },
   "watch": {
-   "runs": 50,
-   "success_rate": 0.98,
-   "p50_s": 58,
-   "max_s": 81,
-   "scheduled_runs": 7,
+   "runs": 75,
+   "success_rate": 0.973,
+   "p50_s": 62,
+   "max_s": 103,
+   "scheduled_runs": 9,
    "schedule_delay_p50_min": 36,
    "schedule_delay_max_min": 59
   },
   "health": {
-   "runs": 14,
+   "runs": 38,
    "success_rate": 1.0,
    "p50_s": 18,
    "max_s": 30,
-   "scheduled_runs": 1,
-   "schedule_delay_p50_min": 5,
-   "schedule_delay_max_min": 5
+   "scheduled_runs": 3,
+   "schedule_delay_p50_min": 7,
+   "schedule_delay_max_min": 28
   }
  },
  "models": {
@@ -78,11 +78,11 @@
    "groq": 1
   },
   "analyst_rate": 1.0,
-  "llm_s_p50": null,
-  "total_s_p50": null,
+  "llm_s_p50": 27,
+  "total_s_p50": 74,
   "top_failures": {}
  },
  "alerts": [
-  "brief: 87% of runs succeeded in the last 7 days"
+  "Daily brief: 90% of runs succeeded in the last 7 days"
  ]
 }
