@@ -14,7 +14,7 @@ import argparse
 import json
 import logging
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -87,6 +87,17 @@ def missed_jobs(now: datetime, root: Path = ROOT) -> dict:
     patch_tuesday = now.weekday() == 1 and 8 <= now.day <= 14
     sent = (root / "data" / "patchday" / f"{now.strftime('%Y-%b')}.json").exists()
     out["rerun_patchday"] = patch_tuesday and now.hour >= 19 and not sent
+    # Cisco: yesterday must have been checked by 08:00 UTC (the daily run is at 06:13)
+    mark = root / "state" / "cisco_checked.json"
+    checked = json.loads(mark.read_text()).get("day", "") if mark.exists() else ""
+    out["rerun_cisco"] = now.hour >= 8 and checked < (now.date() - timedelta(days=1)).isoformat()
+    # Oracle: third Tuesday of the month; its edition must exist from the next morning for a week
+    first = now.date().replace(day=1)
+    third = first + timedelta(days=(1 - first.weekday()) % 7 + 14)
+    days_after = (now.date() - third).days
+    oracle_sent = (root / "data" / "patchday" / f"oracle-{now.strftime('%Y-%b')}.json").exists()
+    out["rerun_oracle"] = 1 <= days_after <= 7 and now.hour >= 8 and not oracle_sent
+    out["oracle_month"] = now.strftime("%Y-%b")
     return out
 
 
@@ -109,6 +120,9 @@ def main() -> None:
             fh.write(f"rerun_watch={str(res['rerun_watch']).lower()}\n")
             fh.write(f"rerun_perf={str(res['rerun_perf']).lower()}\n")
             fh.write(f"rerun_patchday={str(res['rerun_patchday']).lower()}\n")
+            fh.write(f"rerun_cisco={str(res['rerun_cisco']).lower()}\n")
+            fh.write(f"rerun_oracle={str(res['rerun_oracle']).lower()}\n")
+            fh.write(f"oracle_month={res['oracle_month']}\n")
     summary = os.environ.get("GITHUB_STEP_SUMMARY")
     if summary:
         with open(summary, "a") as fh:
