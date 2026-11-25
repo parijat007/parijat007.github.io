@@ -37,6 +37,17 @@ def _wrap(draw, text: str, font, width_px: int, max_lines: int) -> list[str]:
     return lines
 
 
+def mark(d, x: int, y: int, size: int) -> None:
+    """The Watchfloor mark (brand/watchfloor-mark.svg): 3x3 tiles, the top-right one red."""
+    k = size / 64
+    d.rounded_rectangle([x, y, x + size, y + size], radius=14 * k, fill=PANEL)
+    for r in range(3):
+        for c in range(3):
+            cx, cy = x + (10 + c * 16) * k, y + (10 + r * 16) * k
+            d.rounded_rectangle([cx, cy, cx + 12 * k, cy + 12 * k], radius=2.5 * k,
+                                fill=BREACH if (r, c) == (0, 2) else "#364259")
+
+
 def card(out: Path, kicker: str, title: str, detail: str = "", accent: str = BREACH, footer: str = "theparijat.com") -> Path:
     img = Image.new("RGB", (W, H), BASE)
     d = ImageDraw.Draw(img)
@@ -54,7 +65,8 @@ def card(out: Path, kicker: str, title: str, detail: str = "", accent: str = BRE
             d.text((80, y + 24), line, font=df, fill=MUTED)
             y += 44
     d.line([80, H - 96, W - 80, H - 96], fill=RULE, width=2)
-    d.text((80, H - 74), "Watchfloor", font=_font("bold", 30), fill=TEXT)
+    mark(d, 80, H - 78, 36)
+    d.text((128, H - 74), "Watchfloor", font=_font("bold", 30), fill=TEXT)
     d.text((W - 80, H - 74), footer, font=_font("regular", 28), fill=MUTED, anchor="ra")
     out.parent.mkdir(parents=True, exist_ok=True)
     img.save(out, "PNG", optimize=True)
