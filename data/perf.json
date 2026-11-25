@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-25T00:06:29+00:00",
+ "updated": "2026-11-25T01:07:14+00:00",
  "site": {
   "home": {
    "url": "https://theparijat.com/",
@@ -9,10 +9,10 @@
     "best-practices": 1,
     "seo": 1
    },
-   "lcp_ms": 907,
+   "lcp_ms": 845,
    "cls": 0,
-   "tbt_ms": 55,
-   "bytes": 162000
+   "tbt_ms": 21,
+   "bytes": 162068
   },
   "today": {
    "url": "https://theparijat.com/today/",
@@ -22,10 +22,10 @@
     "best-practices": 1,
     "seo": 1
    },
-   "lcp_ms": 755,
+   "lcp_ms": 762,
    "cls": 0,
    "tbt_ms": 0,
-   "bytes": 101858
+   "bytes": 101893
   },
   "watch": {
    "url": "https://theparijat.com/watch/",
@@ -35,10 +35,10 @@
     "best-practices": 1,
     "seo": 1
    },
-   "lcp_ms": 829,
+   "lcp_ms": 805,
    "cls": 0,
-   "tbt_ms": 18,
-   "bytes": 146292
+   "tbt_ms": 0,
+   "bytes": 146435
   }
  },
  "pipeline": {
@@ -52,16 +52,16 @@
    "schedule_delay_max_min": 644
   },
   "watch": {
-   "runs": 75,
-   "success_rate": 0.973,
-   "p50_s": 62,
-   "max_s": 103,
-   "scheduled_runs": 9,
-   "schedule_delay_p50_min": 36,
+   "runs": 79,
+   "success_rate": 0.975,
+   "p50_s": 63,
+   "max_s": 107,
+   "scheduled_runs": 10,
+   "schedule_delay_p50_min": 34,
    "schedule_delay_max_min": 59
   },
   "health": {
-   "runs": 38,
+   "runs": 40,
    "success_rate": 1.0,
    "p50_s": 18,
    "max_s": 30,

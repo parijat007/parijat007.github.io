@@ -54,24 +54,24 @@
     "accessibility": 1,
     "best-practices": 1,
     "seo": 1,
-    "lcp_ms": 907,
-    "bytes": 162000
+    "lcp_ms": 845,
+    "bytes": 162068
    },
    "today": {
     "performance": 1,
     "accessibility": 1,
     "best-practices": 1,
     "seo": 1,
-    "lcp_ms": 755,
-    "bytes": 101858
+    "lcp_ms": 762,
+    "bytes": 101893
    },
    "watch": {
     "performance": 1,
     "accessibility": 1,
     "best-practices": 1,
     "seo": 1,
-    "lcp_ms": 829,
-    "bytes": 146292
+    "lcp_ms": 805,
+    "bytes": 146435
    }
   },
   "pipeline": {
@@ -81,8 +81,8 @@
     "delay_max_min": 644
    },
    "watch": {
-    "success_rate": 0.973,
-    "p50_s": 62,
+    "success_rate": 0.975,
+    "p50_s": 63,
     "delay_max_min": 59
    },
    "health": {
