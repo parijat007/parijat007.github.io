@@ -1,0 +1,70 @@
+name: Oracle and Cisco patch days
+
+# Oracle: third Tuesday of every month, around 20:00 UTC (quarterly CPU or monthly CSPU); acts once.
+# Cisco: daily check of the previous day; an edition only when a bundle of new advisories was released.
+# Facts-only, from the vendors' CSAF files (tools/csaf_patchday.py).
+on:
+  schedule:
+    - cron: "40 21 * * 2"     # Oracle
+    - cron: "40 23 * * 2"     # Oracle retry, in case it published late
+    - cron: "13 6 * * *"      # Cisco, previous UTC day
+  workflow_dispatch:
+    inputs:
+      vendor:
+        type: choice
+        options: [oracle, cisco]
+        default: oracle
+      month:
+        description: "Oracle release month, e.g. 2026-Nov (blank = today, release day only)"
+        type: string
+        default: ""
+      day:
+        description: "Cisco publication day, YYYY-MM-DD (blank = yesterday)"
+        type: string
+        default: ""
+      dry_run:
+        description: "Print only: no Telegram, no commit"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: data-writer
+  cancel-in-progress: false
+
+jobs:
+  edition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write          # commit data/patchday
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install --require-hashes -r requirements.lock
+      - name: Summarize
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+          SCHEDULE: ${{ github.event.schedule }}
+          VENDOR: ${{ inputs.vendor }}
+          MONTH: ${{ inputs.month }}
+          DAY: ${{ inputs.day }}
+          DRY: ${{ inputs.dry_run }}
+        run: |
+          if [ -z "$VENDOR" ]; then
+            if [ "$SCHEDULE" = "13 6 * * *" ]; then VENDOR=cisco; else VENDOR=oracle; fi
+          fi
+          args=("$VENDOR")
+          [ -n "$MONTH" ] && args+=(--month "$MONTH")
+          [ -n "$DAY" ] && args+=(--day "$DAY")
+          [ "$DRY" = "true" ] && args+=(--dry-run)
+          python tools/csaf_patchday.py "${args[@]}"
+      - name: Commit
+        if: ${{ inputs.dry_run != true }}
+        run: |
+          tools/publish.sh "patch day: $(date -u +%F)"

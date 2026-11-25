@@ -662,3 +662,34 @@ def test_ledger_sync_records_new_and_replaced_briefs_once(tmp_path):
     (b / "2026-11-21.json").write_text("{}")
     assert sorted(e["reason"] for e in L.sync(tmp_path)) == ["published", "replaced"]
     assert L.verify(tmp_path) == []
+
+
+def _csaf_tool():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("csaf_patchday", HERE.parent / "tools" / "csaf_patchday.py")
+    m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+    return m
+
+
+def test_csaf_summary_merges_cves_skips_vex_and_flags_kev():
+    t = _csaf_tool()
+    doc = json.loads((HERE / "csaf_sample.json").read_text())
+    s = t.summarize_csaf([doc], kev={"CVE-2026-0002"})
+    assert s["total"] == 2                                            # 0003 is VEX not-affected; 0002 merged
+    v2 = next(v for v in s["exploited"] if v["cve"] == "CVE-2026-0002")
+    assert v2["cvss"] == 7.1 and v2["severity"] == "High"             # highest score wins; severity derived
+    assert v2["families"] == ["Oracle Database Server", "Oracle Fusion Middleware"]
+    assert v2["title"] == "Database privilege escalation"             # from the description note, whitespace fixed
+    assert s["critical"] == 1 and s["remote_noauth"] == 1
+    assert [v["cve"] for v in s["top"]] == ["CVE-2026-0001"]
+    text = t.message("Oracle", "Critical Security Patch Update, November 2026", s, "https://example.test")
+    assert "2 CVEs · 1 critical · 1 exploitable remotely without login · 1 in CISA KEV" in text
+    assert text.index("Exploited now") < text.index("Critical or remote")
+
+
+def test_oracle_release_day_is_third_tuesday():
+    from datetime import date
+    t = _csaf_tool()
+    assert t.third_tuesday(date(2026, 11, 3)) == date(2026, 11, 17)
+    assert t.third_tuesday(date(2026, 12, 1)) == date(2026, 12, 15)
+    assert t.third_tuesday(date(2027, 1, 30)) == date(2027, 1, 19)
