@@ -131,16 +131,21 @@ def third_tuesday(d: date) -> date:
     return first + timedelta(days=(1 - first.weekday()) % 7 + 14)
 
 
-def oracle_release(month: date) -> tuple[str, str, str]:
-    """(kind, csaf url, advisory page) for a release month; the CPU months first try 'cpu', others 'cspu'."""
+def oracle_release(month: date) -> tuple[str, str, str, dict | None]:
+    """(kind, csaf url, advisory page, document) for a release month; CPU months try 'cpu' first, others 'cspu'.
+    A plain GET: Oracle's CDN does not answer HEAD requests reliably."""
     mon, year = month.strftime("%b").lower(), month.year
     kinds = ["cpu", "cspu"] if month.month in CPU_MONTHS else ["cspu", "cpu"]
     for kind in kinds:
         url = ORACLE_CSAF.format(kind=kind, mon=mon, year=year)
-        r = requests.head(url, headers=HDR, timeout=30, allow_redirects=True)
+        r = requests.get(url, headers=HDR, timeout=120)
+        print(f"  {url}: HTTP {r.status_code}")
         if r.status_code == 200:
-            return kind, url, ORACLE_PAGE.format(kind=kind, mon=mon, year=year)
-    return "", "", ""
+            try:
+                return kind, url, ORACLE_PAGE.format(kind=kind, mon=mon, year=year), r.json()
+            except ValueError:
+                continue
+    return "", "", "", None
 
 
 def cisco_advisories_for(day: date) -> list[dict]:
@@ -168,7 +173,23 @@ def cisco_advisories_for(day: date) -> list[dict]:
 
 # ---------- message ----------
 
-def message(vendor: str, label: str, s: dict, source: str, n_adv: int | None = None) -> str:
+def advisories(docs: list[dict], kev: set[str]) -> list[dict]:
+    """One line per advisory (Cisco): its title, CVEs, highest CVSS, and whether any CVE is in KEV."""
+    out = []
+    for d in docs:
+        doc = d.get("document") or {}
+        cves = sorted({v.get("cve") for v in d.get("vulnerabilities") or [] if (v.get("cve") or "").startswith("CVE-")})
+        scores = [x for v in d.get("vulnerabilities") or [] for x in [_cvss(v)[0]] if x is not None]
+        vecs = [_cvss(v)[2] for v in d.get("vulnerabilities") or []]
+        out.append({"id": (doc.get("tracking") or {}).get("id", ""), "title": doc.get("title", ""),
+                    "cves": cves, "cvss": max(scores) if scores else None,
+                    "remote_noauth": any("AV:N" in x and "PR:N" in x for x in vecs),
+                    "exploited": any(c in kev for c in cves)})
+    return sorted(out, key=lambda a: (not a["exploited"], -(a["cvss"] or 0)))
+
+
+def message(vendor: str, label: str, s: dict, source: str, n_adv: int | None = None,
+            advs: list[dict] | None = None) -> str:
     def safe(t: str) -> str:
         return "".join(" " if ch in "*_`[]" else ch for ch in t)
 
@@ -183,6 +204,16 @@ def message(vendor: str, label: str, s: dict, source: str, n_adv: int | None = N
            f"{len(s['exploited'])} in CISA KEV"]
     if s["families"]:
         out.append("Most fixes: " + ", ".join(f"{safe(f)} ({n})" for f, n in s["families"]))
+    if advs is not None:
+        def aline(a):
+            bits = [b for b in ("in CISA KEV" if a["exploited"] else "",
+                                f"CVSS {a['cvss']:g}" if a["cvss"] is not None else "",
+                                "remote, no login" if a["remote_noauth"] else "",
+                                f"{len(a['cves'])} CVE" + ("s" if len(a["cves"]) != 1 else "")) if b]
+            return f"• {safe(a['title'][:90])} ({'; '.join(bits)})"
+        out += ["", "*Advisories (highest risk first):*", *[aline(a) for a in advs[:10]]]
+        out += ["", f"Source: {source}"]
+        return "\n".join(out)
     if s["exploited"]:
         out += ["", "*Exploited now (patch first):*", *[line(v) for v in s["exploited"]]]
     if s["top"]:
@@ -216,13 +247,11 @@ def run_oracle(args, now: datetime) -> int:
     if args.fixture:
         kind, page, docs = "cspu", "fixture", [json.loads(Path(args.fixture).read_text())]
     else:
-        kind, url, page = oracle_release(month)
-        if not url:
+        kind, url, page, doc = oracle_release(month)
+        if not doc:
             print(f"Oracle has not published a CSAF file for {rid} yet")
             return 0
-        r = requests.get(url, headers=HDR, timeout=120)
-        r.raise_for_status()
-        docs = [r.json()]
+        docs = [doc]
     s = summarize_csaf(docs, set() if args.fixture else kev_ids())
     name = "Critical Patch Update" if kind == "cpu" else "Critical Security Patch Update"
     label = f"{name}, {month.strftime('%B %Y')}"
@@ -240,11 +269,12 @@ def run_cisco(args, now: datetime) -> int:
     if len(docs) < (1 if args.fixture else args.min_advisories):
         print(f"Cisco {day}: {len(docs)} new advisories, below the bundle threshold of {args.min_advisories}")
         return 0
-    s = summarize_csaf(docs, set() if args.fixture else kev_ids())
+    kev = set() if args.fixture else kev_ids()
+    s = summarize_csaf(docs, kev)
     label = f"security advisory bundle, {day.strftime('%d %B %Y')}"
     src = "https://sec.cloudapps.cisco.com/security/center/publicationListing.x"
-    advs = [((d.get("document") or {}).get("tracking") or {}).get("id") for d in docs]
-    deliver(message("Cisco", label, s, src, n_adv=len(docs)), out_f,
+    advs = advisories(docs, kev)
+    deliver(message("Cisco", label, s, src, n_adv=len(docs), advs=advs), out_f,
             {"vendor": "cisco", "id": day.isoformat(), "advisories": advs, "source": src, **s}, args.dry_run)
     return 0
 
