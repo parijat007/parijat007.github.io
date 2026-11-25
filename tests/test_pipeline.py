@@ -954,3 +954,21 @@ def test_openrouter_discovery_accepts_switchable_reasoning_models(monkeypatch):
     llm._DISCOVERED.clear()
     assert llm.discover_free_models({"base_url": "https://x.test/api/v1"}) == ["a/fast:free", "b/think:free", "c/structured:free"]
     llm._DISCOVERED.clear()
+
+
+def test_channel_posts_recent_notes_once(tmp_path, monkeypatch):
+    from digest import channel
+    (tmp_path / "data" / "notes").mkdir(parents=True)
+    (tmp_path / "data" / "notes" / "2026-11-25-spot.md").write_text(
+        '---\ntitle: "AI Security Spotlight: tools"\ndate: 2026-11-25\nsummary: >\n  Short\n  summary.\ntags: [AI Security Spotlight]\n---\nBody')
+    (tmp_path / "data" / "notes" / "2026-11-10-old.md").write_text('---\ntitle: "Old"\ndate: 2026-11-10\nsummary: x\n---\nBody')
+    sent = []
+
+    class R:
+        status_code = 200
+        text = ""
+    monkeypatch.setattr(channel.requests, "post", lambda url, **k: sent.append(k["json"]["text"]) or R())
+    monkeypatch.setenv("TELEGRAM_CHANNEL_ID", "@t"); monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "x")
+    assert channel.post_notes("2026-11-26", "https://site.test", tmp_path) == ["2026-11-25-spot"]
+    assert channel.post_notes("2026-11-27", "https://site.test", tmp_path) == []          # once only
+    assert sent == ["AI Security Spotlight: tools\n\nShort summary.\n\nRead it: https://site.test/notes/2026-11-25-spot/"]

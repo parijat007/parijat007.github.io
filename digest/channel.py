@@ -61,6 +61,49 @@ def post(digest: dict, run_date: str, base: str, root: Path, dry_run: bool = Fal
     return True
 
 
+def note_message(note: dict, base: str) -> str:
+    kind = "AI Security Spotlight" if "AI Security Spotlight" in (note.get("tags") or []) else "Analyst note"
+    title = str(note.get("title", "")).removeprefix("AI Security Spotlight: ").strip()
+    text = f"{kind}: {title}\n\n{' '.join(str(note.get('summary', '')).split())}\n\nRead it: {base}/notes/{note['slug']}/"
+    return text if len(text) <= MAX else text[:MAX - 1] + "…"
+
+
+def post_notes(run_date: str, base: str, root: Path, days: int = 3, dry_run: bool = False) -> list[str]:
+    """Post each analyst note dated within `days` of the run, once (recorded in state/channel_posted.json)."""
+    import yaml  # noqa: PLC0415
+    chan, token = os.environ.get("TELEGRAM_CHANNEL_ID"), os.environ.get("TELEGRAM_BOT_TOKEN")
+    if not (chan and token and base):
+        return []
+    marker = root / "state" / "channel_posted.json"
+    done = json.loads(marker.read_text()) if marker.exists() else {}
+    run = datetime.fromisoformat(run_date)
+    posted = []
+    for f in sorted((root / "data" / "notes").glob("*.md")) if (root / "data" / "notes").exists() else []:
+        key = f"note:{f.stem}"
+        raw = f.read_text()
+        if key in done or not raw.startswith("---"):
+            continue
+        meta = yaml.safe_load(raw.split("---", 2)[1]) or {}
+        when = datetime.fromisoformat(str(meta.get("date", f.stem[:10])))
+        if not 0 <= (run - when).days <= days:
+            continue
+        text = note_message({**meta, "slug": f.stem}, base)
+        if dry_run:
+            print(text)
+            continue
+        r = requests.post(f"https://api.telegram.org/bot{token}/sendMessage", timeout=60,
+                          json={"chat_id": chan, "text": text, "disable_web_page_preview": False})
+        if r.status_code >= 300:
+            log.warning("channel note post failed: HTTP %s %s", r.status_code, r.text[:200])
+            continue
+        done[key] = datetime.now().astimezone().isoformat(timespec="seconds")
+        posted.append(f.stem)
+    if posted:
+        marker.parent.mkdir(parents=True, exist_ok=True)
+        marker.write_text(json.dumps(dict(sorted(done.items())[-120:]), indent=1))
+    return posted
+
+
 WELCOME = """Watchfloor: a daily, source-checked cyber threat brief, plus an hourly watch for newly exploited vulnerabilities.
 
 One post a day: the top items, whether each is confirmed exploited, and a link to the full brief with its sources.

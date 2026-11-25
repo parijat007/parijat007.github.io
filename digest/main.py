@@ -377,6 +377,8 @@ def run(args) -> int:
             if cfg.get("delivery", {}).get("telegram_channel"):
                 os.environ.setdefault("TELEGRAM_CHANNEL_ID", cfg["delivery"]["telegram_channel"])
             post_channel(digest, run_date, (cfg.get("site", {}).get("url") or "").rstrip("/"), ROOT, dry_run=args.dry_run)
+            from .channel import post_notes
+            post_notes(run_date, (cfg.get("site", {}).get("url") or "").rstrip("/"), ROOT, dry_run=args.dry_run)
         except Exception as e:   # never fail a published brief over the channel
             log.warning("channel post failed: %s", e)
     if not args.dry_run and not args.llm_fixture:
