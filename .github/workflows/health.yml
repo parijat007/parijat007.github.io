@@ -1,7 +1,8 @@
 name: Health check
 
 # Hourly. Re-runs the brief if it is missing or facts-only after 14:00 UTC (9 AM EST),
-# re-runs the watch if it is more than 3 hours old, and alerts on Telegram.
+# re-runs the watch if it is more than 3 hours old, and alerts on Telegram. Also checks integrity every hour:
+# the ledger chain, the live site against the deployed build, and the Sigstore signature of build.json.
 # Reads data only; the re-runs do the writing.
 on:
   schedule:
@@ -11,6 +12,7 @@ on:
 permissions:
   contents: read
   actions: write             # dispatch brief.yml / watch.yml
+  attestations: read         # verify the live site's signed build provenance
 
 concurrency:
   group: health
@@ -19,10 +21,10 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with: { persist-credentials: false }
+        with: { fetch-depth: 0, persist-credentials: false }   # full history: "deployed commit is on main"
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with: { python-version: "3.12", cache: pip }
       - run: pip install -r requirements.txt
@@ -56,3 +58,20 @@ jobs:
             gh api -X POST "repos/${{ github.repository }}/actions/workflows/backup.yml/dispatches" -f ref=main
             echo "backup re-run started (last success: ${last:-none})"
           fi
+      - name: Integrity (ledger, live site, signature); alert on Telegram if it fails twice
+        if: ${{ !cancelled() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if out=$(tools/integrity.sh); then echo "integrity OK"; exit 0; fi
+          echo "first check failed (a deploy may be in progress); retrying in 3 minutes"; echo "$out"
+          sleep 180
+          if out=$(tools/integrity.sh); then echo "integrity OK on retry"; exit 0; fi
+          echo "::error::integrity check failed"; echo "$out"
+          text=$(printf '🛑 Watchfloor integrity check FAILED\n%s\n\nRun: %s/%s/actions/runs/%s\nDo not trust the live site until this is explained.' \
+            "$out" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID")
+          curl -fsS -m 15 "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" --data-urlencode "text=${text}" >/dev/null || true
+          exit 1
