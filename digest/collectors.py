@@ -313,7 +313,8 @@ def poc_counts(cves: list[str], limit: int = 40) -> dict:
             if r.status_code == 200:
                 repos = r.json()
                 out[cve] = {"count": len(repos),
-                            "top_repo_stars": max((p.get("stargazers_count", 0) for p in repos), default=0)}
+                            "top_repo_stars": max((p.get("stargazers_count", 0) for p in repos), default=0),
+                            "first": min((p.get("created_at") or "9999")[:10] for p in repos) if repos else None}
             else:
                 out[cve] = {"count": 0}
         except Exception as e:  # noqa: BLE001

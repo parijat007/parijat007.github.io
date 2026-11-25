@@ -28,7 +28,7 @@
       <dt>What happened</dt><dd>{{ e.summary }}</dd>
       <dt>Affected</dt><dd>{{ e.target }}</dd>
       {% if e.risk %}<dt>Risk</dt><dd class="risk">{{ e.risk | riskline }}</dd>{% endif %}
-      {% if e.identifiers %}<dt>Identifiers</dt><dd class="ids">{% for i in e.identifiers %}<span class="id">{{ i }}</span>{% endfor %}</dd>{% endif %}
+      {% if e.identifiers %}<dt>Identifiers</dt><dd class="ids">{% for i in e.identifiers %}{% if i | upper in cve_pages %}<a class="id" href="/cve/{{ i | upper }}/" title="Exploit timeline">{{ i }}</a>{% else %}<span class="id">{{ i }}</span>{% endif %}{% endfor %}</dd>{% endif %}
       <dt>Do this</dt><dd>{{ e.action }}</dd>
       {% if e.hunt %}<dt>Hunt for</dt><dd>{{ e.hunt }}</dd>{% endif %}
       {% if e.remediation %}{{ fix(e.remediation, e.primary_source) }}{% endif %}

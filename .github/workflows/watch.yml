@@ -35,7 +35,7 @@ jobs:
         run: |
           git config user.name  "watchfloor-bot"
           git config user.email "watchfloor-bot@users.noreply.github.com"
-          git add data/watch.json
+          git add data/watch.json data/cve_timeline.json
           git diff --cached --quiet && exit 0
           git commit -m "watch: $(date -u +%FT%H:%MZ)"
           # watch.json is rebuilt in full on every run, so if another run pushed first,

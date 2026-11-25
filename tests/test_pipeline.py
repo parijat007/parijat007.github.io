@@ -896,3 +896,40 @@ def test_second_model_check_lowers_trust_never_rewrites(monkeypatch):
     assert d["items"][1]["confidence"] == "HIGH"
     monkeypatch.setattr("digest.llm.complete", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("HTTP 429")))
     assert V.verify(d, items, cfg, "gemini") == {"verifier": "groq", "status": "error"}
+
+
+def test_cve_timeline_records_earliest_facts_offline(tmp_path, monkeypatch):
+    from datetime import datetime, timezone
+    from digest import timeline as T
+    (tmp_path / "data" / "briefs").mkdir(parents=True)
+    (tmp_path / "data" / "briefs" / "2026-11-24.json").write_text(json.dumps({"run_date": "2026-11-24", "items": [
+        {"headline": "Acme gateway exploited", "identifiers": ["CVE-2026-1111", "GHSA-x"]}]}))
+    now = datetime(2026, 11, 25, 12, tzinfo=timezone.utc)
+    kev = {"CVE-2026-1111": {"dateAdded": "2026-11-23", "dueDate": "2026-12-14", "knownRansomwareCampaignUse": "Known"}}
+    items = [
+        {"source_name": "Acme PSIRT", "cves": ["CVE-2026-1111"], "published": "2026-11-20T10:00:00Z", "url": "https://acme.example/sa"},
+        {"source_name": "Acme PSIRT", "cves": ["CVE-2026-1111"], "published": "2026-11-22", "url": "https://acme.example/sa2"},
+        {"source_name": "BleepingComputer", "cves": ["CVE-2026-1111"], "url": "https://press.example/x",
+         "public_poc": {"count": 3, "first": "2026-11-21"}}]
+    watch = [{"cves": ["CVE-2026-1111"], "first_seen": "2026-11-23T08:00:00+00:00", "title": "w"},
+             {"cves": ["CVE-2026-2222"], "first_seen": "2026-11-25T01:00:00+00:00", "title": "Other"}]
+    d = T.update(now, kev, items, watch, {"Acme PSIRT": "vendor", "BleepingComputer": "press"}, root=tmp_path, fetch=False)
+    r = d["cves"]["CVE-2026-1111"]
+    assert r["events"]["vendor_advisory"] == {"date": "2026-11-20", "source": "Acme PSIRT", "url": "https://acme.example/sa"}
+    assert r["events"]["kev_added"]["date"] == "2026-11-23" and r["events"]["kev_added"]["ransomware"] == "Known"
+    assert r["events"]["poc_first_seen"]["date"] == "2026-11-21"          # earliest PoC repo, not the day we looked
+    assert r["events"]["watchfloor_first"]["date"] == "2026-11-23" and r["briefs"] == ["2026-11-24"]
+    assert "CVE-2026-2222" in d["cves"] and "GHSA-X" not in d["cves"]
+    ev = T.ordered_events(r)
+    assert [e["key"] for e in ev] == ["vendor_advisory", "poc_first_seen", "kev_added", "watchfloor_first"]
+    assert [e["day"] for e in ev] == [0, 1, 3, 3]
+
+    class R:
+        def raise_for_status(self): pass
+        def json(self): return {"truncated": False, "tree": [
+            {"type": "blob", "path": "rules-emerging-threats/2026/Exploits/CVE-2026-1111/web_acme_exploit.yml"},
+            {"type": "blob", "path": "http/cves/2026/CVE-2026-1111.yaml"}, {"type": "tree", "path": "CVE-2026-1111"},
+            {"type": "blob", "path": "README-CVE-2026-1111.md"}]}
+    monkeypatch.setattr(T.requests, "get", lambda *a, **k: R())
+    idx = T.detection_index()
+    assert {d["kind"] for d in idx["CVE-2026-1111"]} == {"Sigma", "Nuclei"} and len(idx["CVE-2026-1111"]) == 4  # 2 files x 2 repos (mocked)
