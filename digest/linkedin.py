@@ -6,12 +6,15 @@
   python -m digest.linkedin draft --from file post-idea.md
   python -m digest.linkedin list                 # drafts waiting for you
   python -m digest.linkedin show <id>
-  python -m digest.linkedin publish <id>         # shows the post and asks "Publish? [y/N]"
+  python -m digest.linkedin judge <id>           # re-run the judge (after you edit a draft)
+  python -m digest.linkedin publish <id>         # judge, show post and image, ask "Publish? [y/N]"
   python -m digest.linkedin status               # token expiry and author
 
 Drafts live outside the public repo (~/.watchfloor/linkedin). The model writes only from the
 source you point it at; every draft is checked (length, banned words, links, employer names)
-before you see it. Publishing uses LinkedIn's own API for your own profile (scope
+before you see it, gets a branded image drawn from the source (digest/post_visual.py), and is
+reviewed by the judge (digest/post_judge.py): facts matched against the source, then a second
+model. Publishing is blocked unless the judge passes, and you still approve every post. Publishing uses LinkedIn's own API for your own profile (scope
 w_member_social), never browser automation.
 """
 from __future__ import annotations
@@ -34,7 +37,7 @@ from pathlib import Path
 import requests
 import yaml
 
-from . import llm
+from . import llm, post_judge, post_visual
 from .config import load_config
 
 log = logging.getLogger("digest.linkedin")
@@ -137,8 +140,19 @@ def source_from_note(cfg: dict) -> dict:
     _, fm, body = raw.split("---", 2)
     meta = yaml.safe_load(fm)
     return {"kind": "note", "title": meta["title"], "summary": meta.get("summary", ""),
-            "text": f"{meta.get('summary', '')}\n\n{body[:9000]}",
+            "text": f"{meta.get('summary', '')}\n\n{body[:9000]}", "raw": raw,
+            "visual": post_visual.spec_from_note(meta),
             "link": f"{_site(cfg)}/notes/{f.stem}/", "urls": URL_RE.findall(raw)}
+
+
+def note_source(cfg: dict, stem: str) -> dict | None:
+    """The source for a draft made from a note, re-read from the repo (drafts made before images existed)."""
+    f = ROOT / "data" / "notes" / f"{stem}.md"
+    if not f.exists():
+        return None
+    raw = f.read_text()
+    meta = yaml.safe_load(raw.split("---", 2)[1])
+    return {"raw": raw, "visual": post_visual.spec_from_note(meta)}
 
 
 def source_from_brief(cfg: dict) -> dict:
@@ -153,13 +167,15 @@ def source_from_brief(cfg: dict) -> dict:
         lines.append(f"- {e['headline']} | label: {e.get('exploitation')} | severity: {e.get('severity')} | "
                      f"action: {e.get('action')} | fixed: {e.get('fixed_versions')} | source: {e.get('primary_source')}")
     return {"kind": "brief", "title": f"Threat brief {b['run_date']}", "summary": b.get("executive_pulse", ""),
-            "text": "\n".join(lines),
+            "text": "\n".join(lines), "raw": json.dumps(b, ensure_ascii=False),
+            "visual": {"kicker": "Daily threat brief", "title": f"Threat brief {b['run_date']}",
+                       "detail": b.get("executive_pulse", "")},
             "link": f"{_site(cfg)}/brief/{b['run_date']}/", "urls": URL_RE.findall(json.dumps(b))}
 
 
 def source_from_file(cfg: dict, path: str) -> dict:
     text = Path(path).read_text()
-    return {"kind": "file", "title": Path(path).stem, "text": text[:9000], "link": _site(cfg) + "/",
+    return {"kind": "file", "title": Path(path).stem, "text": text[:9000], "raw": text, "link": _site(cfg) + "/",
             "urls": URL_RE.findall(text)}
 
 
@@ -228,9 +244,31 @@ def draft(cfg: dict, src: dict) -> dict:
     did = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M") + "-" + hashlib.sha1(text.encode()).hexdigest()[:6]
     d = {"id": did, "created": datetime.now(timezone.utc).isoformat(timespec="seconds"), "status": "draft",
          "source": {k: src[k] for k in ("kind", "title", "link")}, "provider": provider,
-         "problems": problems, "text": text}
+         "problems": problems, "text": text, "source_raw": src.get("raw", src["text"])}
     STORE.mkdir(parents=True, exist_ok=True)
+    attach_image(d, src.get("visual"))
+    d["judge"] = post_judge.judge(text, d.get("image_text", ""), d["source_raw"], cfg, provider)
     (STORE / f"{did}.json").write_text(json.dumps(d, indent=1, ensure_ascii=False))
+    return d
+
+
+def attach_image(d: dict, spec: dict | None) -> None:
+    """Draw the post image from the source's own words and keep its text for the judge."""
+    if not spec:
+        return
+    out = post_visual.render(spec, STORE / f"{d['id']}.png")
+    d["image"], d["image_text"] = str(out), post_visual.numbers(spec)
+    d["alt"] = (spec.get("title", "") + ". " + "; ".join(spec.get("steps") or [])).strip()[:1000]
+
+
+def complete_draft(d: dict, cfg: dict) -> dict:
+    """Older drafts: fill in the source snapshot and image from the note they were drafted from."""
+    if d["source"]["kind"] == "note" and not (d.get("source_raw") and d.get("image")):
+        src = note_source(cfg, d["source"]["link"].rstrip("/").rsplit("/", 1)[-1])
+        if src:
+            d.setdefault("source_raw", src["raw"])
+            if not d.get("image") or not Path(d["image"]).exists():
+                attach_image(d, src["visual"])
     return d
 
 
@@ -243,6 +281,12 @@ def notify_draft(d: dict) -> None:
     head = f"LinkedIn draft {d['id']} ({len(d['text'])} chars, {d['provider']})"
     if d["problems"]:
         head += "\nNeeds attention: " + "; ".join(d["problems"])
+    if d.get("judge"):
+        head += "\n" + post_judge.report(d["judge"])
+    if d.get("image") and Path(d["image"]).exists():
+        with open(d["image"], "rb") as fh:
+            requests.post(f"https://api.telegram.org/bot{tok}/sendPhoto", data={"chat_id": chat,
+                          "caption": f"Image for draft {d['id']}"}, files={"photo": fh}, timeout=60)
     msg = f"{head}\n\n{d['text']}\n\nTo publish, on the Mac run:\npython -m digest.linkedin publish {d['id']}"
     requests.post(f"https://api.telegram.org/bot{tok}/sendMessage",
                   json={"chat_id": chat, "text": msg[:4000], "disable_web_page_preview": True}, timeout=20)
@@ -250,20 +294,45 @@ def notify_draft(d: dict) -> None:
 
 # ---------- publishing ----------
 
-def post(text: str, token: str, author: str, version: str) -> str:
+def _headers(token: str, version: str) -> dict:
+    return {"Authorization": f"Bearer {token}", "LinkedIn-Version": version,
+            "X-Restli-Protocol-Version": "2.0.0", "Content-Type": "application/json"}
+
+
+def upload_image(path: str, token: str, author: str, version: str) -> str:
+    """LinkedIn Images API: register an upload for this author, PUT the bytes, return the image URN."""
+    r = requests.post(f"{API}/rest/images?action=initializeUpload", headers=_headers(token, version),
+                      json={"initializeUploadRequest": {"owner": author}}, timeout=30)
+    if r.status_code != 200:
+        raise RuntimeError(f"LinkedIn image init HTTP {r.status_code}: {r.text[:300]}")
+    v = r.json()["value"]
+    with open(path, "rb") as fh:
+        u = requests.put(v["uploadUrl"], data=fh, timeout=120, headers={"Authorization": f"Bearer {token}"})
+    if u.status_code not in (200, 201):
+        raise RuntimeError(f"LinkedIn image upload HTTP {u.status_code}: {u.text[:300]}")
+    return v["image"]
+
+
+def post(text: str, token: str, author: str, version: str, image: str | None = None, alt: str = "") -> str:
     body = {"author": author, "commentary": little_text(text), "visibility": "PUBLIC",
             "distribution": {"feedDistribution": "MAIN_FEED", "targetEntities": [],
                              "thirdPartyDistributionChannels": []},
             "lifecycleState": "PUBLISHED", "isReshareDisabledByAuthor": False}
-    r = requests.post(f"{API}/rest/posts", json=body, timeout=30, headers={
-        "Authorization": f"Bearer {token}", "LinkedIn-Version": version,
-        "X-Restli-Protocol-Version": "2.0.0", "Content-Type": "application/json"})
+    if image:
+        body["content"] = {"media": {"id": image, "altText": alt[:4086]}}
+    r = requests.post(f"{API}/rest/posts", json=body, timeout=30, headers=_headers(token, version))
     if r.status_code != 201:
         raise RuntimeError(f"LinkedIn HTTP {r.status_code}: {r.text[:300]}")
     return r.headers.get("x-restli-id", "")
 
 
-def publish(cfg: dict, did: str, yes: bool = False) -> None:
+def run_judge(cfg: dict, d: dict) -> dict:
+    d["judge"] = post_judge.judge(d["text"], d.get("image_text", ""), d.get("source_raw", ""), cfg, d.get("provider"))
+    d["judged_text"] = hashlib.sha1(d["text"].encode()).hexdigest()
+    return d["judge"]
+
+
+def publish(cfg: dict, did: str, yes: bool = False, skip_judge: bool = False) -> None:
     f = STORE / f"{did}.json"
     if not f.exists():
         raise SystemExit(f"no draft {did}; run `list`")
@@ -276,13 +345,30 @@ def publish(cfg: dict, did: str, yes: bool = False) -> None:
     token, author = secret("linkedin-access-token"), secret("linkedin-person-urn")
     if not (token and author):
         raise SystemExit("not signed in: run `python -m digest.linkedin auth`")
+    complete_draft(d, cfg)
+    if not d.get("source_raw"):
+        raise SystemExit("this draft has no source to judge against; draft it again")
+    v = run_judge(cfg, d)
+    f.write_text(json.dumps(d, indent=1, ensure_ascii=False))
+    print(post_judge.report(v))
+    if v["verdict"] == "fail":
+        raise SystemExit("Not published: fix the draft (edit the JSON file), then run `judge` or `publish` again.")
+    if v["verdict"] == "unavailable" and not skip_judge:
+        raise SystemExit("Not published: no second model answered. Try again later, or pass --skip-judge "
+                         "if you have checked the post against the source yourself.")
     print("-" * 60 + f"\n{d['text']}\n" + "-" * 60)
+    if d.get("image"):
+        print(f"Image: {d['image']}")
+        if sys.platform == "darwin" and not yes:
+            subprocess.run(["open", d["image"]], check=False)
     if not yes and input("Publish this to your LinkedIn profile? [y/N] ").strip().lower() != "y":
         print("Not published.")
         return
-    urn = post(d["text"], token, author, cfg.get("linkedin", {}).get("api_version", "202608"))
+    version = cfg.get("linkedin", {}).get("api_version", "202608")
+    image = upload_image(d["image"], token, author, version) if d.get("image") else None
+    urn = post(d["text"], token, author, version, image, d.get("alt", ""))
     d.update(status="published", published=datetime.now(timezone.utc).isoformat(timespec="seconds"),
-             post_urn=urn, url=f"https://www.linkedin.com/feed/update/{urn}/" if urn else None)
+             post_urn=urn, image_urn=image, url=f"https://www.linkedin.com/feed/update/{urn}/" if urn else None)
     f.write_text(json.dumps(d, indent=1, ensure_ascii=False))
     print(f"Published: {d['url'] or urn}")
 
@@ -358,6 +444,10 @@ def main() -> None:
     p = sub.add_parser("publish")
     p.add_argument("id")
     p.add_argument("--yes", action="store_true", help="skip the confirmation prompt")
+    p.add_argument("--skip-judge", action="store_true", help="publish even if no second model is available "
+                   "(a FAIL still blocks)")
+    j = sub.add_parser("judge")
+    j.add_argument("id")
     sub.add_parser("auth")
     sub.add_parser("status")
     a = ap.parse_args()
@@ -367,7 +457,8 @@ def main() -> None:
         src = src(cfg) if src else source_from_file(cfg, a.path or sys.exit("draft --from file needs a path"))
         dr = draft(cfg, src)
         print(dr["text"] + f"\n\n[{dr['id']}] provider={dr['provider']}"
-              + (f"\nNEEDS ATTENTION: {dr['problems']}" if dr["problems"] else "\nchecks passed"))
+              + (f"\nNEEDS ATTENTION: {dr['problems']}" if dr["problems"] else "\nchecks passed")
+              + (f"\nimage: {dr['image']}" if dr.get("image") else "") + "\n" + post_judge.report(dr["judge"]))
         if not a.no_notify:
             notify_draft(dr)
     elif a.cmd == "list":
@@ -377,7 +468,12 @@ def main() -> None:
     elif a.cmd == "show":
         print(json.loads((STORE / f"{a.id}.json").read_text())["text"])
     elif a.cmd == "publish":
-        publish(cfg, a.id, a.yes)
+        publish(cfg, a.id, a.yes, a.skip_judge)
+    elif a.cmd == "judge":
+        f = STORE / f"{a.id}.json"
+        d = complete_draft(json.loads(f.read_text()), cfg)
+        print(post_judge.report(run_judge(cfg, d)) + (f"\nimage: {d['image']}" if d.get("image") else ""))
+        f.write_text(json.dumps(d, indent=1, ensure_ascii=False))
     elif a.cmd == "auth":
         auth(cfg)
     elif a.cmd == "status":

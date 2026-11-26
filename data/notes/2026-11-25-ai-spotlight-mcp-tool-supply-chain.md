@@ -8,6 +8,20 @@ summary: >
   automated attack since September. What happened, how the attack works, and what to check.
 tlp: CLEAR
 tags: [AI Security Spotlight, MCP, AI agents, Supply chain, Prompt injection]
+visual:
+  kicker: AI Security Spotlight
+  title: When the tool tells the agent what to do
+  steps:
+    - The agent reads text an attacker can influence (a ticket, log line, page or tool description)
+    - Hidden instructions ask it to troubleshoot a service
+    - It calls a legitimate tool with its own legitimate access
+    - Before 0.1.36, the ECS MCP tool returned secrets in cleartext
+    - The same instructions ask the agent to repeat or send them
+  highlight: 4
+  figures:
+    - {value: "22%", label: "of 834 flagged MCP servers: prompt injection or tool poisoning", state: reported}
+    - {value: "0.1.36", label: "ECS MCP Server fix for CVE-2026-135614", state: confirmed}
+    - {value: "1,423", label: "Langflow attempts logged on honeypots", state: reported}
 status:
   - {claim: "Prompt injection or tool poisoning in 22% of flagged MCP servers", state: reported, note: "OX Security research, 834 flagged MCP servers, July to October 2026; flagged does not mean malicious"}
   - {claim: "Amazon ECS MCP Server leaks secrets to prompt injection (CVE-2026-135614)", state: confirmed, note: "AWS advisory, fixed in 0.1.36"}
