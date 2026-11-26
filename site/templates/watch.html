@@ -4,7 +4,12 @@
 {% block main %}
 <section class="page-head">
   <h1>Hourly watch</h1>
-  <p class="lede">New CISA KEV listings, vendor security advisories and critical GitHub advisories from the last {{ retain_days }} days. No AI summaries: every row comes straight from the source. CVE ids link to their <a href="{{ root }}cve/">anatomy</a>: how fast each moved from publication to exploit code, CISA confirmation and detection. Updated {{ watch.updated | ago }}.</p>
+  <p class="lede">New CISA KEV listings, vendor security advisories and critical GitHub advisories from the last {{ retain_days }} days. No AI summaries: every row comes straight from the source. CVE ids link to their <a href="{{ root }}cve/">anatomy</a>: how fast each moved from publication to exploit code, CISA confirmation and detection. Updated <time datetime="{{ watch.updated }}" data-ago>{{ watch.updated | ago }}</time>.</p>
+{% if watch.entries %}{% set latest = watch.entries[0].first_seen %}
+  <p class="quiet" data-quiet data-latest="{{ latest }}" data-checked="{{ watch.updated }}" data-sources="{{ watch.sources | length }}">
+    Nothing new since <time datetime="{{ latest }}" data-clock>{{ latest[:16] | replace('T', ' ') }} UTC</time>. All {{ watch.sources | length }} sources were checked <time datetime="{{ watch.updated }}" data-ago>{{ watch.updated | ago }}</time>{% if watch.sources.values() | reject('ok_status') | list %}, but some reported errors (see Sources &amp; method){% endif %}.
+    <span class="stale-note">The watch has not reported for over two hours, so it may be delayed.</span>
+  </p>{% endif %}
 </section>
 <div class="filters" role="group" aria-label="Filter by type">
   <button type="button" data-f="all" aria-pressed="true">All</button>
@@ -33,7 +38,7 @@
   <td class="num">{{ "%.0f%%" | format(e.epss.score * 100) if e.epss else "–" }}</td>
   <td class="num">{{ e.poc if e.poc else "–" }}</td>
   <td class="num">{{ e.kev_due | nicedate if e.kev_due else "–" }}</td>
-  <td class="num"><time datetime="{{ e.first_seen }}">{{ e.first_seen | ago }}</time></td>
+  <td class="num"><time datetime="{{ e.first_seen }}" data-ago>{{ e.first_seen | ago }}</time></td>
 </tr>
 {% endfor %}
 </tbody></table></div>

@@ -4,7 +4,7 @@
 {% block main %}
 {% set below = [] %}{% if perf %}{% for name, v in perf.site.items() %}{% for c in ["performance", "accessibility", "best-practices", "seo"] %}{% if (v.scores[c] or 0) < (0.95 if c == "accessibility" else 0.9) %}{% set _ = below.append(name) %}{% endif %}{% endfor %}{% endfor %}{% endif %}
 <section class="page-head"><h1>Site speed</h1>
-<p class="lede">{% if perf %}Measured {{ perf.updated | ago }}. {% if below %}{{ below | unique | list | length }} page{{ '' if below | unique | list | length == 1 else 's' }} below target.{% else %}Every page measured is within its targets.{% endif %}{% else %}No measurements yet.{% endif %}</p></section>
+<p class="lede">{% if perf %}Measured <time datetime="{{ perf.updated }}" data-ago>{{ perf.updated | ago }}</time>. {% if below %}{{ below | unique | list | length }} page{{ '' if below | unique | list | length == 1 else 's' }} below target.{% else %}Every page measured is within its targets.{% endif %}{% else %}No measurements yet.{% endif %}</p></section>
 {% if perf %}
 <section class="block"><h2 class="vh">Scores</h2>
 <p class="note">Lighthouse, run daily against the live site. Scores are out of 100; targets are 90 or more (95 for accessibility).</p>
