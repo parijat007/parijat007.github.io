@@ -602,7 +602,8 @@
    },
    "epss": [],
    "briefs": [
-    "2026-11-25"
+    "2026-11-25",
+    "2026-11-26"
    ],
    "detections": [],
    "title": "Drupal Core Installer Vulnerability Allows Site Takeover and RCE"
@@ -764,7 +765,9 @@
      "score": 0.0086
     }
    ],
-   "briefs": [],
+   "briefs": [
+    "2026-11-26"
+   ],
    "detections": [],
    "title": "Hewlett Packard Enterprise (HPE) Juniper Session Smart Conductor and Session Smart Router OS Command Injection Vulnerability"
   },
@@ -1270,7 +1273,9 @@
      "score": 0.011
     }
    ],
-   "briefs": [],
+   "briefs": [
+    "2026-11-26"
+   ],
    "detections": [
     {
      "kind": "Nuclei",
@@ -1937,7 +1942,9 @@
     }
    },
    "epss": [],
-   "briefs": [],
+   "briefs": [
+    "2026-11-26"
+   ],
    "detections": [],
    "title": "CVE-2026-136267 - Improper neutralization of special elements used in an OS command in Kiro Web"
   },
@@ -1978,7 +1985,9 @@
      "score": 0.0051
     }
    ],
-   "briefs": [],
+   "briefs": [
+    "2026-11-26"
+   ],
    "detections": [],
    "title": "Danfoss AK-SM 800A Series Improper Authentication Vulnerability"
   },
@@ -2132,7 +2141,9 @@
      "score": 0.0032
     }
    ],
-   "briefs": [],
+   "briefs": [
+    "2026-11-26"
+   ],
    "detections": [],
    "title": "Mitel MiCollab Unrestricted Upload of File with Dangerous Type Vulnerability"
   },
@@ -2230,7 +2241,9 @@
      "score": 0.0255
     }
    ],
-   "briefs": [],
+   "briefs": [
+    "2026-11-26"
+   ],
    "detections": [],
    "title": "Mitel MiCollab OS Command Injection Vulnerability"
   },
@@ -2267,8 +2280,26 @@
    "briefs": [],
    "detections": [],
    "title": "TastyIgniter mail template editor allows remote code execution via server-side template injection"
+  },
+  "CVE-2026-134070": {
+   "cve": "CVE-2026-134070",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-26"
+    },
+    "published": {
+     "date": "2026-11-25",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-134070"
+    }
+   },
+   "epss": [],
+   "briefs": [
+    "2026-11-26"
+   ],
+   "detections": [],
+   "title": "AWS: Kiro Web RCE and Config Remediation Flaws"
   }
  },
  "detections_checked": "2026-11-26",
- "updated": "2026-11-26T10:20:23+00:00"
+ "updated": "2026-11-26T11:12:44+00:00"
 }
