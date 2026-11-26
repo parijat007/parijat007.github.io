@@ -5,6 +5,6 @@ feedparser>=6.0
 requests>=2.34.2
 PyYAML>=6.0
 Jinja2>=3.1
-MarkupSafe>=2.1
+MarkupSafe>=3.0.4
 Pillow>=11.0       # link-preview cards (site/og/cards.py)
 markdown-it-py>=3.0
