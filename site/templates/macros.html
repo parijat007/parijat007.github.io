@@ -56,3 +56,12 @@
 </nav>
 {% endif %}
 {%- endmacro %}
+
+
+{% macro comments(c, term) -%}
+{% if c and c.category_id %}<section class="block comments" aria-labelledby="cm-h"><h2 id="cm-h">Discussion</h2>
+<p class="muted">Comments use GitHub sign-in through giscus and are stored as public GitHub Discussions. Nothing loads from GitHub until you choose to show them.</p>
+<button type="button" class="button" data-comments data-repo="{{ c.repo }}" data-repo-id="{{ c.repo_id }}" data-category="{{ c.category }}" data-category-id="{{ c.category_id }}" data-term="{{ term }}">Show comments</button>
+<div class="giscus"></div>
+</section>{% endif %}
+{%- endmacro %}
