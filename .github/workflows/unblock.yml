@@ -1,12 +1,18 @@
 name: Unblock agent
 
-# Hourly at :25. Re-runs failed brief/watch/patch-day/deploy runs once, merges the owner's green PRs after a
+# Hourly (at :25, and after each hourly watch run). Re-runs failed brief/watch/patch-day/deploy runs once, merges the owner's green PRs after a
 # one-hour hold window (comment "hold" on a PR or add the `hold` label to stop it), and checks the owner's
 # open items (Telegram list on Mondays, reminders three days before a due date). See digest/unblock.py.
 # To switch auto-merge off: set the repository variable WF_AUTOMERGE to "off".
 on:
   schedule:
     - cron: "25 * * * *"
+  # GitHub's own schedule fires late or not at all for new workflows; the hourly watch is kept on time by an
+  # external trigger, so also run after each watch run. The agent skips itself if it ran in the last 40 min.
+  workflow_run:
+    workflows: ["Hourly watch"]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
 
 permissions: {}

@@ -103,6 +103,37 @@ def fix_cve_product(e: dict, kmap: dict[str, set[str]]) -> str | None:
     return None
 
 
+SENTENCE = re.compile(r"(?<=[.;!?])\s+")
+
+
+def ground_facts(e: dict, known: set[str]) -> list[str]:
+    """Remove model-written sentences that carry a CVE, advisory id, version, percentage or number the
+    collected inputs do not contain. Removed, not rewritten: an invented advisory number must not reach
+    the page, and a missing sentence is safer than a guessed one."""
+    from .post_judge import tokens  # noqa: PLC0415
+    notes = []
+    for f in ("summary", "action", "hunt", "target"):
+        v = e.get(f)
+        if not isinstance(v, str) or not v.strip():
+            continue
+        kept, cut = [], []
+        for sent in SENTENCE.split(v.strip()):
+            bad = tokens(sent) - known
+            (cut if bad else kept).append((sent, bad))
+        if cut:
+            e[f] = " ".join(x for x, _ in kept) or None
+            for _, bad in cut:
+                notes.append(f"{f}: removed a sentence with {', '.join(sorted(bad))} (not in inputs): "
+                             f"{e.get('headline', '?')[:45]}")
+    bad_head = tokens(e.get("headline", "")) - known
+    for t in bad_head:
+        e["headline"] = re.sub(rf"\s*\(?{re.escape(t)}\)?", "", e["headline"], flags=re.I).strip()
+        e["headline"] = re.sub(r"(?:[\s,:;/-]+(?:and|or|&)?)+$", "", e["headline"], flags=re.I).strip()
+        notes.append(f"headline: removed {t} (not in inputs)")
+    e["identifiers"] = [i for i in (e.get("identifiers") or []) if str(i).upper() in known or not tokens(str(i))]
+    return notes
+
+
 def validate(digest: dict, items: list[dict], tiers: dict | None = None) -> tuple[dict, list[str]]:
     """Drop any entry whose URL was not collected; enforce caps; cap claims to what the sources can prove."""
     tiers = tiers or {}
@@ -115,6 +146,8 @@ def validate(digest: dict, items: list[dict], tiers: dict | None = None) -> tupl
     threats = repos = 0
     official = _authority_index(items, tiers)
     kmap = kev_product_map(items)
+    from .post_judge import tokens  # noqa: PLC0415
+    known = tokens(json.dumps(items, ensure_ascii=False))
     for e in digest.get("items", []):
         for f in ("hunt", "fixed_versions", "action", "target", "kev_due_date"):
             e[f] = _nullish(e.get(f))
@@ -124,6 +157,7 @@ def validate(digest: dict, items: list[dict], tiers: dict | None = None) -> tupl
         if e.get("primary_source") not in allowed:
             problems.append(f"dropped (URL not in input): {e.get('headline', '?')[:60]}")
             continue
+        problems += ground_facts(e, known)
         if (note := fix_cve_product(e, kmap)):
             problems.append(note)
         e["corroborating_sources"] = [u for u in (e.get("corroborating_sources") or []) if u in allowed]
