@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-26T19:20:23+00:00",
+ "updated": "2026-11-26T20:20:26+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
@@ -7,8 +7,8 @@
   "Microsoft MSRC": "ok (0)",
   "Palo Alto PSIRT": "ok (2)",
   "Fortinet PSIRT": "ok (0)",
-  "Cisco PSIRT": "ok (5)",
-  "AWS Security Bulletins": "ok (3)"
+  "Cisco PSIRT": "ok (4)",
+  "AWS Security Bulletins": "ok (1)"
  },
  "entries": [
   {
@@ -747,7 +747,7 @@
     "score": 0.3298,
     "percentile": 0.987
    },
-   "poc": 95,
+   "poc": 96,
    "kev_due": "2026-11-10",
    "ransomware": "Unknown",
    "stack_match": [
