@@ -1118,7 +1118,7 @@ def test_linkedin_autopilot_post_reply_publishes_through_the_judge(tmp_path, mon
     from digest import linkedin as L
     monkeypatch.setattr(L, "STORE", tmp_path)
     monkeypatch.setenv("TELEGRAM_CHAT_ID", "42")
-    monkeypatch.setattr(L, "source_from_note", lambda cfg: (_ for _ in ()).throw(SystemExit("no notes")))
+    monkeypatch.setattr(L, "source_from_note", lambda *a: (_ for _ in ()).throw(SystemExit("no notes")))
     monkeypatch.setattr(L, "secret", lambda n: None)
     did = "20261125-2333-2dc936"
     (tmp_path / f"{did}.json").write_text(json.dumps({"id": did, "status": "draft"}))
@@ -1270,6 +1270,69 @@ def test_kev_trends_counts_from_catalog_only():
     v = visual(t)
     assert fact_check("", numbers(v), json.dumps(t)) == []          # the image carries only counted figures
     assert compute(kev, "2026-11", today=date(2026, 11, 20))["partial"] is True
+
+def test_ai_notes_keep_to_the_inputs(tmp_path, monkeypatch):
+    from datetime import date
+    from digest import ai_notes as A
+    items = [{"title": "What defenders need to know about ARTEX, the agentic AI framework", "url": "https://ms.example/a",
+              "source_name": "Microsoft Security", "source_tier": "vendor", "text": "Several groups abuse ARTEX; 3 campaigns.",
+              "source_type": "rss"},
+             {"title": "user/agent-repo", "url": "https://github.com/u/r", "source_tier": "press", "source_type": "github_repo",
+              "text": "LLM agent tooling"}]
+    assert A.worth_a_note(A.ai_items(items)) and not A.worth_a_note(items[1:])
+    note = {"title": "AI Security Daily: ARTEX abuse", "summary": "Groups abuse ARTEX. It hit 40% of firms.",
+            "body": [{"heading": "What happened", "markdown": "Microsoft saw 3 campaigns. Version 9.9.9 fixes it."}],
+            "actions": [{"verb": "Patch", "text": "Install 9.9.9."}, {"verb": "Inventory", "text": "Find agent frameworks."}],
+            "hunt": None, "status": [{"claim": "ARTEX abused", "state": "confirmed", "note": "Microsoft"}],
+            "sources": [{"title": "a", "url": "https://ms.example/a"}, {"title": "x", "url": "https://evil.example/"}],
+            "visual": {"title": "ARTEX", "figures": [{"value": "3", "label": "campaigns", "state": "reported"},
+                                                     {"value": "40%", "label": "of firms", "state": "reported"}]}}
+    probs = A.check(note, items)
+    assert any("evil.example" in p for p in probs) and any("9.9.9" in p for p in probs) and any("40%" in p for p in probs)
+    A.scrub(note, items)
+    assert note["summary"] == "Groups abuse ARTEX." and note["body"][0]["markdown"] == "Microsoft saw 3 campaigns."
+    assert [a["verb"] for a in note["actions"]] == ["Inventory"] and len(note["sources"]) == 1
+    assert note["visual"]["figures"] == [{"value": "3", "label": "campaigns", "state": "reported"}]
+    assert note["status"][0]["state"] == "confirmed"          # Microsoft is a vendor source
+    slug, md = A.to_markdown(note, "daily", date(2026, 11, 26), "local")
+    assert slug == "2026-11-26-ai-daily-artex-abuse" and "## What to do" in md and "AI Security Daily" in md
+    with pytest.raises(SystemExit, match="not a note draft id"):
+        A.publish("../../etc/passwd")
+
+
+def test_autopilot_note_commands_owner_only():
+    from digest.linkedin import owner_commands
+    ups = [{"message": {"chat": {"id": 42, "type": "private"}, "text": "/note ok 2026-11-26-ai-daily-artex-abuse"}},
+           {"message": {"chat": {"id": 42, "type": "private"}, "text": "/note drop 2026-11-27-ai-spotlight-mcp"}},
+           {"message": {"chat": {"id": 7, "type": "private"}, "text": "/note ok 2026-11-26-ai-daily-artex-abuse"}},
+           {"message": {"chat": {"id": 42, "type": "private"}, "text": "/note ok ../../x"}}]
+    assert owner_commands(ups, "42") == [("note-ok", "2026-11-26-ai-daily-artex-abuse"),
+                                         ("note-drop", "2026-11-27-ai-spotlight-mcp")]
+
+
+def test_ai_topics_rotation_and_grounding(tmp_path, monkeypatch):
+    from datetime import date
+    from digest import ai_notes as A
+    from digest import ai_topics as T
+    monkeypatch.setattr(A, "DRAFTS", tmp_path)
+    ts = T.topics()
+    assert len(ts) >= 30 and len({t["id"] for t in ts}) == len(ts)
+    assert all((T.CACHE / f"{t['id']}.txt").exists() for t in ts)          # every topic has its official text
+    first = T.next_topic()
+    assert first["id"] == ts[0]["id"]
+    items = T.items_for(first)
+    assert items[0]["source_tier"] == "authority" and items[0]["url"] == first["sources"][0]["url"]
+    note = {"title": "x", "summary": "Prompt injection alters model behaviour. 93% of apps are hit.",
+            "body": [{"heading": "What it is", "markdown": "Direct and indirect forms exist."}], "actions": [],
+            "hunt": None, "status": [], "sources": [{"title": "s", "url": first["sources"][0]["url"]}], "visual": {}}
+    assert any("93%" in p for p in A.check(note, items))
+    A.scrub(note, items)
+    assert note["summary"] == "Prompt injection alters model behaviour."
+    slug, md = A.to_markdown(note, "topic", date(2026, 11, 27), "local",
+                             extra={"topic_id": first["id"], "framework": "OWASP LLM01:2025", "tags": ["OWASP"]})
+    assert slug.startswith("2026-11-27-ai-topic-") and f"topic_id: {first['id']}" in md
+    (tmp_path / f"{slug}.md").write_text(md)
+    assert T.next_topic()["id"] == ts[1]["id"]                              # a pending draft is not repeated
 
 def test_anatomy_gaps_story_and_comparison():
     from digest.timeline import anatomy, axis, gaps

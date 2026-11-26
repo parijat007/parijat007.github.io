@@ -1,0 +1,29 @@
+MITRE ATLAS technique AML.T0043: Craft Adversarial Data
+
+Adversarial data are inputs to an AI model that have been modified such that they cause the adversary's desired effect in the target model.
+Effects can range from misclassification, to missed detections, to maximizing energy consumption.
+Typically, the modification is constrained in magnitude or location so that a human still perceives the data as if it were unmodified, but human perceptibility may not always be a concern depending on the adversary's intended effect.
+For example, an adversarial input for an image classification task is an image the AI model would misclassify, but a human would still recognize as containing the correct class.
+
+Depending on the adversary's knowledge of and access to the target model, the adversary may use different classes of algorithms to develop the adversarial example such as [White-Box Optimization](/techniques/AML.T0043.000), [Black-Box Optimization](/techniques/AML.T0043.001), [Black-Box Transfer](/techniques/AML.T0043.002), or [Manual Modification](/techniques/AML.T0043.003).
+
+The adversary may [Verify Attack](/techniques/AML.T0042) their approach works if they have white-box or inference API access to the model.
+This allows the adversary to gain confidence their attack is effective "live" environment where their attack may be noticed.
+They can then use the attack at a later time to accomplish their goals.
+An adversary may optimize adversarial examples for [Evade AI Model](/techniques/AML.T0015), or to [Erode AI Model Integrity](/techniques/AML.T0031).
+
+Mitigations:
+- AML.M0002 Passive AI Output Obfuscation: Decreasing the fidelity of model outputs provided to the end user can reduce an adversary's ability to extract information about the model and optimize attacks for the model.
+- AML.M0003 Model Hardening: Use techniques to make AI models robust to adversarial inputs such as adversarial training or network distillation.
+- AML.M0004 Restrict Number of AI Model Queries: Limit the total number and rate of queries a user can perform.
+
+- AML.M0006 Use Ensemble Methods: Use an ensemble of models for inference to increase robustness to adversarial inputs. Some attacks may effectively evade one model or model family but be ineffective against others.
+
+- AML.M0008 Validate AI Model: Validate that AI models perform as intended by testing for backdoor triggers, potential for data leakage, or adversarial influence.
+Monitor AI model for concept drift and training data drift, which may indicate data tampering and poisoning.
+- AML.M0010 Input Restoration: Preprocess all inference data to nullify or reverse potential adversarial perturbations.
+
+- AML.M0015 Adversarial Input Detection: Detect and block adversarial inputs or atypical queries that deviate from known benign behavior, exhibit behavior patterns observed in previous attacks or that come from potentially malicious IPs.
+Incorporate adversarial detection algorithms into the AI system prior to the AI model.
+- AML.M0019 Control Access to AI Models and Data in Production: Require users to verify their identities before accessing a production model.
+Require authentication for API endpoints and monitor production model queries to ensure compliance with usage policies and to prevent model misuse.

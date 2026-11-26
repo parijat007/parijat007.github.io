@@ -1,0 +1,24 @@
+MITRE ATLAS technique AML.T0020: Poison Training Data
+
+Adversaries may attempt to poison datasets used by an AI model by modifying the underlying data or its labels.
+This allows the adversary to embed vulnerabilities in AI models trained on the data that may not be easily detectable.
+Data poisoning attacks may or may not require modifying the labels.
+The embedded vulnerability is activated at a later time by data samples with an [Insert Backdoor Trigger](/techniques/AML.T0043.004)
+
+Poisoned data can be introduced via [AI Supply Chain Compromise](/techniques/AML.T0010) or the data may be poisoned after the adversary gains [Initial Access](/tactics/AML.TA0004) to the system.
+
+Mitigations:
+- AML.M0001 Limit Model Artifact Release: Limit public release of technical project details including data, algorithms, model architectures, and model checkpoints that are used in production, or that are representative of those used in production.
+
+- AML.M0005 Control Access to AI Models and Data at Rest: Establish access controls on internal model registries and limit internal access to production models. Limit access to training data only to approved users.
+
+- AML.M0007 Sanitize Training Data: Detect and remove or remediate poisoned training data.  Training data should be sanitized prior to model training and recurrently for an active learning model.
+
+Implement a filter to limit ingested training data.  Establish a content policy that would remove unwanted content such as certain explicit or offensive language from being used.
+
+- AML.M0008 Validate AI Model: Validate that AI models perform as intended by testing for backdoor triggers, potential for data leakage, or adversarial influence.
+Monitor AI model for concept drift and training data drift, which may indicate data tampering and poisoning.
+- AML.M0023 AI Bill of Materials: An AI Bill of Materials (AI BOM) contains a full listing of artifacts and resources that were used in building the AI. The AI BOM can help mitigate supply chain risks and enable rapid response to reported vulnerabilities.
+
+This can include maintaining dataset provenance, i.e. a detailed history of datasets used for AI applications. The history can include information about the dataset source as well as well as a complete record of any modifications.
+- AML.M0025 Maintain AI Dataset Provenance: Maintain a detailed history of datasets used for AI applications. The history should include information about the dataset's source as well as a complete record of any modifications.

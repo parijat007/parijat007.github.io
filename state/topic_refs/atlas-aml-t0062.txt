@@ -1,0 +1,16 @@
+MITRE ATLAS technique AML.T0062: Discover LLM Hallucinations
+
+Adversaries may prompt large language models and identify hallucinated entities.
+They may request software packages, commands, URLs, organization names, or e-mail addresses, and identify hallucinations with no connected real-world source. Discovered hallucinations provide the adversary with potential targets to [Publish Hallucinated Entities](/techniques/AML.T0060). Different LLMs have been shown to produce the same hallucinations, so the hallucinations exploited by an adversary may affect users of other LLMs.
+
+Mitigations:
+- AML.M0004 Restrict Number of AI Model Queries: Limit the total number and rate of queries a user can perform.
+
+- AML.M0020 Generative AI Guardrails: Guardrails are safety controls that are placed between a generative AI model and the output shared with the user to prevent undesired inputs and outputs.
+Guardrails can take the form of validators such as filters, rule-based logic, or regular expressions, as well as AI-based approaches, such as classifiers and utilizing LLMs, or named entity recognition (NER) to evaluate the safety of the prompt or response. Domain specific methods can be employed to reduce risks in a variety of areas such as etiquette, brand damage, jailbreaking, false information, code exploits, SQL injections, and data leakage.
+- AML.M0021 Generative AI Guidelines: Guidelines are safety controls that are placed between user-provided input and a generative AI model to help direct the model to produce desired outputs and prevent undesired outputs.
+
+Guidelines can be implemented as instructions appended to all user prompts or as part of the instructions in the system prompt. They can define the goal(s), role, and voice of the system, as well as outline safety and security parameters.
+- AML.M0022 Generative AI Model Alignment: When training or fine-tuning a generative AI model it is important to utilize techniques that improve model alignment with safety, security, and content policies.
+
+The fine-tuning process can potentially remove built-in safety mechanisms in a generative AI model, but utilizing techniques such as Supervised Fine-Tuning, Reinforcement Learning from Human Feedback or AI Feedback, and Targeted Safety Context Distillation can improve the safety and alignment of the model.

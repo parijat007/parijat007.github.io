@@ -1,0 +1,13 @@
+MITRE ATLAS technique AML.T0010: AI Supply Chain Compromise
+
+Adversaries may gain initial access to a system by compromising the unique portions of the AI supply chain.
+This could include [Hardware](/techniques/AML.T0010.000), [Data](/techniques/AML.T0010.002) and its annotations, parts of the AI [AI Software](/techniques/AML.T0010.001) stack, or the [Model](/techniques/AML.T0010.003) itself.
+In some instances the attacker will need secondary access to fully carry out an attack using compromised components of the supply chain.
+
+Mitigations:
+- AML.M0014 Verify AI Artifacts: Verify the cryptographic checksum of all AI artifacts to verify that the file was not modified by an attacker.
+- AML.M0020 Generative AI Guardrails: Guardrails are safety controls that are placed between a generative AI model and the output shared with the user to prevent undesired inputs and outputs.
+Guardrails can take the form of validators such as filters, rule-based logic, or regular expressions, as well as AI-based approaches, such as classifiers and utilizing LLMs, or named entity recognition (NER) to evaluate the safety of the prompt or response. Domain specific methods can be employed to reduce risks in a variety of areas such as etiquette, brand damage, jailbreaking, false information, code exploits, SQL injections, and data leakage.
+- AML.M0023 AI Bill of Materials: An AI Bill of Materials (AI BOM) contains a full listing of artifacts and resources that were used in building the AI. The AI BOM can help mitigate supply chain risks and enable rapid response to reported vulnerabilities.
+
+This can include maintaining dataset provenance, i.e. a detailed history of datasets used for AI applications. The history can include information about the dataset source as well as well as a complete record of any modifications.

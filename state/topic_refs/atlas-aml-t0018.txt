@@ -1,0 +1,10 @@
+MITRE ATLAS technique AML.T0018: Manipulate AI Model
+
+Adversaries may directly manipulate an AI model to change its behavior or introduce malicious code. Manipulating a model gives the adversary a persistent change in the system. This can include poisoning the model by changing its weights, modifying the model architecture to change its behavior, and embedding malware which may be executed when the model is loaded.
+
+Mitigations:
+- AML.M0005 Control Access to AI Models and Data at Rest: Establish access controls on internal model registries and limit internal access to production models. Limit access to training data only to approved users.
+
+- AML.M0008 Validate AI Model: Validate that AI models perform as intended by testing for backdoor triggers, potential for data leakage, or adversarial influence.
+Monitor AI model for concept drift and training data drift, which may indicate data tampering and poisoning.
+- AML.M0013 Code Signing: Enforce binary and application integrity with digital signature verification to prevent untrusted code from executing. Adversaries can embed malicious code in AI software or models. Developers should also cryptographically sign SBOM and AIBOM components that track model or data provenance. Enforcement of code signing can prevent the compromise of the AI supply chain and prevent execution of malicious code.

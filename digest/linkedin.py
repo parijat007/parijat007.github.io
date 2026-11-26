@@ -149,8 +149,10 @@ def _site(cfg: dict) -> str:
     return (cfg.get("site", {}).get("url") or "").rstrip("/")
 
 
-def source_from_note(cfg: dict) -> dict:
+def source_from_note(cfg: dict, stem: str | None = None) -> dict:
     notes = sorted((ROOT / "data" / "notes").glob("*.md"), reverse=True)
+    if stem:
+        notes = [n for n in notes if n.stem == stem]
     if not notes:
         raise SystemExit("no analyst notes in data/notes/")
     f = notes[0]
@@ -553,6 +555,7 @@ def status() -> None:
 # ---------- autopilot: Telegram approval ----------
 
 CMD = re.compile(r"^/(post|skip)\s+([0-9]{8}-[0-9]{4}-[0-9a-f]{6})\s*$")
+NOTE_CMD = re.compile(r"^/note\s+(ok|drop)\s+([0-9]{4}-[0-9]{2}-[0-9]{2}-ai-(?:daily|spotlight|topic)-[a-z0-9-]{1,60})\s*$")
 
 
 def _tg(method: str, **kw) -> dict:
@@ -576,8 +579,11 @@ def owner_commands(updates: list[dict], chat: str) -> list[tuple[str, str]]:
             log.info("ignored a message from chat %s (%s): not the owner's private chat %s",
                      m.get("chat", {}).get("id"), m.get("chat", {}).get("type"), chat)
             continue
-        if (c := CMD.match((m.get("text") or "").strip())):
+        text = (m.get("text") or "").strip()
+        if (c := CMD.match(text)):
             out.append((c.group(1), c.group(2)))
+        elif (c := NOTE_CMD.match(text)):
+            out.append(("note-" + c.group(1), c.group(2)))
     return out
 
 
@@ -585,18 +591,30 @@ def autopilot(cfg: dict) -> None:
     """Draft new notes, then act on /post and /skip replies. /post publishes only after the judge passes."""
     STORE.mkdir(parents=True, exist_ok=True)
     chat = os.environ.get("TELEGRAM_CHAT_ID") or secret("telegram-chat-id")
-    say = (lambda t: _tg("sendMessage", chat_id=chat, text=t, disable_web_page_preview=True)) if chat else print
+    def say(text: str) -> None:
+        """Reply to the owner in Telegram (nothing is printed: messages can quote drafts and ids)."""
+        if chat:
+            _tg("sendMessage", chat_id=chat, text=text, disable_web_page_preview=True)
 
-    # 1. a note from the last three days with no draft yet
-    try:
-        src = source_from_note(cfg)
-        stem = src["link"].rstrip("/").rsplit("/", 1)[-1]
-        drafted = {json.loads(f.read_text())["source"]["link"] for f in STORE.glob("*.json")}
-        fresh = (datetime.now(timezone.utc).date() - datetime.fromisoformat(stem[:10]).date()).days <= 3
-        if fresh and src["link"] not in drafted and not (STORE / f".skip-{stem}").exists():
-            notify_draft(draft(cfg, src))
-    except (SystemExit, ValueError) as e:
-        log.info("no new note to draft (%s)", e)
+    # 1. every note from the last three days with no draft yet (a news note and a topic note can share a day);
+    #    at most two per run so one busy day cannot flood Telegram
+    drafted = {json.loads(f.read_text()).get("source", {}).get("link") for f in STORE.glob("*.json")}
+    today = datetime.now(timezone.utc).date()
+    made = 0
+    for f in sorted((ROOT / "data" / "notes").glob("*.md"), reverse=True):
+        try:
+            if (today - datetime.fromisoformat(f.stem[:10]).date()).days > 3:
+                break
+        except ValueError:
+            continue
+        link = f"{_site(cfg)}/notes/{f.stem}/"
+        if link in drafted or (STORE / f".skip-{f.stem}").exists() or made >= 2:
+            continue
+        try:
+            notify_draft(draft(cfg, source_from_note(cfg, f.stem)))
+            made += 1
+        except SystemExit as e:
+            log.info("could not draft %s (%s)", f.stem, e)
 
     # 1b. last month's KEV trends, on the 1st to the 3rd
     if datetime.now(timezone.utc).day <= 3:
@@ -628,6 +646,17 @@ def autopilot(cfg: dict) -> None:
     if updates:
         off_f.write_text(str(updates[-1]["update_id"] + 1))
     for cmd, did in owner_commands(updates, chat):
+        if cmd.startswith("note-"):
+            from . import ai_notes  # noqa: PLC0415
+            try:
+                if cmd == "note-ok":
+                    say(f"Published: {ai_notes.publish(did)}\nThe LinkedIn draft follows within 10 minutes.")
+                else:
+                    (ai_notes.DRAFTS / f"{did}.md").rename(ai_notes.DRAFTS / f"{did}.dropped")
+                    say(f"Dropped note {did}. Nothing was published.")
+            except (SystemExit, OSError) as e:
+                say(f"Note {did}: {e}")
+            continue
         f = STORE / f"{did}.json"
         if not f.exists():
             say(f"No draft {did}.")

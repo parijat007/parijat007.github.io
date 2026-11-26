@@ -1,0 +1,18 @@
+MITRE ATLAS technique AML.T0024: Exfiltration via AI Inference API
+
+Adversaries may exfiltrate private information via [AI Model Inference API Access](/techniques/AML.T0040).
+AI Models have been shown leak private information about their training data (e.g.  [Infer Training Data Membership](/techniques/AML.T0024.000), [Invert AI Model](/techniques/AML.T0024.001)).
+The model itself may also be extracted ([Extract AI Model](/techniques/AML.T0024.002)) for the purposes of [AI Intellectual Property Theft](/techniques/AML.T0048.004).
+
+Exfiltration of information relating to private training data raises privacy concerns.
+Private training data may include personally identifiable information, or other protected data.
+
+Mitigations:
+- AML.M0004 Restrict Number of AI Model Queries: Limit the total number and rate of queries a user can perform.
+
+- AML.M0019 Control Access to AI Models and Data in Production: Require users to verify their identities before accessing a production model.
+Require authentication for API endpoints and monitor production model queries to ensure compliance with usage policies and to prevent model misuse.
+
+- AML.M0024 AI Telemetry Logging: Implement logging of inputs and outputs of deployed AI models. When deploying AI agents, implement logging of the intermediate steps of agentic actions and decisions, data access and tool use, installation commands, and identity of the agent. Monitoring logs can help to detect security threats and mitigate impacts.
+
+Additionally, having logging enabled can discourage adversaries who want to remain undetected from utilizing AI resources.

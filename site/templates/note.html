@@ -8,6 +8,7 @@
 <article class="note">
   <header class="page-head">
     <p class="hero-date">Analyst note, {{ n.date | longdate }}{% if n.updated %} · updated {{ n.updated | longdate }}{% endif %} · TLP:{{ n.tlp }}</p>
+    {% if n.drafted_by %}<p class="muted">Drafted by a language model from the cited sources only, checked by Watchfloor's fact rules, and reviewed and approved by {{ p.name }} before publishing.</p>{% endif %}
     <h1>{{ n.title }}</h1>
     <p class="lede">{{ n.summary }}</p>
     {% if n.tags %}<ul class="tags">{% for t in n.tags %}<li class="tag">{{ t }}</li>{% endfor %}</ul>{% endif %}
