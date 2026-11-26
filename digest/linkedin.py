@@ -246,6 +246,13 @@ def craft(text: str, src: dict) -> list[str]:
                         "(Patch:, Inventory:, Contain:, Hunt:)")
     if re.search(r"(?mi)^#+\s*hunt|\*\*hunt", src.get("text", "")) and not re.search(r"(?m)^- Hunt\b", text):
         problems.append("the source gives hunting guidance: add a '- Hunt:' line naming its log source and events")
+    if len(text) > 2300:
+        problems.append(f"{len(text)} characters: cut to 2,200 or fewer by tightening, not by dropping a caveat "
+                        "or the second part of a fix step")
+    for ln in text.splitlines():
+        if ln.startswith("- ") and len(ln) > 280:
+            problems.append(f"this line is {len(ln)} characters; keep each line under 280 (split or tighten): "
+                            f"{ln[:60]}...")
     tags = re.findall(r"(?<!\w)#\w+", text)
     if len(tags) < 3:
         problems.append("end with three to five specific hashtags")

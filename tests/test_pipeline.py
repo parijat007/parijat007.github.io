@@ -1145,6 +1145,9 @@ def test_linkedin_craft_checks():
     no_hunt = "\\n".join(ln for ln in good.splitlines() if not ln.startswith("- Hunt"))
     assert any("Hunt" in p for p in craft(no_hunt, src))
     assert craft("short", {**src, "no_craft": True}) == []
+    live = (Path(__file__).parent / "linkedin_live_draft.txt").read_text()     # selftest draft, 26 Nov
+    probs = craft(live, src)
+    assert any("2,200" in p for p in probs) and sum("under 280" in p for p in probs) == 2
 
 
 def test_linkedin_draft_goes_back_to_the_writer_until_the_judge_passes(tmp_path, monkeypatch):
