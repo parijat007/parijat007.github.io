@@ -40,6 +40,13 @@ launchctl bootstrap "gui/$(id -u)" ~/Library/LaunchAgents/com.watchfloor.daily.p
 sed "s#__REPO_DIR__#${REPO_DIR}#" mac/com.watchfloor.watch.plist > ~/Library/LaunchAgents/com.watchfloor.watch.plist
 launchctl bootout "gui/$(id -u)/com.watchfloor.watch" 2>/dev/null || true
 launchctl bootstrap "gui/$(id -u)" ~/Library/LaunchAgents/com.watchfloor.watch.plist
+# LinkedIn autopilot (only once you have signed in with ./mac/linkedin.sh auth): Telegram /post approvals
+if security find-generic-password -a watchfloor -s linkedin-access-token >/dev/null 2>&1; then
+  sed "s#__REPO_DIR__#${REPO_DIR}#" mac/com.watchfloor.linkedin.plist > ~/Library/LaunchAgents/com.watchfloor.linkedin.plist
+  launchctl bootout "gui/$(id -u)/com.watchfloor.linkedin" 2>/dev/null || true
+  launchctl bootstrap "gui/$(id -u)" ~/Library/LaunchAgents/com.watchfloor.linkedin.plist
+  echo "   LinkedIn autopilot on (every 10 min; log /tmp/watchfloor.linkedin.log)"
+fi
 
 echo "4/4 Wake the Mac at 6:30 daily (needs admin; Mac must be on power)"
 sudo pmset repeat wakeorpoweron MTWRFSU 05:40:00
