@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches: [main]
-    paths: ["digest/**", "site/**", "tests/**", "config.yaml", "requirements.txt", "requirements.lock", ".github/**", "mac/**"]
+    paths: ["digest/**", "site/**", "tests/**", "config.yaml", "requirements.txt", "requirements.lock", "requirements-e2e.lock", ".github/**", "mac/**"]
 
 permissions:
   contents: read
@@ -20,3 +20,23 @@ jobs:
         with: { python-version: "3.12", cache: pip }
       - run: pip install --require-hashes -r requirements.lock && pip install pytest==9.1.1
       - run: python -m pytest -q tests
+
+  e2e:                         # the built site in a real browser (the same checks gate every deploy)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install --require-hashes -r requirements.lock -r requirements-e2e.lock
+      - run: python -m playwright install --with-deps chromium
+      - run: python site/build.py --out _site
+      - run: python -m pytest -q -p no:cacheprovider tests/e2e
+        env: { E2E_SITE_DIR: _site }
+      - name: Screenshots of key pages (desktop and phone), kept 14 days
+        if: always()
+        run: python tools/screenshots.py _site shots
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with: { name: screenshots, path: shots, retention-days: 14 }
