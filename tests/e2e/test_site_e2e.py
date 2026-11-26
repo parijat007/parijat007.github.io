@@ -172,3 +172,14 @@ def test_note_share_and_comments(base_url, page_with_checks):
     if btn.count():                                  # comments configured: nothing from giscus until clicked
         assert not [s for s in page.eval_on_selector_all("script", "ss => ss.map(s => s.src)") if "giscus" in s]
     assert not (page.problems + page.evaluate("window.__problems || []"))
+
+
+@pytest.mark.live
+def test_hidden_files_are_published(browser, base_url):
+    """Dot-folders must ship: security.txt (RFC 9116) is the reporting contact, and the integrity check
+    compares it with the signed build."""
+    page = browser.new_page()
+    resp = page.goto(base_url + "/.well-known/security.txt")
+    body = page.inner_text("body") if resp else ""
+    page.close()
+    assert resp and resp.status == 200 and body.startswith("Contact:"), f"security.txt not served: {resp and resp.status}"
