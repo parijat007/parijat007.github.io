@@ -1219,3 +1219,30 @@ def test_linkedin_edit_post_requires_judge_pass(tmp_path, monkeypatch):
     url, k = sent[0]
     assert url.endswith("/rest/posts/urn%3Ali%3Ashare%3A1") and k["headers"]["X-RestLi-Method"] == "PARTIAL_UPDATE"
     assert json.loads((tmp_path / "d1.json").read_text())["text"].endswith("more")
+
+
+def test_brief_ground_facts_removes_invented_ids(tmp_path):
+    from digest.post_judge import tokens
+    from digest.render import ground_facts
+    inputs = [{"title": "CISA adds CVE-2026-132165 (Drupal Fail2Install) to KEV", "text": "Juniper 2026-10 bulletin"}]
+    known = tokens(json.dumps(inputs))
+    e = {"headline": "Drupal CVE-2026-132165 and MISA-2026-0012", "summary": "Drupal CVE-2026-132165 is exploited.",
+         "action": "Apply vendor patches immediately. Mitel MISA-2026-0012. Juniper 2026-10 bulletin. Drupal 10.4.7/11.1.5.",
+         "identifiers": ["CVE-2026-132165", "CVE-2026-999999", "Fail2Install"]}
+    notes = ground_facts(e, known)
+    assert e["action"] == "Apply vendor patches immediately. Juniper 2026-10 bulletin."
+    assert e["summary"] == "Drupal CVE-2026-132165 is exploited."
+    assert e["headline"] == "Drupal CVE-2026-132165"
+    assert e["identifiers"] == ["CVE-2026-132165", "Fail2Install"]
+    assert len(notes) == 3
+    assert tokens("SHA-256, AES-256-GCM, X-Forwarded-For, MS26-041") == {"MS26-041"}
+
+
+def test_unblock_runs_once_when_triggered_twice():
+    from digest.unblock import recent_run
+    runs = [{"id": 2, "created_at": "2026-11-26T14:25:05Z", "conclusion": None},   # schedule
+            {"id": 3, "created_at": "2026-11-26T14:25:40Z", "conclusion": None},   # after the watch
+            {"id": 1, "created_at": "2026-11-26T13:20:00Z", "conclusion": "success"}]
+    assert recent_run(runs, "2", _now()) is False     # the earlier of the pair goes ahead
+    assert recent_run(runs, "3", _now()) is True      # the later one skips
+    assert recent_run([{**r, "conclusion": "failure"} if r["id"] == 2 else r for r in runs], "3", _now()) is False

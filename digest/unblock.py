@@ -218,6 +218,22 @@ def owner_message(state: dict[str, bool | None], today: date, weekly: bool) -> s
 
 # ---------- main ----------
 
+MIN_GAP_MINUTES = 40
+
+
+def recent_run(runs: list[dict], me: str, now: datetime) -> bool:
+    """An earlier unblock run was created in the last 40 minutes and did not fail. It is triggered both by its
+    schedule and by each watch run; comparing creation times means exactly one of two near-simultaneous
+    runs goes ahead (the concurrency group makes the later one wait for the earlier)."""
+    mine = next((r for r in runs if str(r["id"]) == str(me)), None)
+    if not mine:
+        return False
+    t = _ts(mine["created_at"])
+    return any(str(r["id"]) != str(me) and r.get("conclusion") in ("success", None)
+               and (_ts(r["created_at"]), r["id"]) < (t, mine["id"])
+               and now - _ts(r["created_at"]) < timedelta(minutes=MIN_GAP_MINUTES)
+               for r in runs)
+
 def main() -> None:
     import argparse  # noqa: PLC0415
     global DRY
@@ -230,6 +246,13 @@ def main() -> None:
     repo, now = os.environ["GITHUB_REPOSITORY"], datetime.now(timezone.utc)
     owner = repo.split("/")[0]
     msgs: list[str] = []
+
+    me = os.environ.get("GITHUB_RUN_ID")
+    if me and os.environ.get("GITHUB_EVENT_NAME") != "workflow_dispatch":
+        mine = gh("GET", f"/repos/{repo}/actions/workflows/unblock.yml/runs?per_page=10")["workflow_runs"]
+        if recent_run(mine, me, now):
+            log.info("ran less than %d minutes ago; skipping", MIN_GAP_MINUTES)
+            return
 
     runs = gh("GET", f"/repos/{repo}/actions/runs?per_page=60&created=>{(now - timedelta(hours=12)).date()}")["workflow_runs"]
     rerun, alert = failed_runs(runs, now)

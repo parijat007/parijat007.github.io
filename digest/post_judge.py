@@ -21,6 +21,8 @@ import re
 log = logging.getLogger(__name__)
 
 CVE = re.compile(r"\bCVE-\d{4}-\d{4,}\b", re.I)
+# Vendor advisory and bulletin ids: MISA-2026-0012, DSA-2023-08-01, GHSA-xxxx-xxxx-xxxx, MS26-041
+ADVISORY = re.compile(r"\b(?!CVE-)[A-Z][A-Z0-9]{1,9}(?:-[A-Za-z0-9]{2,}){1,4}\b")   # kept if it has 4+ digits
 VERSION = re.compile(r"(?<![\w.])v?\d+(?:\.\d+){1,3}(?![\w.]*\d)")
 PERCENT = re.compile(r"(?<![\w.])(\d+(?:\.\d+)?)\s*(?:%|percent\b|per cent\b)", re.I)
 NUMBER = re.compile(r"(?<![\w.,-])(\d{1,3}(?:,\d{3})+|\d{3,})(?![\w,]*\d)")
@@ -54,10 +56,12 @@ def _norm_num(s: str) -> str:
 
 
 def tokens(text: str) -> set[str]:
-    """The checkable facts in a text: CVE ids, versions, percentages, numbers of three or more digits."""
+    """The checkable facts in a text: CVE ids, advisory ids, versions, percentages, numbers of 3+ digits."""
     text = HASHTAG.sub(" ", URL.sub(" ", text))
     out = {c.upper() for c in CVE.findall(text)}
     bare = CVE.sub(" ", text)
+    out |= {a.upper() for a in ADVISORY.findall(bare) if sum(ch.isdigit() for ch in a) >= 4}
+    bare = ADVISORY.sub(" ", bare)
     out |= {f"{p}%" for p in PERCENT.findall(bare)}
     bare = PERCENT.sub(" ", bare)
     out |= {v.lstrip("v") for v in VERSION.findall(bare)}
