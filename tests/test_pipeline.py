@@ -1123,15 +1123,18 @@ def test_linkedin_autopilot_post_reply_publishes_through_the_judge(tmp_path, mon
     did = "20261125-2333-2dc936"
     (tmp_path / f"{did}.json").write_text(json.dumps({"id": did, "status": "draft"}))
     said, published = [], []
+    confirmed = []
     def tg(method, **kw):
         if method == "getUpdates":
+            if "offset" in kw:
+                confirmed.append(kw["offset"]); return {"result": []}
             return {"result": [{"update_id": 5, "message": {"chat": {"id": 42, "type": "private"}, "text": f"/post {did}"}}]}
         said.append(kw["text"]); return {}
     monkeypatch.setattr(L, "_tg", tg)
     monkeypatch.setattr(L, "publish", lambda cfg, d, yes=False, skip_judge=False: published.append((d, yes, skip_judge)))
     L.autopilot({})
     assert published == [(did, True, False)]       # never skips the judge
-    assert (tmp_path / ".tg_offset").read_text() == "6" and said[0].startswith("Posted to LinkedIn")
+    assert confirmed == [6] and not (tmp_path / ".tg_offset").exists() and said[0].startswith("Posted to LinkedIn")
 
 
 def test_linkedin_craft_checks():

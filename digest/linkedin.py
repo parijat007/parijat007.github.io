@@ -97,6 +97,10 @@ Return only the post text."""
 # ---------- secrets (env first, then macOS Keychain) ----------
 
 def secret(name: str) -> str | None:
+    return _keychain(name)
+
+
+def _keychain(name: str) -> str | None:
     env = "WF_" + name.upper().replace("-", "_")
     if os.environ.get(env):
         return os.environ[env]
@@ -106,6 +110,11 @@ def secret(name: str) -> str | None:
         if r.returncode == 0:
             return r.stdout.strip()
     return None
+
+
+def setting(name: str) -> str | None:
+    """A non-secret value kept next to the secrets (member URN, token expiry date, Telegram chat id)."""
+    return _keychain(name)
 
 
 def save_secret(name: str, value: str) -> None:
@@ -368,7 +377,7 @@ def complete_draft(d: dict, cfg: dict) -> dict:
 def notify_draft(d: dict) -> None:
     """Send the draft to Telegram so you can review it on your phone."""
     tok, chat = os.environ.get("TELEGRAM_BOT_TOKEN") or secret("telegram-bot-token"), \
-        os.environ.get("TELEGRAM_CHAT_ID") or secret("telegram-chat-id")
+        os.environ.get("TELEGRAM_CHAT_ID") or setting("telegram-chat-id")
     if not (tok and chat):
         return
     head = f"LinkedIn draft {d['id']} ({len(d['text'])} chars, {d['provider']})"
@@ -544,8 +553,8 @@ def auth(cfg: dict) -> None:
 
 
 def status() -> None:
-    exp = secret("linkedin-token-expires")
-    print(f"author: {secret('linkedin-person-urn') or 'not signed in'}")
+    exp = setting("linkedin-token-expires")
+    print("signed in: " + ("yes" if setting("linkedin-person-urn") else "no (run ./mac/linkedin.sh auth)"))
     if exp:
         left = (datetime.fromisoformat(exp).date() - datetime.now(timezone.utc).date()).days
         print(f"token expires {exp} ({left} days)" + ("  <- run `auth` again" if left < 7 else ""))
@@ -565,7 +574,8 @@ def _tg(method: str, **kw) -> dict:
         return {}
     r = requests.post(f"https://api.telegram.org/bot{tok}/{method}", json=kw, timeout=40)
     if not r.ok:
-        log.warning("telegram %s: HTTP %s %s", method, r.status_code, r.text[:200])
+        # Status code only: the reply is not logged (the request carried the bot token).
+        log.warning("telegram %s failed: HTTP %s", method, r.status_code)
         return {}
     return r.json()
 
@@ -576,8 +586,7 @@ def owner_commands(updates: list[dict], chat: str) -> list[tuple[str, str]]:
     for u in updates:
         m = u.get("message") or {}
         if str(m.get("chat", {}).get("id")) != str(chat) or m.get("chat", {}).get("type") != "private":
-            log.info("ignored a message from chat %s (%s): not the owner's private chat %s",
-                     m.get("chat", {}).get("id"), m.get("chat", {}).get("type"), chat)
+            log.info("ignored a message that did not come from the owner's private chat with the bot")
             continue
         text = (m.get("text") or "").strip()
         if (c := CMD.match(text)):
@@ -590,7 +599,7 @@ def owner_commands(updates: list[dict], chat: str) -> list[tuple[str, str]]:
 def autopilot(cfg: dict) -> None:
     """Draft new notes, then act on /post and /skip replies. /post publishes only after the judge passes."""
     STORE.mkdir(parents=True, exist_ok=True)
-    chat = os.environ.get("TELEGRAM_CHAT_ID") or secret("telegram-chat-id")
+    chat = os.environ.get("TELEGRAM_CHAT_ID") or setting("telegram-chat-id")
     def say(text: str) -> None:
         """Reply to the owner in Telegram (nothing is printed: messages can quote drafts and ids)."""
         if chat:
@@ -628,7 +637,7 @@ def autopilot(cfg: dict) -> None:
             log.info("no trends to draft (%s)", e)
 
     # 2. token expiry
-    exp = secret("linkedin-token-expires")
+    exp = setting("linkedin-token-expires")
     if exp and (datetime.fromisoformat(exp).date() - datetime.now(timezone.utc).date()).days == 7:
         flag = STORE / f".expiry-{exp}"
         if not flag.exists():
@@ -638,13 +647,13 @@ def autopilot(cfg: dict) -> None:
     # 3. replies
     if not chat:
         return
-    off_f = STORE / ".tg_offset"
-    offset = int(off_f.read_text()) if off_f.exists() else 0
-    res = _tg("getUpdates", offset=offset, timeout=0, allowed_updates=["message"])
+    # Telegram keeps unread messages until they are confirmed, so nothing is stored here: read them, then
+    # confirm them by asking for the next update id.
+    res = _tg("getUpdates", timeout=0, allowed_updates=["message"])
     updates = res.get("result") or []
     log.info("telegram: %d new message(s)", len(updates))
     if updates:
-        off_f.write_text(str(updates[-1]["update_id"] + 1))
+        _tg("getUpdates", offset=updates[-1]["update_id"] + 1, limit=1, timeout=0)
     for cmd, did in owner_commands(updates, chat):
         if cmd.startswith("note-"):
             from . import ai_notes  # noqa: PLC0415

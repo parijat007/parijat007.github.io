@@ -34,7 +34,7 @@ jobs:
         with: { persist-credentials: false }
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with: { python-version: "3.12" }
-      - run: pip install pip-audit==2.9.0
+      - run: pip install --require-hashes -r requirements-tools.lock
       - run: pip-audit --require-hashes -r requirements.lock
 
   workflows:
@@ -43,7 +43,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with: { persist-credentials: false }
-      - run: pip install actionlint-py==1.7.12.25 && actionlint -color
+      - run: pip install --require-hashes -r requirements-tools.lock && actionlint -color
 
   live-site:                 # daily / by hand only: on a push it would race the deploy
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -57,7 +57,7 @@ jobs:
         with: { fetch-depth: 0, persist-credentials: false }
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with: { python-version: "3.12" }
-      - run: pip install requests
+      - run: pip install --require-hashes -r requirements-tools.lock
       - run: python tools/site_check.py
       - name: Brief ledger is unbroken (hash chain matches every published brief)
         run: python -m digest.ledger verify
