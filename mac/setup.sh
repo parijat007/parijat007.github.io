@@ -46,6 +46,20 @@ if security find-generic-password -a watchfloor -s linkedin-access-token >/dev/n
   launchctl bootout "gui/$(id -u)/com.watchfloor.linkedin" 2>/dev/null || true
   launchctl bootstrap "gui/$(id -u)" ~/Library/LaunchAgents/com.watchfloor.linkedin.plist
   echo "   LinkedIn autopilot on (every 10 min; log /tmp/watchfloor.linkedin.log)"
+  # LinkedIn MCP server for the Claude desktop app: Claude can draft, judge and (after you approve) publish
+  CFG="$HOME/Library/Application Support/Claude/claude_desktop_config.json"
+  mkdir -p "$(dirname "$CFG")"
+  .venv/bin/python - "$CFG" "${REPO_DIR}/mac/linkedin_mcp.sh" <<'PY'
+import json, sys, pathlib
+cfg, script = pathlib.Path(sys.argv[1]), sys.argv[2]
+try:
+    data = json.loads(cfg.read_text()) if cfg.exists() and cfg.read_text().strip() else {}
+except ValueError:
+    sys.exit(f"   {cfg} is not valid JSON; left unchanged. Add the watchfloor-linkedin server by hand (mac/LINKEDIN.md).")
+data.setdefault("mcpServers", {})["watchfloor-linkedin"] = {"command": "/bin/zsh", "args": [script]}
+cfg.write_text(json.dumps(data, indent=2))
+PY
+  echo "   LinkedIn MCP server registered: quit and reopen the Claude desktop app to load it"
 fi
 
 echo "4/4 Wake the Mac at 6:30 daily (needs admin; Mac must be on power)"
