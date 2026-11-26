@@ -1046,3 +1046,89 @@ def test_linkedin_publish_blocked_by_judge(tmp_path, monkeypatch):
     with pytest.raises(SystemExit, match="skip-judge"):
         linkedin.publish({"site": {"url": "https://site.test"}}, "d1", yes=True)
     assert json.loads((tmp_path / "d1.json").read_text())["judge"]["verdict"] == "unavailable"
+
+
+def _now():
+    from datetime import datetime, timezone
+    return datetime(2026, 11, 26, 15, 0, tzinfo=timezone.utc)
+
+
+def test_unblock_failed_runs_rerun_once_then_alert():
+    from digest.unblock import failed_runs
+    def run(i, wf, concl, attempt, created, updated):
+        return {"id": i, "path": f".github/workflows/{wf}", "status": "completed", "conclusion": concl,
+                "run_attempt": attempt, "created_at": created, "updated_at": updated}
+    runs = [run(1, "brief.yml", "failure", 1, "2026-11-26T11:20:00Z", "2026-11-26T11:40:00Z"),
+            run(2, "watch.yml", "failure", 2, "2026-11-26T13:05:00Z", "2026-11-26T14:30:00Z"),
+            run(3, "watch.yml", "failure", 1, "2026-11-26T09:05:00Z", "2026-11-26T09:08:00Z"),
+            run(4, "watch.yml", "success", 1, "2026-11-26T10:05:00Z", "2026-11-26T10:08:00Z"),
+            run(5, "selftest.yml", "failure", 1, "2026-11-26T14:00:00Z", "2026-11-26T14:10:00Z"),
+            run(6, "pages.yml", "failure", 2, "2026-11-26T08:00:00Z", "2026-11-26T08:30:00Z")]
+    rerun, alert = failed_runs(runs, _now())
+    assert [r["id"] for r in rerun] == [1]          # 3 superseded by a later success; selftest not ours to retry
+    assert [r["id"] for r in alert] == [2]          # 6 alerted in an earlier hour already
+
+
+def test_unblock_merge_rules():
+    from digest.unblock import MARKER, merge_decision
+    repo, owner = "p/site", "p"
+    pr = {"number": 7, "draft": False, "user": {"login": "p"}, "labels": [], "head": {"sha": "abc", "repo": {"full_name": repo}}}
+    green = [{"status": "completed", "conclusion": "success"}, {"status": "completed", "conclusion": "skipped"}]
+    note = {"body": f"{MARKER} sha=abc\nAll checks passed.", "created_at": "2026-11-26T14:30:00Z"}
+    late = {"body": f"{MARKER} sha=abc\nAll checks passed.", "created_at": "2026-11-26T13:30:00Z"}
+    d = lambda **k: merge_decision({**pr, **k.pop("pr", {})}, k.get("checks", green), k.get("files", ["digest/x.py"]),
+                                   k.get("comments", []), owner, repo, _now())[0]
+    assert d() == "announce"
+    assert d(comments=[note]) == "wait"                                   # inside the hour
+    assert d(comments=[late]) == "merge"
+    assert d(comments=[late, {"body": "hold please", "created_at": "2026-11-26T14:00:00Z"}]) == "skip"
+    assert d(comments=[{**late, "body": f"{MARKER} sha=old"}]) == "announce"   # new commits restart the hour
+    assert d(pr={"labels": [{"name": "hold"}]}, comments=[late]) == "skip"
+    assert d(pr={"user": {"login": "dependabot[bot]"}}, comments=[late]) == "skip"
+    assert d(pr={"head": {"sha": "abc", "repo": {"full_name": "evil/site"}}}, comments=[late]) == "skip"
+    assert d(checks=[{"status": "in_progress"}]) == "wait"
+    assert d(checks=[{"status": "completed", "conclusion": "failure"}], comments=[late]) == "skip"
+    assert d(files=[".github/workflows/x.yml"], comments=[late]) == "needs_owner"
+
+
+def test_unblock_owner_message():
+    from datetime import date
+    from digest.unblock import owner_message
+    state = {k: True for k in ("backup", "nvd", "rulesets", "token_read_only", "dnssec", "orcid", "vulncheck", "cronjob")}
+    assert owner_message({**state, "dmarc": True}, date(2026, 11, 30), weekly=True) is None
+    assert owner_message({**state, "dmarc": False}, date(2026, 11, 26), weekly=False) is None      # not due yet
+    m = owner_message({**state, "dmarc": False}, date(2026, 12, 4), weekly=False)
+    assert "DMARC enforcement (due 2026-12-06)" in m and m.startswith("Watchfloor: due soon")
+    m = owner_message({**state, "dnssec": None}, date(2026, 11, 30), weekly=True)
+    assert "[could not check]" in m and "DNSSEC" in m
+
+
+def test_linkedin_autopilot_only_obeys_owner_private_chat():
+    from digest.linkedin import owner_commands
+    ups = [{"message": {"chat": {"id": 42, "type": "private"}, "text": "/post 20261125-2333-2dc936"}},
+           {"message": {"chat": {"id": 99, "type": "private"}, "text": "/post 20261125-2333-2dc936"}},
+           {"message": {"chat": {"id": 42, "type": "group"}, "text": "/post 20261125-2333-2dc936"}},
+           {"message": {"chat": {"id": 42, "type": "private"}, "text": "/post 20261125-2333-2dc936; rm -rf"}},
+           {"message": {"chat": {"id": 42, "type": "private"}, "text": " /skip 20261126-0101-abcdef "}},
+           {"channel_post": {"chat": {"id": 42}, "text": "/post 20261125-2333-2dc936"}}]
+    assert owner_commands(ups, "42") == [("post", "20261125-2333-2dc936"), ("skip", "20261126-0101-abcdef")]
+
+
+def test_linkedin_autopilot_post_reply_publishes_through_the_judge(tmp_path, monkeypatch):
+    from digest import linkedin as L
+    monkeypatch.setattr(L, "STORE", tmp_path)
+    monkeypatch.setenv("TELEGRAM_CHAT_ID", "42")
+    monkeypatch.setattr(L, "source_from_note", lambda cfg: (_ for _ in ()).throw(SystemExit("no notes")))
+    monkeypatch.setattr(L, "secret", lambda n: None)
+    did = "20261125-2333-2dc936"
+    (tmp_path / f"{did}.json").write_text(json.dumps({"id": did, "status": "draft"}))
+    said, published = [], []
+    def tg(method, **kw):
+        if method == "getUpdates":
+            return {"result": [{"update_id": 5, "message": {"chat": {"id": 42, "type": "private"}, "text": f"/post {did}"}}]}
+        said.append(kw["text"]); return {}
+    monkeypatch.setattr(L, "_tg", tg)
+    monkeypatch.setattr(L, "publish", lambda cfg, d, yes=False, skip_judge=False: published.append((d, yes, skip_judge)))
+    L.autopilot({})
+    assert published == [(did, True, False)]       # never skips the judge
+    assert (tmp_path / ".tg_offset").read_text() == "6" and said[0].startswith("Posted to LinkedIn")

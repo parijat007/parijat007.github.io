@@ -9,6 +9,7 @@
   python -m digest.linkedin judge <id>           # re-run the judge (after you edit a draft)
   python -m digest.linkedin publish <id>         # judge, show post and image, ask "Publish? [y/N]"
   python -m digest.linkedin status               # token expiry and author
+  python -m digest.linkedin autopilot            # Mac, every 10 min: draft new notes, act on Telegram replies
 
 Drafts live outside the public repo (~/.watchfloor/linkedin). The model writes only from the
 source you point it at; every draft is checked (length, banned words, links, employer names)
@@ -287,7 +288,8 @@ def notify_draft(d: dict) -> None:
         with open(d["image"], "rb") as fh:
             requests.post(f"https://api.telegram.org/bot{tok}/sendPhoto", data={"chat_id": chat,
                           "caption": f"Image for draft {d['id']}"}, files={"photo": fh}, timeout=60)
-    msg = f"{head}\n\n{d['text']}\n\nTo publish, on the Mac run:\npython -m digest.linkedin publish {d['id']}"
+    msg = (f"{head}\n\n{d['text']}\n\nTo publish, reply:  /post {d['id']}\nTo drop it, reply:  /skip {d['id']}\n"
+           "(or on the Mac: ./mac/linkedin.sh publish ID)")
     requests.post(f"https://api.telegram.org/bot{tok}/sendMessage",
                   json={"chat_id": chat, "text": msg[:4000], "disable_web_page_preview": True}, timeout=20)
 
@@ -430,6 +432,85 @@ def status() -> None:
     print(f"drafts: {len(list(STORE.glob('*.json')))} in {STORE}")
 
 
+# ---------- autopilot: Telegram approval ----------
+
+CMD = re.compile(r"^/(post|skip)\s+([0-9]{8}-[0-9]{4}-[0-9a-f]{6})\s*$")
+
+
+def _tg(method: str, **kw) -> dict:
+    tok = os.environ.get("TELEGRAM_BOT_TOKEN") or secret("telegram-bot-token")
+    r = requests.post(f"https://api.telegram.org/bot{tok}/{method}", json=kw, timeout=40)
+    return r.json() if r.ok else {}
+
+
+def owner_commands(updates: list[dict], chat: str) -> list[tuple[str, str]]:
+    """(/post|/skip, id) from the owner's private chat only. Anything else, from anyone else, is ignored."""
+    out = []
+    for u in updates:
+        m = u.get("message") or {}
+        if str(m.get("chat", {}).get("id")) != str(chat) or m.get("chat", {}).get("type") != "private":
+            continue
+        if (c := CMD.match((m.get("text") or "").strip())):
+            out.append((c.group(1), c.group(2)))
+    return out
+
+
+def autopilot(cfg: dict) -> None:
+    """Draft new notes, then act on /post and /skip replies. /post publishes only after the judge passes."""
+    STORE.mkdir(parents=True, exist_ok=True)
+    chat = os.environ.get("TELEGRAM_CHAT_ID") or secret("telegram-chat-id")
+    say = (lambda t: _tg("sendMessage", chat_id=chat, text=t, disable_web_page_preview=True)) if chat else print
+
+    # 1. a note from the last three days with no draft yet
+    try:
+        src = source_from_note(cfg)
+        stem = src["link"].rstrip("/").rsplit("/", 1)[-1]
+        drafted = {json.loads(f.read_text())["source"]["link"] for f in STORE.glob("*.json")}
+        fresh = (datetime.now(timezone.utc).date() - datetime.fromisoformat(stem[:10]).date()).days <= 3
+        if fresh and src["link"] not in drafted and not (STORE / f".skip-{stem}").exists():
+            notify_draft(draft(cfg, src))
+    except (SystemExit, ValueError) as e:
+        log.info("no new note to draft (%s)", e)
+
+    # 2. token expiry
+    exp = secret("linkedin-token-expires")
+    if exp and (datetime.fromisoformat(exp).date() - datetime.now(timezone.utc).date()).days == 7:
+        flag = STORE / f".expiry-{exp}"
+        if not flag.exists():
+            flag.touch()
+            say(f"LinkedIn sign-in expires {exp}. On the Mac run: ./mac/linkedin.sh auth")
+
+    # 3. replies
+    if not chat:
+        return
+    off_f = STORE / ".tg_offset"
+    offset = int(off_f.read_text()) if off_f.exists() else 0
+    res = _tg("getUpdates", offset=offset, timeout=0, allowed_updates=["message"])
+    updates = res.get("result") or []
+    if updates:
+        off_f.write_text(str(updates[-1]["update_id"] + 1))
+    for cmd, did in owner_commands(updates, chat):
+        f = STORE / f"{did}.json"
+        if not f.exists():
+            say(f"No draft {did}.")
+            continue
+        if cmd == "skip":
+            d = json.loads(f.read_text())
+            d["status"] = "skipped"
+            f.write_text(json.dumps(d, indent=1, ensure_ascii=False))
+            say(f"Dropped draft {did}. Nothing was posted.")
+            continue
+        try:
+            publish(cfg, did, yes=True)
+            d = json.loads(f.read_text())
+            say(f"Posted to LinkedIn: {d.get('url') or d.get('post_urn')}")
+        except SystemExit as e:
+            j = json.loads(f.read_text()).get("judge")
+            say(f"Not posted ({did}):\n{e}" + (f"\n\n{post_judge.report(j)}" if j else ""))
+        except Exception as e:  # noqa: BLE001
+            say(f"Not posted ({did}): {str(e)[:300]}")
+
+
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -450,6 +531,7 @@ def main() -> None:
     j.add_argument("id")
     sub.add_parser("auth")
     sub.add_parser("status")
+    sub.add_parser("autopilot")
     a = ap.parse_args()
     cfg = load_config()
     if a.cmd == "draft":
@@ -478,6 +560,8 @@ def main() -> None:
         auth(cfg)
     elif a.cmd == "status":
         status()
+    elif a.cmd == "autopilot":
+        autopilot(cfg)
 
 
 if __name__ == "__main__":

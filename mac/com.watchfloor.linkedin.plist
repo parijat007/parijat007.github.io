@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.watchfloor.linkedin</string>
+  <key>ProgramArguments</key>
+  <array><string>/bin/zsh</string><string>__REPO_DIR__/mac/linkedin_autopilot.sh</string></array>
+  <!-- Every 10 minutes while the Mac is awake: draft new notes, act on /post and /skip replies in Telegram. -->
+  <key>StartInterval</key><integer>600</integer>
+  <key>StandardOutPath</key><string>/tmp/watchfloor.linkedin.log</string>
+  <key>StandardErrorPath</key><string>/tmp/watchfloor.linkedin.log</string>
+</dict>
+</plist>

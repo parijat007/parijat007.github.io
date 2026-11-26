@@ -52,3 +52,13 @@ A FAIL blocks publishing. If no second model answers, publishing is blocked unle
 - no banned phrases; at most five hashtags
 
 Check your employer's social media policy before posting about security topics.
+
+## Autopilot: approve from Telegram
+Once you have signed in (`./mac/linkedin.sh auth`), `zsh mac/setup.sh` adds a job that runs every 10
+minutes while the Mac is awake. It pulls new notes from GitHub, drafts a post for any note from the last
+three days, runs the judge, and sends you the draft and its image on Telegram. Reply:
+
+    /post ID     publish it (the judge runs again; a FAIL or no second model means it is not posted)
+    /skip ID     drop it
+
+Only messages from your own private chat with the bot are obeyed. Log: `/tmp/watchfloor.linkedin.log`.
