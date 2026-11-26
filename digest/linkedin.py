@@ -593,6 +593,8 @@ def owner_commands(updates: list[dict], chat: str) -> list[tuple[str, str]]:
             out.append((c.group(1), c.group(2)))
         elif (c := NOTE_CMD.match(text)):
             out.append(("note-" + c.group(1), c.group(2)))
+        else:
+            log.info("a message from the owner was not a desk command (expected /post ID, /skip ID or /note ok|drop ID)")
     return out
 
 
@@ -603,7 +605,8 @@ def autopilot(cfg: dict) -> None:
     def say(text: str) -> None:
         """Reply to the owner in Telegram (nothing is printed: messages can quote drafts and ids)."""
         if chat:
-            _tg("sendMessage", chat_id=chat, text=text, disable_web_page_preview=True)
+            ok = _tg("sendMessage", chat_id=chat, text=text, disable_web_page_preview=True).get("ok")
+            log.info("reply to the owner: %s", "sent" if ok else "NOT sent")
 
     # 1. every note from the last three days with no draft yet (a news note and a topic note can share a day);
     #    at most two per run so one busy day cannot flood Telegram
@@ -654,7 +657,11 @@ def autopilot(cfg: dict) -> None:
     log.info("telegram: %d new message(s)", len(updates))
     if updates:
         _tg("getUpdates", offset=updates[-1]["update_id"] + 1, limit=1, timeout=0)
-    for cmd, did in owner_commands(updates, chat):
+    cmds = owner_commands(updates, chat)
+    log.info("telegram: %d desk command(s) to act on", len(cmds))
+    labels = {"post": "post", "skip": "skip", "note-ok": "publish note", "note-drop": "drop note"}
+    for cmd, did in cmds:
+        log.info("acting on a '%s' command", labels.get(cmd, "unknown"))
         if cmd.startswith("note-"):
             from . import ai_notes  # noqa: PLC0415
             try:
