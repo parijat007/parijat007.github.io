@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ rec.cve }} exploit timeline — {{ p.name }}{% endblock %}
+{% block title %}Anatomy of {{ rec.cve }} — {{ p.name }}{% endblock %}
 {% block desc %}{{ rec.cve }}: when it was published, added to CISA KEV, given a public PoC and covered by public detections.{% endblock %}
 {% block main %}
 {% set ev = rec.events %}{% set ep = rec.epss %}
@@ -15,6 +15,23 @@
   {% if ev.poc_first_seen %}<div><dt>Public PoC</dt><dd><a href="{{ ev.poc_first_seen.url }}" rel="noopener">{{ ev.poc_first_seen.count }} repositor{{ 'y' if ev.poc_first_seen.count == 1 else 'ies' }}</a></dd></div>{% endif %}
   {% if rec.briefs %}<div><dt>In the brief</dt><dd>{% for d in rec.briefs | sort(reverse=true) %}<a href="{{ root }}brief/{{ d }}/">{{ d | longdate }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</dd></div>{% endif %}
 </dl>
+
+{% if an.story %}<section class="block" aria-labelledby="an-h"><h2 id="an-h">Anatomy of this bug</h2>
+<p class="anatomy-story">{{ an.story | join(" ") }}</p>
+{% if ax %}<figure class="axis">
+<svg viewBox="0 0 {{ ax.width }} 150" role="img" aria-label="Timeline of {{ rec.cve }} over {{ ax.span }} days">
+  <line x1="40" y1="75" x2="{{ ax.width - 40 }}" y2="75" class="axis-line"/>
+  {% for pt in ax.points %}<g class="axis-pt k-{{ pt.key }}">
+    <circle cx="{{ pt.x }}" cy="75" r="7"/>
+    <text x="{{ pt.x }}" y="{{ 38 if pt.row == 0 else 118 }}" text-anchor="{{ 'start' if pt.x < 120 else ('end' if pt.x > ax.width - 120 else 'middle') }}">{{ pt.label }}</text>
+    <text x="{{ pt.x }}" y="{{ 56 if pt.row == 0 else 138 }}" class="axis-day" text-anchor="{{ 'start' if pt.x < 120 else ('end' if pt.x > ax.width - 120 else 'middle') }}">day {{ pt.day }} · {{ pt.date | nicedate }}</text>
+  </g>{% endfor %}
+</svg></figure>{% endif %}
+{% if an.rows %}<table class="watch gaps"><thead><tr><th scope="col">Gap</th><th scope="col">This CVE</th><th scope="col">Median, tracked CVEs</th></tr></thead><tbody>
+{% for r in an.rows %}<tr><td>{{ r.phrase[0] | upper }}{{ r.phrase[1:] }}</td><td class="num"><b>{{ r.days }} day{{ '' if r.days == 1 else 's' }}</b>{% if r.faster_than is not none %}<br><span class="muted">faster than {{ r.faster_than }}% of tracked CVEs</span>{% endif %}</td><td class="num">{{ r.median }} days <span class="muted">({{ r.n }} CVEs)</span></td></tr>{% endfor %}
+</tbody></table>
+<p class="note">Gaps are whole days between dated events. "Tracked CVEs" are the {{ tracked }} CVEs Watchfloor has followed so far; the comparison grows as the record does. <a href="{{ root }}cve/">Compare all tracked CVEs</a>.</p>{% endif %}
+</section>{% endif %}
 
 <section class="block" aria-labelledby="tl-h"><h2 id="tl-h">Timeline</h2>
 <ol class="cve-timeline">
