@@ -600,7 +600,12 @@
      "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-132165"
     }
    },
-   "epss": [],
+   "epss": [
+    {
+     "date": "2026-11-26",
+     "score": 0.1105
+    }
+   ],
    "briefs": [
     "2026-11-25",
     "2026-11-26"
@@ -1941,7 +1946,12 @@
      "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-136267"
     }
    },
-   "epss": [],
+   "epss": [
+    {
+     "date": "2026-11-26",
+     "score": 0.0142
+    }
+   ],
    "briefs": [
     "2026-11-26"
    ],
@@ -2292,7 +2302,12 @@
      "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-134070"
     }
    },
-   "epss": [],
+   "epss": [
+    {
+     "date": "2026-11-26",
+     "score": 0.0056
+    }
+   ],
    "briefs": [
     "2026-11-26"
    ],
@@ -2301,5 +2316,5 @@
   }
  },
  "detections_checked": "2026-11-26",
- "updated": "2026-11-26T14:20:24+00:00"
+ "updated": "2026-11-26T15:20:25+00:00"
 }
