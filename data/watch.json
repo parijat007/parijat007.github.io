@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-26T01:21:13+00:00",
+ "updated": "2026-11-26T02:01:47+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
@@ -625,7 +625,7 @@
     "score": 0.0086,
     "percentile": 0.56
    },
-   "poc": 1,
+   "poc": 2,
    "kev_due": "2026-11-28",
    "ransomware": "Unknown",
    "stack_match": [],
@@ -2428,7 +2428,7 @@
    "summary": "On November 18, 2026, nginx announced the availability of a fix for multiple critical vulnerabilities in nginx that could lead to remote code execution. These vulnerabilities affect nginx releases 1.9.5 through 1.31.8 and is fixed in releases 1.31.9 (mainline) and 1.30.7 (stable)",
    "source": "Cisco PSIRT",
    "url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nginx-nov-2026-e8jska2s",
-   "published": "2026-11-26T00:36:59+00:00",
+   "published": "2026-11-26T01:48:13+00:00",
    "cves": [
     "CVE-2026-113425",
     "CVE-2026-121810",
