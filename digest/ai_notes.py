@@ -51,7 +51,7 @@ press, research, honeypots or social posts is "reported". Keep every caveat an i
 A fix step is copied whole (upgrade AND the rotation/restriction the item requires).
 
 Voice: confident, specific, plain. No hype, no emojis, no rhetorical questions. Never use: landscape, delve,
-elevate, paradigm, testament, furthermore, moreover, game-changer. Spell out an acronym the first time.
+elevate, paradigm, testament, furthermore, moreover, game-changer. Spell out a less common acronym the first time (MCP, RAG); "AI" and "LLM" need no expansion.
 
 Return JSON only:
 {{"title": "AI Security {label}: <specific finding, under 80 characters>",
