@@ -391,6 +391,34 @@ def post(text: str, token: str, author: str, version: str, image: str | None = N
     return r.headers.get("x-restli-id", "")
 
 
+def edit_post(cfg: dict, did: str, text: str) -> str:
+    """Replace the text of a post that is already live (image, reactions and link stay). Judge first."""
+    f = STORE / f"{did}.json"
+    d = json.loads(f.read_text())
+    if d.get("status") != "published" or not d.get("post_urn"):
+        raise SystemExit(f"{did} is not a published post")
+    problems = check(text, {**d["source"], "urls": URL_RE.findall(text), "no_craft": True}, cfg)
+    if problems:
+        raise SystemExit("fix first:\n- " + "\n- ".join(problems))
+    complete_draft(d, cfg)
+    trial = {**d, "text": text}
+    v = run_judge(cfg, trial)
+    if v["verdict"] != "pass":
+        raise SystemExit("Not edited:\n" + post_judge.report(v))
+    token = secret("linkedin-access-token")
+    if not token:
+        raise SystemExit("not signed in: run `./mac/linkedin.sh auth`")
+    version = cfg.get("linkedin", {}).get("api_version", "202608")
+    r = requests.post(f"{API}/rest/posts/{urllib.parse.quote(d['post_urn'], safe='')}", timeout=30,
+                      headers={**_headers(token, version), "X-RestLi-Method": "PARTIAL_UPDATE"},
+                      json={"patch": {"$set": {"commentary": little_text(text)}}})
+    if r.status_code not in (200, 204):
+        raise RuntimeError(f"LinkedIn edit HTTP {r.status_code}: {r.text[:300]}")
+    d.update(text=text, judge=v, edited=datetime.now(timezone.utc).isoformat(timespec="seconds"))
+    f.write_text(json.dumps(d, indent=1, ensure_ascii=False))
+    return d.get("url") or d["post_urn"]
+
+
 def run_judge(cfg: dict, d: dict) -> dict:
     d["judge"] = post_judge.judge(d["text"], d.get("image_text", ""), d.get("source_raw", ""), cfg, d.get("provider"))
     d["judged_text"] = hashlib.sha1(d["text"].encode()).hexdigest()

@@ -1169,3 +1169,53 @@ def test_linkedin_draft_goes_back_to_the_writer_until_the_judge_passes(tmp_path,
     d = L.draft(cfg, src)
     assert d["text"] == good and d["judge"]["verdict"] == "pass" and d["provider"] == "gemini"
     assert "missing_caveat" in prompts[1] and "<previous_draft>" in prompts[1]
+
+
+def test_linkedin_mcp_server_speaks_stdio_and_guards_publishing(tmp_path):
+    import subprocess
+    import os as _os
+    msgs = [{"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2025-06-18", "capabilities": {},
+             "clientInfo": {"name": "t", "version": "1"}}},
+            {"jsonrpc": "2.0", "method": "notifications/initialized"},
+            {"jsonrpc": "2.0", "id": 2, "method": "tools/list"},
+            {"jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": {"name": "linkedin_publish",
+             "arguments": {"id": "20261125-2333-2dc936", "confirm": False}}},
+            {"jsonrpc": "2.0", "id": 4, "method": "tools/call", "params": {"name": "linkedin_list_drafts", "arguments": {}}},
+            {"jsonrpc": "2.0", "id": 5, "method": "tools/call", "params": {"name": "linkedin_show_draft",
+             "arguments": {"id": "20990101-0000-abcdef"}}}]
+    env = {**_os.environ, "WF_LINKEDIN_DIR": str(tmp_path)}
+    r = subprocess.run([sys.executable, "-m", "digest.linkedin_mcp"], input="\n".join(json.dumps(m) for m in msgs) + "\n",
+                       capture_output=True, text=True, env=env, cwd=Path(__file__).parent.parent, timeout=60)
+    out = [json.loads(ln) for ln in r.stdout.splitlines()]          # every stdout line is protocol JSON
+    assert [o["id"] for o in out] == [1, 2, 3, 4, 5]
+    assert out[0]["result"]["serverInfo"]["name"] == "watchfloor-linkedin"
+    names = {t["name"] for t in out[1]["result"]["tools"]}
+    assert {"linkedin_publish", "linkedin_edit_post", "linkedin_create_draft"} <= names
+    assert out[2]["result"]["isError"] and "approve" in out[2]["result"]["content"][0]["text"]
+    assert out[3]["result"]["content"][0]["text"] == "no drafts"
+    assert out[4]["result"]["isError"] and "no draft" in out[4]["result"]["content"][0]["text"]
+
+
+def test_linkedin_edit_post_requires_judge_pass(tmp_path, monkeypatch):
+    from digest import linkedin as L
+    monkeypatch.setattr(L, "STORE", tmp_path)
+    text = "Finding.\n\n" + "Detail line. " * 30 + "\nhttps://theparijat.com/notes/n/"
+    (tmp_path / "d1.json").write_text(json.dumps({"id": "d1", "status": "published", "post_urn": "urn:li:share:1",
+        "url": "https://www.linkedin.com/feed/update/urn:li:share:1/", "text": text, "provider": "gemini", "source_raw": "x",
+        "source": {"kind": "file", "title": "t", "link": "https://theparijat.com/notes/n/"}}))
+    cfg = {"site": {"url": "https://theparijat.com"}, "linkedin": {"never_name": []}}
+    monkeypatch.setattr(L, "secret", lambda n: "tok")
+    monkeypatch.setattr(L.post_judge, "judge", lambda *a: {"verdict": "fail", "facts": ["post: '9' x"], "judge": None, "issues": []})
+    monkeypatch.setattr(L.requests, "post", lambda *a, **k: pytest.fail("must not call LinkedIn"))
+    with pytest.raises(SystemExit, match="Not edited"):
+        L.edit_post(cfg, "d1", text + " more")
+    sent = []
+
+    class R:
+        status_code, text = 204, ""
+    monkeypatch.setattr(L.post_judge, "judge", lambda *a: {"verdict": "pass", "facts": [], "judge": "Groq", "issues": []})
+    monkeypatch.setattr(L.requests, "post", lambda url, **k: sent.append((url, k)) or R())
+    assert L.edit_post(cfg, "d1", text + " more").endswith("urn:li:share:1/")
+    url, k = sent[0]
+    assert url.endswith("/rest/posts/urn%3Ali%3Ashare%3A1") and k["headers"]["X-RestLi-Method"] == "PARTIAL_UPDATE"
+    assert json.loads((tmp_path / "d1.json").read_text())["text"].endswith("more")

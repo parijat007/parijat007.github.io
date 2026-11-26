@@ -62,3 +62,21 @@ three days, runs the judge, and sends you the draft and its image on Telegram. R
     /skip ID     drop it
 
 Only messages from your own private chat with the bot are obeyed. Log: `/tmp/watchfloor.linkedin.log`.
+
+## Claude as your LinkedIn desk (MCP server)
+`zsh mac/setup.sh` also registers `watchfloor-linkedin` in the Claude desktop app
+(`~/Library/Application Support/Claude/claude_desktop_config.json`). Quit and reopen the app; Claude can then,
+from any chat on this Mac or linked to it:
+
+| Tool | What it does | Changes LinkedIn? |
+|---|---|---|
+| `linkedin_status`, `linkedin_list_drafts`, `linkedin_show_draft` | read | no |
+| `linkedin_create_draft` | draft from the latest note or brief (write, check, judge, revise, image) | no |
+| `linkedin_update_draft`, `linkedin_judge` | change a draft's text, re-run the judge | no |
+| `linkedin_publish` | publish a draft with its image | yes |
+| `linkedin_edit_post` | replace the text of a live post (image and reactions stay) | yes |
+
+Publish and edit need `confirm=true`, which Claude sends only after you say yes in the chat, and the app asks
+you before each call. Both run the judge and refuse on FAIL. Tokens stay in Keychain; no tool returns them.
+The server is plain Python with no extra packages (`digest/linkedin_mcp.py`); its log is
+`/tmp/watchfloor.linkedin-mcp.log`.
