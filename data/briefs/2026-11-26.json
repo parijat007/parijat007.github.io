@@ -23,7 +23,7 @@
    ],
    "kev_due_date": "2026-11-28",
    "summary": "CISA added 10 vulnerabilities to KEV. Mitel MiCollab has 5 flaws (RCE, file upload, auth bypass). Juniper Session Smart has OS command injection. Drupal Fail2Install (CVE-2026-132165) is under active exploitation. Danfoss AK-SM 800A has path traversal and auth flaws.",
-   "action": "Apply vendor patches immediately. Mitel MISA-2026-0012. Juniper 2026-10 bulletin. Drupal 10.4.7/11.1.5. Danfoss DSA-2023-08-01/DSA-2025-03-01.",
+   "action": "Apply vendor patches immediately. Juniper 2026-10 bulletin.",
    "hunt": null,
    "fixed_versions": null,
    "confidence": "LOW",
@@ -241,5 +241,12 @@
    "runner": "mac",
    "schedule_delay_min": null
   }
- }
+ },
+ "corrections": [
+  {
+   "date": "2026-11-26",
+   "item": 1,
+   "note": "Removed three references the model wrote that were not in any source: a Mitel advisory number (MISA-2026-0012), Drupal versions 10.4.7/11.1.5, and two Danfoss advisory numbers. Check the vendor advisories linked from CISA's KEV entries for fixed versions."
+  }
+ ]
 }
