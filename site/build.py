@@ -259,6 +259,7 @@ def build(out: Path) -> None:
     if out.exists():
         shutil.rmtree(out)
     shutil.copytree(SITE / "static", out / "static")
+    shutil.copyfile(SITE / "static" / "favicon.ico", out / "favicon.ico")   # browsers ask for /favicon.ico
     E = env()
     tl = json.loads((DATA / "cve_timeline.json").read_text()) if (DATA / "cve_timeline.json").exists() else {"cves": {}}
     E.globals["cve_pages"] = set(tl["cves"])          # identifiers that link to a timeline page
