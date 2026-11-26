@@ -170,3 +170,82 @@ def ordered_events(rec: dict) -> list[dict]:
         for e in evs:
             e["day"] = (datetime.fromisoformat(e["date"]) - d0).days
     return evs
+
+
+# ---------- Anatomy of a bug: the gaps between milestones, compared with every tracked CVE ----------
+
+GAPS = [  # (key, from-event, to-event, phrase)
+    ("poc", "published", "poc_first_seen", "from publication to the first public proof of concept"),
+    ("kev", "published", "kev_added", "from publication to CISA confirming exploitation"),
+    ("detect", "published", "detection_seen", "from publication to the first public detection rule"),
+    ("blind", "poc_first_seen", "detection_seen", "with public exploit code and no public detection"),
+    ("deadline", "kev_added", "kev_due", "between the KEV listing and the federal due date"),
+]
+
+
+def _date(rec: dict, key: str) -> datetime | None:
+    ev = rec.get("events", {})
+    s = (ev.get("kev_added") or {}).get("due") if key == "kev_due" else (ev.get(key) or {}).get("date")
+    try:
+        return datetime.fromisoformat(s) if s else None
+    except ValueError:
+        return None
+
+
+def gaps(rec: dict) -> dict[str, int]:
+    out = {}
+    for k, a, b, _ in GAPS:
+        da, db = _date(rec, a), _date(rec, b)
+        if da and db:
+            out[k] = (db - da).days
+    return out
+
+
+def _say(n: int) -> str:
+    return "the same day" if n == 0 else (f"{n} day{'' if n == 1 else 's'}" if n > 0 else f"{-n} day{'' if n == -1 else 's'} before")
+
+
+def anatomy(rec: dict, all_recs: dict) -> dict:
+    """Deterministic narrative and comparisons for one CVE. Every number is a date difference from the record."""
+    g = gaps(rec)
+    pool = {k: sorted(x for r in all_recs.values() if (x := gaps(r).get(k)) is not None) for k, *_ in GAPS}
+    rows = []
+    for k, _, _, phrase in GAPS:
+        if k not in g:
+            continue
+        p = pool[k]
+        faster = sum(1 for x in p if x > g[k])
+        rows.append({"key": k, "days": g[k], "phrase": phrase, "median": p[len(p) // 2] if p else None, "n": len(p),
+                     "faster_than": round(100 * faster / len(p)) if len(p) >= 5 and k != "deadline" else None})
+    ev = rec.get("events", {})
+    story = []
+    if "published" in ev:
+        story.append(f"NVD published the CVE on {datetime.fromisoformat(ev['published']['date']):%-d %B %Y}.")
+    if "poc" in g:
+        n = (ev.get("poc_first_seen") or {}).get("count")
+        story.append(f"Public proof-of-concept code appeared {_say(g['poc'])}" + (" after that" if g["poc"] > 0 else "")
+                     + (f" ({n} repositor{'y' if n == 1 else 'ies'} so far)." if n else "."))
+    if "kev" in g:
+        story.append(f"CISA confirmed exploitation in the wild {_say(g['kev'])}" + (" after publication" if g["kev"] > 0 else "")
+                     + f", and set a federal due date {_say(g.get('deadline', 0))} after the listing." if "deadline" in g else ".")
+    if "detect" in g:
+        story.append(f"The first public detection rule showed up {_say(g['detect'])} after publication.")
+    elif "poc_first_seen" in ev:
+        story.append("No public Sigma rule or nuclei template names it yet, so defenders still write their own.")
+    return {"gaps": g, "rows": rows, "story": story}
+
+
+def axis(rec: dict, width: int = 760) -> dict | None:
+    """Positions for a horizontal timeline drawing (SVG in the page): days on a shared scale."""
+    evs = ordered_events(rec)
+    due = _date(rec, "kev_due")
+    if due and evs:
+        d0 = datetime.fromisoformat(evs[0]["date"])
+        evs = evs + [{"key": "kev_due", "label": "Federal due date", "date": due.date().isoformat(), "day": (due - d0).days}]
+    if len(evs) < 2:
+        return None
+    span = max(e["day"] for e in evs) or 1
+    pts = []
+    for i, e in enumerate(evs):
+        pts.append({**e, "x": 40 + round((width - 80) * e["day"] / span), "row": i % 2})
+    return {"width": width, "span": span, "points": pts}

@@ -262,6 +262,7 @@ def build(out: Path) -> None:
     shutil.copyfile(SITE / "static" / "favicon.ico", out / "favicon.ico")   # browsers ask for /favicon.ico
     E = env()
     tl = json.loads((DATA / "cve_timeline.json").read_text()) if (DATA / "cve_timeline.json").exists() else {"cves": {}}
+    E.globals["cfg_comments"] = cfg.get("comments")
     E.globals["cve_pages"] = set(tl["cves"])          # identifiers that link to a timeline page
 
     sitemap: list[tuple[str, str | None]] = []
@@ -324,10 +325,19 @@ def build(out: Path) -> None:
     topics = topic_feeds(briefs, watch, cfg.get("stack_watchlist", []), base)
     page("feeds.html", "feeds/", "feeds/", topics=topics)
     sys.path.insert(0, str(ROOT))
-    from digest.timeline import ordered_events  # noqa: PLC0415
+    from digest.timeline import anatomy, axis, gaps, ordered_events  # noqa: PLC0415
+    tracked = len(tl["cves"])
     for cid, rec in tl["cves"].items():
-        page("cve.html", f"cve/{cid}/", "watch/", rec=rec, events=ordered_events(rec),
-             lastmod=(rec.get("epss") or [{}])[-1].get("date"))
+        page("cve.html", f"cve/{cid}/", "watch/", rec=rec, events=ordered_events(rec), an=anatomy(rec, tl["cves"]),
+             ax=axis(rec), tracked=tracked, lastmod=(rec.get("epss") or [{}])[-1].get("date"))
+    an_rows = sorted(({"cve": cid, "title": rec.get("title", ""), "gaps": gaps(rec)} for cid, rec in tl["cves"].items()),
+                     key=lambda r: (r["gaps"].get("kev", 10**6), r["gaps"].get("poc", 10**6), r["cve"]))
+
+    def _median(k):
+        v = sorted(r["gaps"][k] for r in an_rows if k in r["gaps"])
+        return v[len(v) // 2] if v else None
+    page("cve_index.html", "cve/", "watch/", rows=an_rows, tracked=tracked,
+         med={k: _median(k) for k in ("poc", "kev", "detect")})
     page("404.html", "", "")
 
     (out / "api").mkdir()
