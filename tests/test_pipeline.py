@@ -1246,3 +1246,36 @@ def test_unblock_runs_once_when_triggered_twice():
     assert recent_run(runs, "2", _now()) is False     # the earlier of the pair goes ahead
     assert recent_run(runs, "3", _now()) is True      # the later one skips
     assert recent_run([{**r, "conclusion": "failure"} if r["id"] == 2 else r for r in runs], "3", _now()) is False
+
+
+def test_github_events_to_telegram_messages():
+    import importlib.util
+    from datetime import datetime
+    spec = importlib.util.spec_from_file_location("tg_event", Path(__file__).parent.parent / "tools" / "tg_event.py")
+    T = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(T)
+    pr = {"number": 31, "title": "Add X", "user": {"login": "parijat007"}, "html_url": "https://g/31", "draft": False}
+    m = T.message("pull_request_target", {"action": "opened", "pull_request": pr, "_files": ["digest/x.py"]})
+    assert m.startswith("New PR #31: Add X") and "unblock agent merges it" in m
+    m = T.message("pull_request_target", {"action": "opened", "pull_request": pr, "_files": [".github/workflows/a.yml"]})
+    assert "only you can merge" in m
+    dep = {**pr, "user": {"login": "dependabot[bot]"}}
+    assert "Dependabot" in T.message("pull_request_target", {"action": "opened", "pull_request": dep, "_files": []})
+    assert T.message("pull_request_target", {"action": "opened", "pull_request": {**pr, "draft": True}}) is None
+    assert T.message("pull_request_target", {"action": "closed", "pull_request": {**pr, "merged": True,
+                     "merged_by": {"login": "parijat007"}}}).startswith("Merged PR #31")
+    run = {"name": "CI", "head_branch": "main", "event": "push", "display_title": "t", "html_url": "u"}
+    assert T.message("workflow_run", {"workflow_run": {**run, "conclusion": "success"}}) is None
+    assert T.message("workflow_run", {"workflow_run": {**run, "conclusion": "failure"}}).startswith("Failed: CI on main")
+    assert T.message("watch", {"sender": {"login": "a"}, "repository": {"full_name": "p/r", "stargazers_count": 3}}) == "a starred p/r (3 stars)"
+    assert T.quiet(datetime(2026, 11, 26, 23, 0)) and not T.quiet(datetime(2026, 11, 26, 12, 0))
+
+
+def test_unblock_new_code_alerts(monkeypatch):
+    from digest import unblock
+    alerts = [{"created_at": "2026-11-26T14:30:00Z", "tool": {"name": "CodeQL"}, "html_url": "u1",
+               "rule": {"id": "py/x", "description": "Clear-text logging", "security_severity_level": "high"}},
+              {"created_at": "2026-11-25T10:00:00Z", "tool": {"name": "Scorecard"}, "html_url": "u2", "rule": {"id": "Pinned"}}]
+    monkeypatch.setattr(unblock, "gh", lambda *a, **k: alerts)
+    out = unblock.new_code_alerts("p/r", _now())
+    assert out == ["New code-scanning alert (CodeQL, high): Clear-text logging\nu1"]
