@@ -594,6 +594,10 @@
      "date": "2026-11-24",
      "source": "CISA Advisories",
      "url": "https://www.cisa.gov/news-events/alerts/2026/11/24/cisa-adds-three-known-exploited-vulnerabilities-catalog"
+    },
+    "published": {
+     "date": "2026-11-26",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-132165"
     }
    },
    "epss": [],
@@ -2266,5 +2270,5 @@
   }
  },
  "detections_checked": "2026-11-26",
- "updated": "2026-11-26T00:20:24+00:00"
+ "updated": "2026-11-26T01:19:58+00:00"
 }
