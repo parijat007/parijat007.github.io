@@ -58,22 +58,39 @@ EMPLOYMENT_RISK = re.compile(
     r"internal(ly)? (data|incident|tool)|on behalf of)\b", re.I)
 
 SYSTEM = """You write LinkedIn posts for {name}, {headline}
-Voice: a senior practitioner talking to other defenders. Confident, specific, plain. No hype,
-no emojis, no "I'm excited", no motivational lines, no rhetorical questions as hooks.
+Voice: a senior practitioner briefing other defenders. Confident, specific, plain. No hype, no emojis,
+no "I'm excited", no motivational lines, no rhetorical questions, no engagement bait.
 Never use: landscape, delve, elevate, paradigm, testament, furthermore, moreover, game-changer.
 
-Rules:
-- Use ONLY facts in <source>. Do not add numbers, names, CVEs or claims that are not there.
-- Keep "confirmed" and "reported/claimed" distinct exactly as the source does.
-- Never mention any employer or client, and never imply you speak for one.
-- Never describe incidents, systems, tools, metrics or decisions from your own workplace,
-  even without naming it. Write only about the public source.
-- No job-seeking or sales language: no "open to work", "hire me", "consulting", "services",
-  "DM me", "looking for opportunities". This is a practitioner sharing public analysis.
-- Structure: one-line opening that states the finding; a short paragraph of why it matters;
-  three to five short lines a defender can act on; then the link {link} on its own line;
-  then three to five relevant hashtags on the last line.
-- 900 to 1,800 characters. Plain text only: no markdown, no bullets symbols other than "-".
+Facts (non-negotiable):
+- Use ONLY facts in <source>. Do not add numbers, names, CVEs, versions, dates or claims that are not there.
+- Keep "confirmed" and "reported" exactly as the source's status list marks them. Keep every caveat the
+  source attaches to a figure (for example "flagged does not mean malicious").
+- Copy a fix step whole: if the source says upgrade and then rotate or restrict, say both.
+- Time words must be true: do not say "this month" or "this week" about something the source dates earlier.
+- Never mention any employer or client, never imply you speak for one, never describe your own workplace.
+- No job-seeking or sales language ("open to work", "hire me", "consulting", "services", "DM me").
+
+Craft (how an expert post reads):
+1. Opening: one or two sentences, under 200 characters, that state the finding and why it matters.
+   LinkedIn cuts the post at about 210 characters, so the opening must stand alone. Spell out an acronym
+   the first time ("Model Context Protocol (MCP)").
+2. The evidence: a short lead-in line, then two to four "- " lines, one per data point, each with its
+   number, its status (confirmed or reported) where the source gives one, and its caveat.
+3. The mechanism in two or three sentences: how the attack works and why defenders' usual controls miss it.
+4. "What to do this week:" then three to five "- " lines grouped by verb, each starting with one word and a
+   colon: Patch, Inventory, Contain, Hunt (use the ones the source supports). Include a Hunt line whenever
+   the source gives hunting or detection guidance, naming the log source and the event names it gives.
+5. One closing sentence: the principle a defender should keep.
+6. A line naming what the full write-up adds (framework mapping, sources, hunting guidance), then the
+   link {link} on its own line, then three to five specific hashtags on the last line.
+- 1,400 to 2,200 characters. Plain text only: no markdown, no bullet symbols other than "-".
+
+<example> shows the structure and voice to match. It is about a different subject: never reuse its facts,
+numbers or wording.
+<example>
+{example}
+</example>
 Return only the post text."""
 
 
@@ -206,6 +223,32 @@ def check(text: str, src: dict, cfg: dict) -> list[str]:
         problems.append(f"employment-sensitive wording: {m.group(0)!r} (no job-seeking, consulting or workplace references)")
     if len(re.findall(r"(?<!\w)#\w+", text)) > 5:
         problems.append("more than five hashtags")
+    return problems + craft(text, src)
+
+
+OPENING_MAX = 210                      # LinkedIn shows about this much before "see more"
+
+
+def craft(text: str, src: dict) -> list[str]:
+    """Structure an expert post needs. Applied to model drafts of notes and briefs; not to the
+    plain fallback, and not at publish time, so a post you edited by hand is never blocked on style."""
+    if src.get("kind") not in ("note", "brief") or src.get("no_craft"):
+        return []
+    problems = []
+    opening = text.strip().split("\n\n", 1)[0]
+    if len(opening) > OPENING_MAX:
+        problems.append(f"opening paragraph is {len(opening)} characters; keep it under 200 so it shows "
+                        "in full before 'see more'")
+    actions = [ln for ln in text.splitlines() if re.match(r"^- (Patch|Inventory|Contain|Hunt|Detect|Harden|"
+                                                          r"Restrict|Rotate|Monitor|Mitigate)\b", ln)]
+    if len(actions) < 2:
+        problems.append("the action list needs two to five lines that start with a verb and a colon "
+                        "(Patch:, Inventory:, Contain:, Hunt:)")
+    if re.search(r"(?mi)^#+\s*hunt|\*\*hunt", src.get("text", "")) and not re.search(r"(?m)^- Hunt\b", text):
+        problems.append("the source gives hunting guidance: add a '- Hunt:' line naming its log source and events")
+    tags = re.findall(r"(?<!\w)#\w+", text)
+    if len(tags) < 3:
+        problems.append("end with three to five specific hashtags")
     return problems
 
 
@@ -220,35 +263,48 @@ def fallback_post(src: dict) -> str:
 
 def draft(cfg: dict, src: dict) -> dict:
     p = yaml.safe_load((ROOT / "site" / "profile.yaml").read_text())
-    system = SYSTEM.format(name=p["name"], headline=p["headline"], link=src["link"])
+    example = (Path(__file__).parent / "linkedin_example.txt").read_text().strip()
+    system = SYSTEM.format(name=p["name"], headline=p["headline"], link=src["link"], example=example)
     user = f"<source title={json.dumps(src['title'])}>\n{src['text']}\n</source>\nWrite the post."
     lc = cfg["llm"]
     plain = {**lc, "providers": {k: {**v, "json": None} for k, v in lc["providers"].items()}}
     text, provider, problems = None, "fallback", []
+    image_text = post_visual.numbers(src["visual"]) if src.get("visual") else ""
+    verdict = None
     for name in llm.chain(lc):
         if name == "local" and not llm.local_up(lc):
             continue
         try:
-            for _ in range(2):            # one retry with the problems fed back
+            # Write, check, judge, revise: up to three drafts. Problems from the code checks and the judge's
+            # findings go back to the writer, the way an editor would hand a draft back.
+            for attempt in range(3):
                 text = llm.complete(name, plain, system, user).strip()
                 problems = check(text, src, cfg)
+                verdict = None
                 if not problems:
-                    break
-                user += "\n\nYour previous draft had these problems, fix all of them:\n- " + "\n- ".join(problems)
+                    verdict = post_judge.judge(text, image_text, src.get("raw", src["text"]), cfg, name)
+                    if verdict["verdict"] in ("pass", "unavailable"):
+                        break
+                notes = problems + (verdict.get("facts", []) if verdict else []) + \
+                    [f"{i['kind']}: \"{i['quote']}\" - {i['why']}" for i in (verdict or {}).get("issues", [])]
+                log.info("draft %d from %s sent back: %s", attempt + 1, name, "; ".join(notes)[:300])
+                user += ("\n\nAn editor sent your previous draft back. Fix every point, keep everything else, "
+                         "and return the whole post again:\n- " + "\n- ".join(notes) +
+                         f"\n\n<previous_draft>\n{text}\n</previous_draft>")
             provider = name
             break
         except Exception as e:  # noqa: BLE001
             log.warning("%s failed: %s", name, e)
     if not text or problems:
-        text, provider = fallback_post(src), "fallback"
-        problems = check(text, src, cfg)
+        text, provider, verdict = fallback_post(src), "fallback", None
+        problems = check(text, {**src, "no_craft": True}, cfg)
     did = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M") + "-" + hashlib.sha1(text.encode()).hexdigest()[:6]
     d = {"id": did, "created": datetime.now(timezone.utc).isoformat(timespec="seconds"), "status": "draft",
          "source": {k: src[k] for k in ("kind", "title", "link")}, "provider": provider,
          "problems": problems, "text": text, "source_raw": src.get("raw", src["text"])}
     STORE.mkdir(parents=True, exist_ok=True)
     attach_image(d, src.get("visual"))
-    d["judge"] = post_judge.judge(text, d.get("image_text", ""), d["source_raw"], cfg, provider)
+    d["judge"] = verdict or post_judge.judge(text, d.get("image_text", ""), d["source_raw"], cfg, provider)
     (STORE / f"{did}.json").write_text(json.dumps(d, indent=1, ensure_ascii=False))
     return d
 
@@ -341,7 +397,7 @@ def publish(cfg: dict, did: str, yes: bool = False, skip_judge: bool = False) ->
     d = json.loads(f.read_text())
     if d["status"] == "published":
         raise SystemExit(f"{did} was already published: {d.get('url')}")
-    problems = check(d["text"], {**d["source"], "urls": URL_RE.findall(d["text"])}, cfg)
+    problems = check(d["text"], {**d["source"], "urls": URL_RE.findall(d["text"]), "no_craft": True}, cfg)
     if problems:
         raise SystemExit("fix the draft first (edit the JSON file):\n- " + "\n- ".join(problems))
     token, author = secret("linkedin-access-token"), secret("linkedin-person-urn")
@@ -439,8 +495,14 @@ CMD = re.compile(r"^/(post|skip)\s+([0-9]{8}-[0-9]{4}-[0-9a-f]{6})\s*$")
 
 def _tg(method: str, **kw) -> dict:
     tok = os.environ.get("TELEGRAM_BOT_TOKEN") or secret("telegram-bot-token")
+    if not tok:
+        log.warning("telegram: no bot token (Keychain telegram-bot-token)")
+        return {}
     r = requests.post(f"https://api.telegram.org/bot{tok}/{method}", json=kw, timeout=40)
-    return r.json() if r.ok else {}
+    if not r.ok:
+        log.warning("telegram %s: HTTP %s %s", method, r.status_code, r.text[:200])
+        return {}
+    return r.json()
 
 
 def owner_commands(updates: list[dict], chat: str) -> list[tuple[str, str]]:
@@ -449,6 +511,8 @@ def owner_commands(updates: list[dict], chat: str) -> list[tuple[str, str]]:
     for u in updates:
         m = u.get("message") or {}
         if str(m.get("chat", {}).get("id")) != str(chat) or m.get("chat", {}).get("type") != "private":
+            log.info("ignored a message from chat %s (%s): not the owner's private chat %s",
+                     m.get("chat", {}).get("id"), m.get("chat", {}).get("type"), chat)
             continue
         if (c := CMD.match((m.get("text") or "").strip())):
             out.append((c.group(1), c.group(2)))
@@ -487,6 +551,7 @@ def autopilot(cfg: dict) -> None:
     offset = int(off_f.read_text()) if off_f.exists() else 0
     res = _tg("getUpdates", offset=offset, timeout=0, allowed_updates=["message"])
     updates = res.get("result") or []
+    log.info("telegram: %d new message(s)", len(updates))
     if updates:
         off_f.write_text(str(updates[-1]["update_id"] + 1))
     for cmd, did in owner_commands(updates, chat):

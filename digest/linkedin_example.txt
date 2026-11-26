@@ -1,0 +1,21 @@
+An AI agent does what its tools tell it, with the permissions it already holds. So every Model Context Protocol (MCP) server it connects to is part of its supply chain.
+
+Controls built to catch code execution will not see this go wrong. Three data points:
+- OX Security reviewed 834 flagged MCP servers and found prompt injection or tool poisoning in 22% of them. Flagged does not mean malicious.
+- AWS fixed CVE-2026-135614: prompt injection could make the Amazon ECS MCP Server return cleartext secrets despite its redaction setting.
+- Langflow CVE-2026-105740 runs commands defined in MCP server settings on the Langflow host, for any low-privilege user, or for anyone where authentication is off. Honeypots have logged 1,423 attempts since September.
+
+The poisoned tool does not need to run code. It instructs the agent, and the agent uses its own access. No exploit code, no malware, no unusual login: every step is the agent doing its job.
+
+What to do this week:
+- Patch: Amazon ECS MCP Server to 0.1.36 or later, then rotate any secret kept as a plaintext task-definition environment variable. Langflow to 1.10.3 or later, with authentication on and the instance off the internet.
+- Inventory: find mcp.json and claude_desktop_config.json on developer and build hosts. Record who published each server and which token it holds.
+- Contain: give each MCP server its own narrowly scoped credential, pin reviewed versions, and require human approval for tools that write, send or delete.
+- Hunt: in CloudTrail, look for ecs:DescribeTaskDefinition and secretsmanager:GetSecretValue calls from roles used by agents or MCP servers, especially in bursts.
+
+Treat MCP servers like any third-party code with production access: inventoried, pinned, least-privileged and logged.
+
+Full write-up with the OWASP, MITRE ATLAS and ATT&CK mapping:
+https://theparijat.com/notes/2026-11-25-ai-spotlight-mcp-tool-supply-chain/
+
+#AISecurity #MCP #PromptInjection #SupplyChainSecurity #CloudSecurity
