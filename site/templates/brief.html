@@ -1,6 +1,9 @@
-{% extends "base.html" %}{% from "macros.html" import entry, share %}
+{% extends "base.html" %}{% from "macros.html" import entry, share, comments %}
 {% block title %}Threat brief, {{ brief.run_date | longdate }} — {{ p.name }}{% endblock %}
 {% block desc %}{{ brief.executive_pulse }}{% endblock %}
+{% block csp_style %}{% if cfg_comments and cfg_comments.category_id %} https://giscus.app{% endif %}{% endblock %}
+{% block csp_script %}{% if cfg_comments and cfg_comments.category_id %} https://giscus.app{% endif %}{% endblock %}
+{% block csp_frame %}{% if cfg_comments and cfg_comments.category_id %}https://giscus.app{% else %}'none'{% endif %}{% endblock %}
 {% block main %}
 <section class="page-head">
   <h1>Threat brief, {{ brief.run_date | longdate }}</h1>
@@ -15,5 +18,6 @@
 {% if brief.meta.mode == "fallback" %}Automated fallback: the analyst model was offline, so this lists confirmed items without commentary.{% else %}Analyst model: {{ brief.meta.model }}, prompt {{ brief.meta.prompt_version }}.{% endif %}{{ " " }}{% set v = brief.meta.verification %}{% if v and v.status == "checked" %}Checked against its sources by a second model ({{ v.verifier }}): {% if v.flagged %}{{ v.flagged | length }} item{{ '' if v.flagged | length == 1 else 's' }} flagged and marked low confidence.{% else %}nothing flagged.{% endif %}{{ " " }}{% endif %}
 {% if brief.meta.dropped %}{{ brief.meta.dropped | length }} model output(s) rejected by source validation.{% endif %}</p>
 </section>{% endif %}
+{{ comments(cfg_comments, "brief-" ~ brief.run_date) }}
 {% endblock %}
-{% block scripts %}<script src="{{ root }}static/share.js" defer></script>{% endblock %}
+{% block scripts %}<script src="{{ root }}static/comments.js" defer></script><script src="{{ root }}static/share.js" defer></script>{% endblock %}

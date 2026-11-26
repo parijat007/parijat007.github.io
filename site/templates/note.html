@@ -1,6 +1,9 @@
-{% extends "base.html" %}{% from "macros.html" import share %}
+{% extends "base.html" %}{% from "macros.html" import share, comments %}
 {% block title %}{{ n.title }} — {{ p.brand }}{% endblock %}
 {% block desc %}{{ n.summary }}{% endblock %}
+{% block csp_style %}{% if cfg_comments and cfg_comments.category_id %} https://giscus.app{% endif %}{% endblock %}
+{% block csp_script %}{% if cfg_comments and cfg_comments.category_id %} https://giscus.app{% endif %}{% endblock %}
+{% block csp_frame %}{% if cfg_comments and cfg_comments.category_id %}https://giscus.app{% else %}'none'{% endif %}{% endblock %}
 {% block main %}
 <article class="note">
   <header class="page-head">
@@ -25,5 +28,6 @@
   {% endif %}
   <p class="report"><a href="{{ p.repo_url }}/issues/new?title={{ ('Correction: ' ~ n.slug) | urlencode }}&labels=correction">Report an error in this note</a></p>
 </article>
+{{ comments(cfg_comments, n.slug) }}
 {% endblock %}
-{% block scripts %}<script src="{{ root }}static/share.js" defer></script>{% endblock %}
+{% block scripts %}<script src="{{ root }}static/comments.js" defer></script><script src="{{ root }}static/share.js" defer></script>{% endblock %}
