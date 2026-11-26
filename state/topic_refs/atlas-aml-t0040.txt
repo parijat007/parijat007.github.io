@@ -1,0 +1,14 @@
+MITRE ATLAS technique AML.T0040: AI Model Inference API Access
+
+Adversaries may gain access to a model via legitimate access to the inference API.
+Inference API access can be a source of information to the adversary ([Discover AI Model Ontology](/techniques/AML.T0013), [Discover AI Model Family](/techniques/AML.T0014)), a means of staging the attack ([Verify Attack](/techniques/AML.T0042), [Craft Adversarial Data](/techniques/AML.T0043)), or for introducing data to the target system for Impact ([Evade AI Model](/techniques/AML.T0015), [Erode AI Model Integrity](/techniques/AML.T0031)).
+
+Many systems rely on the same models provided via an inference API, which means they share the same vulnerabilities. This is especially true of foundation models which are prohibitively resource intensive to train. Adversaries may use their access to model APIs to identify vulnerabilities such as jailbreaks or hallucinations and then target applications that use the same models.
+
+Mitigations:
+- AML.M0019 Control Access to AI Models and Data in Production: Require users to verify their identities before accessing a production model.
+Require authentication for API endpoints and monitor production model queries to ensure compliance with usage policies and to prevent model misuse.
+
+- AML.M0024 AI Telemetry Logging: Implement logging of inputs and outputs of deployed AI models. When deploying AI agents, implement logging of the intermediate steps of agentic actions and decisions, data access and tool use, installation commands, and identity of the agent. Monitoring logs can help to detect security threats and mitigate impacts.
+
+Additionally, having logging enabled can discourage adversaries who want to remain undetected from utilizing AI resources.

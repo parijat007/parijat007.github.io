@@ -1,0 +1,9 @@
+MITRE ATLAS technique AML.T0047: AI-Enabled Product or Service
+
+Adversaries may use a product or service that uses artificial intelligence under the hood to gain access to the underlying AI model.
+This type of indirect model access may reveal details of the AI model or its inferences in logs or metadata.
+
+Mitigations:
+- AML.M0024 AI Telemetry Logging: Implement logging of inputs and outputs of deployed AI models. When deploying AI agents, implement logging of the intermediate steps of agentic actions and decisions, data access and tool use, installation commands, and identity of the agent. Monitoring logs can help to detect security threats and mitigate impacts.
+
+Additionally, having logging enabled can discourage adversaries who want to remain undetected from utilizing AI resources.

@@ -5,7 +5,7 @@ name: Self-test (all models, no publishing)
 # Sends no messages and commits nothing. The report is on the run's Summary page.
 on:
   pull_request:
-    paths: ["digest/post_judge.py", "tests/judge_cases.json", "digest/linkedin.py", "digest/linkedin_example.txt", "digest/ai_notes.py"]
+    paths: ["digest/post_judge.py", "tests/judge_cases.json", "digest/linkedin.py", "digest/linkedin_example.txt", "digest/ai_notes.py", "digest/ai_topics.py"]
   workflow_dispatch:
     inputs:
       quick:
@@ -103,4 +103,7 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN:  ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: python -m digest.ai_notes daily --dry-run
+        run: |
+          python -m digest.ai_notes daily --dry-run
+          echo "----- AI Security Topics (next in rotation) -----"
+          python -m digest.ai_topics --topic owasp-llm01 --dry-run

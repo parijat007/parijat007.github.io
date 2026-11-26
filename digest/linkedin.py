@@ -149,8 +149,10 @@ def _site(cfg: dict) -> str:
     return (cfg.get("site", {}).get("url") or "").rstrip("/")
 
 
-def source_from_note(cfg: dict) -> dict:
+def source_from_note(cfg: dict, stem: str | None = None) -> dict:
     notes = sorted((ROOT / "data" / "notes").glob("*.md"), reverse=True)
+    if stem:
+        notes = [n for n in notes if n.stem == stem]
     if not notes:
         raise SystemExit("no analyst notes in data/notes/")
     f = notes[0]
@@ -526,7 +528,7 @@ def status() -> None:
 # ---------- autopilot: Telegram approval ----------
 
 CMD = re.compile(r"^/(post|skip)\s+([0-9]{8}-[0-9]{4}-[0-9a-f]{6})\s*$")
-NOTE_CMD = re.compile(r"^/note\s+(ok|drop)\s+([0-9]{4}-[0-9]{2}-[0-9]{2}-ai-(?:daily|spotlight)-[a-z0-9-]{1,60})\s*$")
+NOTE_CMD = re.compile(r"^/note\s+(ok|drop)\s+([0-9]{4}-[0-9]{2}-[0-9]{2}-ai-(?:daily|spotlight|topic)-[a-z0-9-]{1,60})\s*$")
 
 
 def _tg(method: str, **kw) -> dict:
@@ -564,16 +566,25 @@ def autopilot(cfg: dict) -> None:
     chat = os.environ.get("TELEGRAM_CHAT_ID") or secret("telegram-chat-id")
     say = (lambda t: _tg("sendMessage", chat_id=chat, text=t, disable_web_page_preview=True)) if chat else print
 
-    # 1. a note from the last three days with no draft yet
-    try:
-        src = source_from_note(cfg)
-        stem = src["link"].rstrip("/").rsplit("/", 1)[-1]
-        drafted = {json.loads(f.read_text())["source"]["link"] for f in STORE.glob("*.json")}
-        fresh = (datetime.now(timezone.utc).date() - datetime.fromisoformat(stem[:10]).date()).days <= 3
-        if fresh and src["link"] not in drafted and not (STORE / f".skip-{stem}").exists():
-            notify_draft(draft(cfg, src))
-    except (SystemExit, ValueError) as e:
-        log.info("no new note to draft (%s)", e)
+    # 1. every note from the last three days with no draft yet (a news note and a topic note can share a day);
+    #    at most two per run so one busy day cannot flood Telegram
+    drafted = {json.loads(f.read_text()).get("source", {}).get("link") for f in STORE.glob("*.json")}
+    today = datetime.now(timezone.utc).date()
+    made = 0
+    for f in sorted((ROOT / "data" / "notes").glob("*.md"), reverse=True):
+        try:
+            if (today - datetime.fromisoformat(f.stem[:10]).date()).days > 3:
+                break
+        except ValueError:
+            continue
+        link = f"{_site(cfg)}/notes/{f.stem}/"
+        if link in drafted or (STORE / f".skip-{f.stem}").exists() or made >= 2:
+            continue
+        try:
+            notify_draft(draft(cfg, source_from_note(cfg, f.stem)))
+            made += 1
+        except SystemExit as e:
+            log.info("could not draft %s (%s)", f.stem, e)
 
     # 2. token expiry
     exp = secret("linkedin-token-expires")

@@ -156,9 +156,13 @@ def scrub(note: dict, items: list[dict]) -> list[str]:
     return notes
 
 
-def draft(kind: str, items: list[dict], cfg: dict) -> tuple[dict, str]:
+LABEL = {"daily": "AI Security Daily", "weekly": "AI Security Spotlight", "topic": "AI Security Topics"}
+PREFIX = {"daily": "ai-daily", "weekly": "ai-spotlight", "topic": "ai-topic"}
+
+
+def draft(kind: str, items: list[dict], cfg: dict, system: str | None = None) -> tuple[dict, str]:
     label = "Spotlight" if kind == "weekly" else "Daily"
-    system = SYSTEM.format(kind=label.lower(), label=label, size=SIZE[kind])
+    system = system or SYSTEM.format(kind=label.lower(), label=label, size=SIZE[kind])
     user = _user(items)
     lc = cfg["llm"]
     last_err = None
@@ -186,10 +190,10 @@ def slugify(s: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-")[:60].rstrip("-")
 
 
-def to_markdown(note: dict, kind: str, day: date, provider: str) -> tuple[str, str]:
-    label = "AI Security Spotlight" if kind == "weekly" else "AI Security Daily"
+def to_markdown(note: dict, kind: str, day: date, provider: str, extra: dict | None = None) -> tuple[str, str]:
+    label = LABEL[kind]
     title = note["title"] if note["title"].lower().startswith("ai security") else f"{label}: {note['title']}"
-    slug = f"{day}-{'ai-spotlight' if kind == 'weekly' else 'ai-daily'}-{slugify(title.split(':', 1)[-1])}"
+    slug = f"{day}-{PREFIX[kind]}-{slugify(title.split(':', 1)[-1])}"
     v = note.get("visual") or {}
     visual = {"kicker": label, "title": v.get("title") or title.split(":", 1)[-1].strip()}
     if v.get("steps"):
@@ -197,7 +201,7 @@ def to_markdown(note: dict, kind: str, day: date, provider: str) -> tuple[str, s
     if v.get("figures"):
         visual["figures"] = v["figures"][:3]
     fm = {"title": title, "date": day.isoformat(), "summary": note["summary"], "tlp": "CLEAR",
-          "tags": [label, "AI security"], "visual": visual,
+          "tags": [label, "AI security", *(extra or {}).pop("tags", [])], **(extra or {}), "visual": visual,
           "status": note.get("status") or [], "sources": note.get("sources") or [],
           "drafted_by": f"{provider} (model), approved by the owner"}
     body = []
@@ -254,7 +258,7 @@ def run(kind: str, dry: bool = False, today: date | None = None) -> Path | None:
 
 def publish(slug: str) -> str:
     """Move an approved draft into data/notes/ and push it (tools/publish.sh records it in the ledger)."""
-    if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}-ai-(daily|spotlight)-[a-z0-9-]+", slug):
+    if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}-ai-(daily|spotlight|topic)-[a-z0-9-]+", slug):
         raise SystemExit(f"not a note draft id: {slug}")
     src = DRAFTS / f"{slug}.md"
     if not src.exists():

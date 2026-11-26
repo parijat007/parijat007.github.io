@@ -89,4 +89,8 @@ real AI security news. The draft goes to Telegram (full text in `~/.watchfloor/n
     /note ok ID      publish it to theparijat.com/notes/ (the LinkedIn draft follows within 10 minutes)
     /note drop ID    discard it
 
+Each weekday there is also an **AI Security Topics** explainer: the next topic in
+`data/topics/ai_security.yaml` (OWASP Top 10 for LLM Applications 2025 and MITRE ATLAS techniques, 34 topics,
+about seven weeks per cycle), written only from that topic's official text. Same approval: `/note ok ID`.
+
 Published notes say they were drafted by a model from the cited sources and approved by you.

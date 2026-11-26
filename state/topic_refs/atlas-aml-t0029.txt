@@ -1,0 +1,13 @@
+MITRE ATLAS technique AML.T0029: Denial of AI Service
+
+Adversaries may target AI-enabled systems with a flood of requests for the purpose of degrading or shutting down the service.
+Since many AI systems require significant amounts of specialized compute, they are often expensive bottlenecks that can become overloaded.
+Adversaries can intentionally craft inputs that require heavy amounts of useless compute from the AI system.
+
+Mitigations:
+- AML.M0004 Restrict Number of AI Model Queries: Limit the total number and rate of queries a user can perform.
+
+- AML.M0015 Adversarial Input Detection: Detect and block adversarial inputs or atypical queries that deviate from known benign behavior, exhibit behavior patterns observed in previous attacks or that come from potentially malicious IPs.
+Incorporate adversarial detection algorithms into the AI system prior to the AI model.
+- AML.M0019 Control Access to AI Models and Data in Production: Require users to verify their identities before accessing a production model.
+Require authentication for API endpoints and monitor production model queries to ensure compliance with usage policies and to prevent model misuse.

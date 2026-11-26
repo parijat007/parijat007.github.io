@@ -1118,7 +1118,7 @@ def test_linkedin_autopilot_post_reply_publishes_through_the_judge(tmp_path, mon
     from digest import linkedin as L
     monkeypatch.setattr(L, "STORE", tmp_path)
     monkeypatch.setenv("TELEGRAM_CHAT_ID", "42")
-    monkeypatch.setattr(L, "source_from_note", lambda cfg: (_ for _ in ()).throw(SystemExit("no notes")))
+    monkeypatch.setattr(L, "source_from_note", lambda *a: (_ for _ in ()).throw(SystemExit("no notes")))
     monkeypatch.setattr(L, "secret", lambda n: None)
     did = "20261125-2333-2dc936"
     (tmp_path / f"{did}.json").write_text(json.dumps({"id": did, "status": "draft"}))
@@ -1285,3 +1285,28 @@ def test_autopilot_note_commands_owner_only():
            {"message": {"chat": {"id": 42, "type": "private"}, "text": "/note ok ../../x"}}]
     assert owner_commands(ups, "42") == [("note-ok", "2026-11-26-ai-daily-artex-abuse"),
                                          ("note-drop", "2026-11-27-ai-spotlight-mcp")]
+
+
+def test_ai_topics_rotation_and_grounding(tmp_path, monkeypatch):
+    from datetime import date
+    from digest import ai_notes as A
+    from digest import ai_topics as T
+    monkeypatch.setattr(A, "DRAFTS", tmp_path)
+    ts = T.topics()
+    assert len(ts) >= 30 and len({t["id"] for t in ts}) == len(ts)
+    assert all((T.CACHE / f"{t['id']}.txt").exists() for t in ts)          # every topic has its official text
+    first = T.next_topic()
+    assert first["id"] == ts[0]["id"]
+    items = T.items_for(first)
+    assert items[0]["source_tier"] == "authority" and items[0]["url"] == first["sources"][0]["url"]
+    note = {"title": "x", "summary": "Prompt injection alters model behaviour. 93% of apps are hit.",
+            "body": [{"heading": "What it is", "markdown": "Direct and indirect forms exist."}], "actions": [],
+            "hunt": None, "status": [], "sources": [{"title": "s", "url": first["sources"][0]["url"]}], "visual": {}}
+    assert any("93%" in p for p in A.check(note, items))
+    A.scrub(note, items)
+    assert note["summary"] == "Prompt injection alters model behaviour."
+    slug, md = A.to_markdown(note, "topic", date(2026, 11, 27), "local",
+                             extra={"topic_id": first["id"], "framework": "OWASP LLM01:2025", "tags": ["OWASP"]})
+    assert slug.startswith("2026-11-27-ai-topic-") and f"topic_id: {first['id']}" in md
+    (tmp_path / f"{slug}.md").write_text(md)
+    assert T.next_topic()["id"] == ts[1]["id"]                              # a pending draft is not repeated

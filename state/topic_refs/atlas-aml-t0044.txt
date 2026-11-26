@@ -1,0 +1,12 @@
+MITRE ATLAS technique AML.T0044: Full AI Model Access
+
+Adversaries may gain full "white-box" access to an AI model.
+This means the adversary has complete knowledge of the model architecture, its parameters, and class ontology.
+They may exfiltrate the model to [Craft Adversarial Data](/techniques/AML.T0043) and [Verify Attack](/techniques/AML.T0042) in an offline where it is hard to detect their behavior.
+
+Mitigations:
+- AML.M0005 Control Access to AI Models and Data at Rest: Establish access controls on internal model registries and limit internal access to production models. Limit access to training data only to approved users.
+
+- AML.M0017 AI Model Distribution Methods: Deploying AI models to edge devices can increase the attack surface of the system.
+Consider serving models in the cloud to reduce the level of access the adversary has to the model.
+Also consider computing features in the cloud to prevent gray-box attacks, where an adversary has access to the model preprocessing methods.

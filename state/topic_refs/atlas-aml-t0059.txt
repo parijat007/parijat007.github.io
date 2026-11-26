@@ -1,0 +1,10 @@
+MITRE ATLAS technique AML.T0059: Erode Dataset Integrity
+
+Adversaries may poison or manipulate portions of a dataset to reduce its usefulness, reduce trust, and cause users to waste resources correcting errors.
+
+Mitigations:
+- AML.M0007 Sanitize Training Data: Detect and remove or remediate poisoned training data.  Training data should be sanitized prior to model training and recurrently for an active learning model.
+
+Implement a filter to limit ingested training data.  Establish a content policy that would remove unwanted content such as certain explicit or offensive language from being used.
+
+- AML.M0025 Maintain AI Dataset Provenance: Maintain a detailed history of datasets used for AI applications. The history should include information about the dataset's source as well as a complete record of any modifications.

@@ -1,0 +1,29 @@
+MITRE ATLAS technique AML.T0051: LLM Prompt Injection
+
+An adversary may craft malicious prompts as inputs to an LLM that cause the LLM to act in unintended ways.
+These "prompt injections" are often designed to cause the model to ignore aspects of its original instructions and follow the adversary's instructions instead.
+
+Prompt Injections can be an initial access vector to the LLM that provides the adversary with a foothold to carry out other steps in their operation.
+They may be designed to bypass defenses in the LLM, or allow the adversary to issue privileged commands.
+The effects of a prompt injection can persist throughout an interactive session with an LLM.
+
+Malicious prompts may be injected directly by the adversary ([Direct](/techniques/AML.T0051.000)) either to leverage the LLM to generate harmful content or to gain a foothold on the system and lead to further effects.
+Prompts may also be injected indirectly when as part of its normal operation the LLM ingests the malicious prompt from another data source ([Indirect](/techniques/AML.T0051.001)). This type of injection can be used by the adversary to a foothold on the system or to target the user of the LLM.
+Malicious prompts may also be [Triggered](/techniques/AML.T0051.002) user actions or system events.
+
+Mitigations:
+- AML.M0019 Control Access to AI Models and Data in Production: Require users to verify their identities before accessing a production model.
+Require authentication for API endpoints and monitor production model queries to ensure compliance with usage policies and to prevent model misuse.
+
+- AML.M0020 Generative AI Guardrails: Guardrails are safety controls that are placed between a generative AI model and the output shared with the user to prevent undesired inputs and outputs.
+Guardrails can take the form of validators such as filters, rule-based logic, or regular expressions, as well as AI-based approaches, such as classifiers and utilizing LLMs, or named entity recognition (NER) to evaluate the safety of the prompt or response. Domain specific methods can be employed to reduce risks in a variety of areas such as etiquette, brand damage, jailbreaking, false information, code exploits, SQL injections, and data leakage.
+- AML.M0021 Generative AI Guidelines: Guidelines are safety controls that are placed between user-provided input and a generative AI model to help direct the model to produce desired outputs and prevent undesired outputs.
+
+Guidelines can be implemented as instructions appended to all user prompts or as part of the instructions in the system prompt. They can define the goal(s), role, and voice of the system, as well as outline safety and security parameters.
+- AML.M0022 Generative AI Model Alignment: When training or fine-tuning a generative AI model it is important to utilize techniques that improve model alignment with safety, security, and content policies.
+
+The fine-tuning process can potentially remove built-in safety mechanisms in a generative AI model, but utilizing techniques such as Supervised Fine-Tuning, Reinforcement Learning from Human Feedback or AI Feedback, and Targeted Safety Context Distillation can improve the safety and alignment of the model.
+- AML.M0024 AI Telemetry Logging: Implement logging of inputs and outputs of deployed AI models. When deploying AI agents, implement logging of the intermediate steps of agentic actions and decisions, data access and tool use, installation commands, and identity of the agent. Monitoring logs can help to detect security threats and mitigate impacts.
+
+Additionally, having logging enabled can discourage adversaries who want to remain undetected from utilizing AI resources.
+- AML.M0033 Input and Output Validation for AI Agent Components: Implement validation on inputs and outputs for the tools and data sources used by AI agents. Validation includes enforcing a common data format, schema validation, checks for sensitive or prohibited information leakage, and data sanitization to remove potential injections or unsafe code. Input and output validation can help prevent compromises from spreading in AI-enabled systems and can help secure the workflow when multiple components are chained together. Validation should be performed external to the AI agent.
