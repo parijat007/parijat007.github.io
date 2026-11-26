@@ -163,6 +163,33 @@ def source_from_note(cfg: dict) -> dict:
             "link": f"{_site(cfg)}/notes/{f.stem}/", "urls": URL_RE.findall(raw)}
 
 
+def source_from_trends(cfg: dict, month: str | None = None) -> dict:
+    """A month of KEV trends (data/trends/YYYY-MM.json). Every figure in it is counted from CISA KEV."""
+    from . import kev_trends  # noqa: PLC0415
+    files = sorted((ROOT / "data" / "trends").glob("*.json"), reverse=True)
+    f = next((x for x in files if x.stem == month), None) if month else \
+        next((x for x in files if not json.loads(x.read_text()).get("partial")), None)
+    if not f:
+        raise SystemExit("no finished month in data/trends/ (run python -m digest.kev_trends --last)")
+    t = json.loads(f.read_text())
+    label = datetime.strptime(t["month"], "%Y-%m").strftime("%B %Y")
+    lines = [f"What attackers exploited in {label}: CISA KEV, counted from the catalog.",
+             f"Added: {t['total']}" + ("" if t["partial"] else
+                                       f" (previous month {t['previous_month']}, 12-month average {t['avg_12m']})"),
+             f"Known ransomware use: {t['ransomware_known']}",
+             f"Entries with CVE ids from {t['old_cutoff_year']} or earlier: {t['old_cves']}",
+             f"Median days from listing to federal due date: {t['median_window']}",
+             "Most listed vendors: " + ", ".join(f"{v} ({n})" for v, n in t["vendors"]),
+             "Most common weaknesses: " + ", ".join(f"{name or c} {c} ({n})" for c, name, n in t["cwes"]),
+             "What to do:"] + [f"- {a['verb']}: {a['text']}" for a in t["actions"]] + \
+        ["Entries:"] + [f"- {e['cve']} {e['vendor']} {e['product']}: {e['name']} (added {e['added']}, due {e['due']}"
+                        + (", known ransomware use" if e["ransomware"] else "") + ")" for e in t["entries"]]
+    text = "\n".join(lines)
+    return {"kind": "trends", "title": f"KEV trends {label}", "summary": lines[0], "text": text[:9000],
+            "raw": json.dumps(t, ensure_ascii=False) + "\n" + text, "visual": kev_trends.visual(t),
+            "link": f"{_site(cfg)}/trends/{t['month']}/", "urls": [t["source"]]}
+
+
 def note_source(cfg: dict, stem: str) -> dict | None:
     """The source for a draft made from a note, re-read from the repo (drafts made before images existed)."""
     f = ROOT / "data" / "notes" / f"{stem}.md"
@@ -232,7 +259,7 @@ OPENING_MAX = 210                      # LinkedIn shows about this much before "
 def craft(text: str, src: dict) -> list[str]:
     """Structure an expert post needs. Applied to model drafts of notes and briefs; not to the
     plain fallback, and not at publish time, so a post you edited by hand is never blocked on style."""
-    if src.get("kind") not in ("note", "brief") or src.get("no_craft"):
+    if src.get("kind") not in ("note", "brief", "trends") or src.get("no_craft"):
         return []
     problems = []
     opening = text.strip().split("\n\n", 1)[0]
@@ -571,6 +598,17 @@ def autopilot(cfg: dict) -> None:
     except (SystemExit, ValueError) as e:
         log.info("no new note to draft (%s)", e)
 
+    # 1b. last month's KEV trends, on the 1st to the 3rd
+    if datetime.now(timezone.utc).day <= 3:
+        try:
+            src = source_from_trends(cfg)
+            drafted = {json.loads(f.read_text())["source"]["link"] for f in STORE.glob("*.json")}
+            last = (datetime.now(timezone.utc).replace(day=1) - timedelta(days=1)).strftime("%Y-%m")
+            if src["link"].rstrip("/").endswith(last) and src["link"] not in drafted:
+                notify_draft(draft(cfg, src))
+        except SystemExit as e:
+            log.info("no trends to draft (%s)", e)
+
     # 2. token expiry
     exp = secret("linkedin-token-expires")
     if exp and (datetime.fromisoformat(exp).date() - datetime.now(timezone.utc).date()).days == 7:
@@ -616,7 +654,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
     d = sub.add_parser("draft")
-    d.add_argument("--from", dest="src", choices=["note", "brief", "file"], default="note")
+    d.add_argument("--from", dest="src", choices=["note", "brief", "trends", "file"], default="note")
     d.add_argument("path", nargs="?")
     d.add_argument("--no-notify", action="store_true")
     sub.add_parser("list")
@@ -635,7 +673,7 @@ def main() -> None:
     a = ap.parse_args()
     cfg = load_config()
     if a.cmd == "draft":
-        src = {"note": source_from_note, "brief": source_from_brief}.get(a.src)
+        src = {"note": source_from_note, "brief": source_from_brief, "trends": source_from_trends}.get(a.src)
         src = src(cfg) if src else source_from_file(cfg, a.path or sys.exit("draft --from file needs a path"))
         dr = draft(cfg, src)
         print(dr["text"] + f"\n\n[{dr['id']}] provider={dr['provider']}"

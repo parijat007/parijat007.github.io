@@ -1,0 +1,39 @@
+{% extends "base.html" %}{% from "macros.html" import share %}
+{% set label = t.month | monthname %}
+{% block title %}KEV trends {{ label }} — {{ p.name }}{% endblock %}
+{% block desc %}What attackers exploited in {{ label }}: {{ t.total }} CVEs added to CISA's Known Exploited Vulnerabilities catalog, by vendor and weakness. Computed from the catalog, no model-made figures.{% endblock %}
+{% block main %}
+<section class="page-head"><h1>What attackers exploited in {{ label }}</h1>
+<p class="lede">CISA added <b>{{ t.total }}</b> CVEs to its Known Exploited Vulnerabilities catalog{% if t.partial %} so far this month (through {{ t.through | longdate }}){% else %} in {{ label }}{% endif %}{% if not t.partial %}, against {{ t.previous_month }} the month before and a 12-month average of {{ t.avg_12m }}{% endif %}. Every figure below is counted from the catalog itself.</p>
+</section>
+
+<dl class="facts trend-facts">
+  <div><dt>Added</dt><dd>{{ t.total }}{% if not t.partial %} <span class="muted">({{ "%+d" | format(t.total - t.previous_month) | replace("-", "−") }} vs {{ t.month | prevmonthname }})</span>{% endif %}</dd></div>
+  <div><dt>Known ransomware use</dt><dd>{{ t.ransomware_known }}</dd></div>
+  <div><dt>Old CVEs (ids from {{ t.old_cutoff_year }} or earlier)</dt><dd>{{ t.old_cves }}</dd></div>
+  {% if t.median_window is not none %}<div><dt>Median time to federal due date</dt><dd>{{ t.median_window }} days</dd></div>{% endif %}
+</dl>
+
+{% if t.actions %}<section class="block" aria-labelledby="do-h"><h2 id="do-h">What to do</h2>
+<ul class="trend-actions">{% for a in t.actions %}<li><b>{{ a.verb }}:</b> {{ cvelinks(a.text, root) }}</li>{% endfor %}</ul></section>{% endif %}
+
+<div class="trend-split">
+<section class="block" aria-labelledby="v-h"><h2 id="v-h">Most listed vendors</h2>
+<ol class="bars">{% set top = t.vendors[0][1] if t.vendors else 1 %}{% for v, n in t.vendors %}
+<li><span class="bar-label">{{ v }}</span><span class="bar w{{ (n / top * 20) | round | int }}"></span><span class="bar-n">{{ n }}</span></li>{% endfor %}</ol></section>
+<section class="block" aria-labelledby="w-h"><h2 id="w-h">Most common weaknesses</h2>
+<ol class="bars">{% set top = t.cwes[0][2] if t.cwes else 1 %}{% for c, name, n in t.cwes %}
+<li><span class="bar-label">{{ name or c }} <span class="muted">{{ c }}</span></span><span class="bar w{{ (n / top * 20) | round | int }}"></span><span class="bar-n">{{ n }}</span></li>{% endfor %}</ol></section>
+</div>
+
+<section class="block" aria-labelledby="all-h"><h2 id="all-h">Every entry</h2>
+<div class="table-scroll"><table class="watch">
+<thead><tr><th scope="col">CVE</th><th scope="col">Vendor and product</th><th scope="col">Added</th><th scope="col">Due</th><th scope="col">Ransomware</th></tr></thead>
+<tbody>{% for e in t.entries %}<tr>
+<td class="num">{{ cvelinks(e.cve, root) }}</td><td>{{ e.vendor }} {{ e.product }}<br><span class="muted">{{ e.name }}</span></td>
+<td class="num">{{ e.added | nicedate }}</td><td class="num">{{ e.due | nicedate if e.due else "–" }}</td><td>{{ "Known" if e.ransomware else "–" }}</td>
+</tr>{% endfor %}</tbody></table></div></section>
+
+<p class="note">Source: <a href="{{ t.source }}" rel="noopener">CISA Known Exploited Vulnerabilities catalog</a>, counted on {{ t.generated_at[:10] | longdate }}. "Old CVEs" counts entries whose CVE id year is two or more years before the month. Weakness names are MITRE CWE titles. <a href="{{ root }}trends/">All months</a>.</p>
+{{ share(p, path, "What attackers exploited in " ~ label) }}
+{% endblock %}

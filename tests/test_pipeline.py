@@ -1246,3 +1246,27 @@ def test_unblock_runs_once_when_triggered_twice():
     assert recent_run(runs, "2", _now()) is False     # the earlier of the pair goes ahead
     assert recent_run(runs, "3", _now()) is True      # the later one skips
     assert recent_run([{**r, "conclusion": "failure"} if r["id"] == 2 else r for r in runs], "3", _now()) is False
+
+
+def _kev(rows):
+    return {r[0]: {"cveID": r[0], "vendorProject": r[1], "product": "P", "vulnerabilityName": "V", "dateAdded": r[2],
+                   "dueDate": r[3], "knownRansomwareCampaignUse": r[4], "cwes": r[5]} for r in rows}
+
+
+def test_kev_trends_counts_from_catalog_only():
+    from datetime import date
+    from digest.kev_trends import compute, visual
+    from digest.post_judge import fact_check
+    from digest.post_visual import numbers
+    kev = _kev([("CVE-2026-1001", "Mitel", "2026-10-02", "2026-10-05", "Unknown", ["CWE-78"]),
+                ("CVE-2026-1002", "Mitel", "2026-10-09", "2026-10-30", "Known", ["CWE-78", "CWE-287"]),
+                ("CVE-2020-0003", "Cisco", "2026-10-20", "2026-10-23", "Unknown", []),
+                ("CVE-2026-0900", "Fortinet", "2026-09-14", "2026-09-17", "Unknown", ["CWE-22"])])
+    t = compute(kev, "2026-10", today=date(2026, 11, 1))
+    assert (t["total"], t["previous_month"], t["partial"]) == (3, 1, False)
+    assert t["vendors"][0] == ("Mitel", 2) and t["cwes"][0] == ["CWE-78", "OS command injection", 2]
+    assert (t["ransomware_known"], t["old_cves"], t["median_window"]) == (1, 1, 3)
+    assert [a["verb"] for a in t["actions"]] == ["Inventory", "Inventory", "Hunt"]
+    v = visual(t)
+    assert fact_check("", numbers(v), json.dumps(t)) == []          # the image carries only counted figures
+    assert compute(kev, "2026-11", today=date(2026, 11, 20))["partial"] is True

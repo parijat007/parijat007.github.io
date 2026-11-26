@@ -33,7 +33,7 @@
 <header class="bar"><div class="wrap">
   <a class="brand" href="{{ root }}"><img src="{{ root }}static/logo.svg" alt=""><b>{{ p.name }}</b><span>{{ p.brand }}</span></a>
   <nav class="nav" aria-label="Main">
-    {% for href, label in [("", "Profile"), ("today/", "Today's brief"), ("watch/", "Hourly watch"), ("notes/", "Analyst notes"), ("archive/", "Archive"), ("method/", "Sources & method")] %}
+    {% for href, label in [("", "Profile"), ("today/", "Today's brief"), ("watch/", "Hourly watch"), ("notes/", "Analyst notes"), ("archive/", "Archive"), ("trends/", "KEV trends"), ("method/", "Sources & method")] %}
     <a href="{{ root }}{{ href }}"{% if page == href %} aria-current="page"{% endif %}>{{ label }}</a>
     {% endfor %}
   </nav>

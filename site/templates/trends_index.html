@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}KEV trends — {{ p.name }}{% endblock %}
+{% block desc %}Month by month: how many vulnerabilities CISA confirmed as exploited, which vendors and which weaknesses. Counted from the KEV catalog.{% endblock %}
+{% block main %}
+<section class="page-head"><h1>KEV trends</h1>
+<p class="lede">Each month, what CISA confirmed attackers were exploiting: counts by vendor and weakness, old CVEs still in use, and ransomware links. Every figure is counted from the Known Exploited Vulnerabilities catalog; no model writes these numbers.</p></section>
+<ol class="bars trend-months">{% set top = months | map(attribute="total") | max if months else 1 %}{% for t in months %}
+<li><a class="bar-label" href="{{ root }}trends/{{ t.month }}/">{{ t.month | monthname }}{% if t.partial %} (to date){% endif %}</a><span class="bar w{{ (t.total / top * 20) | round | int }}"></span><span class="bar-n">{{ t.total }}</span></li>{% endfor %}</ol>
+{% endblock %}

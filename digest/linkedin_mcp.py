@@ -35,9 +35,9 @@ TOOLS = [
      "inputSchema": {"type": "object", "properties": {}}, "annotations": {"readOnlyHint": True}},
     {"name": "linkedin_show_draft", "description": "Full text of a draft or post, its judge report, image path and LinkedIn URL.",
      "inputSchema": {"type": "object", "properties": {"id": DRAFT_ID}, "required": ["id"]}, "annotations": {"readOnlyHint": True}},
-    {"name": "linkedin_create_draft", "description": "Draft a post from the latest Watchfloor analyst note or daily brief. "
+    {"name": "linkedin_create_draft", "description": "Draft a post from the latest Watchfloor analyst note, daily brief, or finished month of KEV trends. "
      "Writes, checks, judges and revises (up to three rounds) and attaches the branded image. Posts nothing.",
-     "inputSchema": {"type": "object", "properties": {"source": {"type": "string", "enum": ["note", "brief"]}}, "required": ["source"]}},
+     "inputSchema": {"type": "object", "properties": {"source": {"type": "string", "enum": ["note", "brief", "trends"]}}, "required": ["source"]}},
     {"name": "linkedin_update_draft", "description": "Replace a draft's text (for example after a review) and re-run the judge. Posts nothing.",
      "inputSchema": {"type": "object", "properties": {"id": DRAFT_ID, "text": {"type": "string"}}, "required": ["id", "text"]}},
     {"name": "linkedin_judge", "description": "Re-run the judge on a draft: facts against the source, then a second model.",
@@ -86,7 +86,7 @@ def call(name: str, args: dict, cfg: dict) -> str:
     if name == "linkedin_show_draft":
         return _summary(_load(args["id"])[1])
     if name == "linkedin_create_draft":
-        src = L.source_from_note(cfg) if args["source"] == "note" else L.source_from_brief(cfg)
+        src = {"note": L.source_from_note, "brief": L.source_from_brief, "trends": L.source_from_trends}[args["source"]](cfg)
         return _summary(L.draft(cfg, src))
     if name == "linkedin_update_draft":
         f, d = _load(args["id"])
