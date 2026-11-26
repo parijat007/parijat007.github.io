@@ -1,0 +1,21 @@
+An AI agent does what its tools tell it, with the permissions it already holds. So every Model Context Protocol (MCP) server it connects to is part of its supply chain.
+
+Controls built to catch code execution will not see this go wrong. Three data points:
+- OX Security research on 834 flagged MCP servers: prompt injection or tool poisoning in 22%, install-time code execution in 16%. Reported (vendor research). Flagged does not mean malicious, and OX does not claim every weakness was exploited.
+- AWS fixed CVE-2026-135614: prompt injection makes the Amazon ECS MCP Server return cleartext secrets. Confirmed, fixed in 0.1.36.
+- Langflow CVE-2026-105740: commands injected through MCP server settings run on the Langflow host, with 1,423 attempts logged on honeypots. Reported exploitation, fixed in 1.9.0.
+
+The poisoned tool does not need to run code itself. It instructs the agent, and the agent uses its own access to do the work. No exploit code, no malware, no unusual login: every step is the agent doing its job, which is why traditional controls miss it.
+
+What to do this week:
+- Patch: Amazon ECS MCP Server to 0.1.36 or later, then rotate any credential kept as a plaintext task-definition environment variable and move those to AWS Secrets Manager or Parameter Store references. Langflow to 1.9.0 or later, with the broader MCP execution fix in 1.10.3, keeping authentication on and the instance off the internet.
+- Inventory: find MCP client configuration on developer machines and build hosts, such as mcp.json files in editor settings folders and claude_desktop_config.json. Record who published each server, where its code comes from, and the token it holds.
+- Contain: give each MCP server its own narrowly scoped credential, keep secrets out of anything a tool can return, require a human approval step for tools that write, send or delete, and pin MCP servers to reviewed versions.
+- Hunt: in AWS CloudTrail, look for ecs:DescribeTaskDefinition and secretsmanager:GetSecretValue calls from roles used by AI agents or MCP servers, especially in bursts or outside normal patterns. On Langflow hosts, check for shell or interpreter processes started by the Langflow process and outbound connections to unusual hosts. On agent hosts, look for new outbound destinations right after an agent reads external content.
+
+Treat MCP servers like any third-party code with production access: inventoried, pinned, least-privileged, and logged.
+
+Full write-up with the OWASP, MITRE ATLAS and ATT&CK mapping:
+https://theparijat.com/notes/2026-11-25-ai-spotlight-mcp-tool-supply-chain/
+
+#AISecurity #MCP #PromptInjection #SupplyChainSecurity #CloudSecurity

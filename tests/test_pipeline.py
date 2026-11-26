@@ -1132,3 +1132,40 @@ def test_linkedin_autopilot_post_reply_publishes_through_the_judge(tmp_path, mon
     L.autopilot({})
     assert published == [(did, True, False)]       # never skips the judge
     assert (tmp_path / ".tg_offset").read_text() == "6" and said[0].startswith("Posted to LinkedIn")
+
+
+def test_linkedin_craft_checks():
+    from pathlib import Path
+    from digest.linkedin import craft
+    good = (Path(__file__).parent.parent / "digest" / "linkedin_example.txt").read_text()
+    src = {"kind": "note", "text": "## What to do\n**Hunt** (adapt to your logging): CloudTrail ..."}
+    assert craft(good, src) == []
+    long_open = "x " * 150 + "\n\n" + good
+    assert any("opening paragraph" in p for p in craft(long_open, src))
+    no_hunt = "\\n".join(ln for ln in good.splitlines() if not ln.startswith("- Hunt"))
+    assert any("Hunt" in p for p in craft(no_hunt, src))
+    assert craft("short", {**src, "no_craft": True}) == []
+    live = (Path(__file__).parent / "linkedin_live_draft.txt").read_text()     # selftest draft, 26 Nov
+    probs = craft(live, src)
+    assert any("2,200" in p for p in probs) and sum("under 280" in p for p in probs) == 2
+
+
+def test_linkedin_draft_goes_back_to_the_writer_until_the_judge_passes(tmp_path, monkeypatch):
+    from pathlib import Path
+    from digest import linkedin as L
+    monkeypatch.setattr(L, "STORE", tmp_path)
+    good = (Path(__file__).parent.parent / "digest" / "linkedin_example.txt").read_text().strip()
+    link = "https://theparijat.com/notes/2026-11-25-ai-spotlight-mcp-tool-supply-chain/"
+    src = {"kind": "note", "title": "t", "link": link, "text": "**Hunt** CloudTrail", "raw": "the note", "urls": [link]}
+    drafts = iter([good.replace("Flagged does not mean malicious. ", ""), good])
+    prompts = []
+    monkeypatch.setattr(L.llm, "chain", lambda lc: ["gemini"])
+    monkeypatch.setattr(L.llm, "complete", lambda name, cfg, system, user: prompts.append(user) or next(drafts))
+    verdicts = iter([{"verdict": "fail", "facts": [], "judge": "Groq", "issues": [
+                        {"kind": "missing_caveat", "quote": "22%", "why": "flagged is not malicious"}]},
+                     {"verdict": "pass", "facts": [], "judge": "Groq", "issues": []}])
+    monkeypatch.setattr(L.post_judge, "judge", lambda *a: next(verdicts))
+    cfg = {"llm": {"providers": {}}, "site": {"url": "https://theparijat.com"}, "linkedin": {"never_name": []}}
+    d = L.draft(cfg, src)
+    assert d["text"] == good and d["judge"]["verdict"] == "pass" and d["provider"] == "gemini"
+    assert "missing_caveat" in prompts[1] and "<previous_draft>" in prompts[1]
