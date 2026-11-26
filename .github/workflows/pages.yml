@@ -40,6 +40,11 @@ jobs:
         with: { python-version: "3.12", cache: pip }
       - run: pip install --require-hashes -r requirements.lock
       - run: python site/build.py --out _site
+      # End-to-end check of the built site before it can ship: every page loads in a real browser with no
+      # script error, CSP violation or missing file, every internal link resolves, feeds parse, features work.
+      - run: pip install --require-hashes -r requirements-e2e.lock && python -m playwright install --with-deps chromium
+      - run: python -m pytest -q -p no:cacheprovider tests/e2e
+        env: { E2E_SITE_DIR: _site }
       # Signed build provenance (Sigstore, public transparency log): proves build.json, and through its
       # per-file hashes and ledger head every file of the site, came from this repository's workflow.
       - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
@@ -56,3 +61,15 @@ jobs:
     steps:
       - id: d
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+  smoke:                       # the live site, after the deploy: key pages, features, phone layout
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with: { ref: main, persist-credentials: false }
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install --require-hashes -r requirements-e2e.lock && python -m playwright install --with-deps chromium
+      - run: sleep 20 && python -m pytest -q -p no:cacheprovider -m live tests/e2e
+        env: { E2E_BASE_URL: "https://theparijat.com" }
