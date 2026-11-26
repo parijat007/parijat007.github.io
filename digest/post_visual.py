@@ -92,7 +92,9 @@ def render(spec: dict, out: Path) -> Path:
 
     steps = spec.get("steps") or []
     figures = (spec.get("figures") or [])[:3]
-    if steps:
+    if spec.get("bars"):
+        y = _bars(d, spec["bars"], spec.get("bars_title", ""), y, inner)
+    elif steps:
         y = _chain(d, steps, int(spec.get("highlight") or 0), y, inner, bottom=H - (370 if figures else 150))
     elif spec.get("detail"):
         df = _font("regular", 36)
@@ -139,6 +141,25 @@ def _chain(d, steps: list[str], hi: int, y: int, inner: int, bottom: int) -> int
     return y
 
 
+def _bars(d, bars: list, title: str, y: int, inner: int) -> int:
+    """Horizontal bars for counted data (KEV trends): label, bar, number. Largest bar lit in signal red."""
+    if title:
+        d.text((M, y), title, font=_font("bold", 30), fill=MUTED)
+        y += 58
+    top = max(n for _, n in bars) or 1
+    lf, nf = _font("regular", 30), _font("bold", 30)
+    label_w, bar_x0 = 330, M + 350
+    bar_w = inner - 350 - 70
+    for i, (label, n) in enumerate(bars[:7]):
+        text = label if d.textlength(label, font=lf) <= label_w else _wrap(d, label, lf, label_w - 20)[0] + "…"
+        d.text((M, y), text, font=lf, fill=TEXT)
+        w = max(6, int(bar_w * n / top))
+        d.rounded_rectangle([bar_x0, y + 8, bar_x0 + w, y + 32], radius=4, fill=SIGNAL if i == 0 else CELL)
+        d.text((W - M, y + 2), str(n), font=nf, fill=TEXT, anchor="ra")
+        y += 64
+    return y
+
+
 def _figures(d, figures: list[dict], y: int, inner: int) -> None:
     n = len(figures)
     gap = 22
@@ -167,7 +188,8 @@ def spec_from_note(meta: dict) -> dict:
 
 def numbers(spec: dict) -> str:
     """All the text drawn on the image, for the judge's fact check."""
-    parts = [spec.get("title", ""), spec.get("detail", ""), *spec.get("steps", [])]
+    parts = [spec.get("title", ""), spec.get("detail", ""), spec.get("bars_title", ""), *spec.get("steps", []),
+             *[f"{label} {n}" for label, n in spec.get("bars", [])]]
     for f in spec.get("figures", []):
         parts += [f["value"], f["label"]]
     return "\n".join(p for p in parts if p)

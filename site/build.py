@@ -94,6 +94,9 @@ def env() -> Environment:
     e = Environment(loader=FileSystemLoader(SITE / "templates"), autoescape=select_autoescape(["html", "xml"]),
                     trim_blocks=True, lstrip_blocks=True)
     e.tests["ok_status"] = lambda v: str(v).startswith("ok")
+
+    e.filters["monthname"] = lambda ym: datetime.strptime(ym, "%Y-%m").strftime("%B %Y")
+    e.filters["prevmonthname"] = lambda ym: (datetime.strptime(ym, "%Y-%m").replace(day=1) - timedelta(days=1)).strftime("%B")
     e.filters.update(
         sev=lambda v: LABELS["sev"].get(v, v), xlabel=lambda v: LABELS["x"].get(v, v),
         cat=lambda v: LABELS["cat"].get(v, v), kindlabel=lambda v: LABELS["kind"].get(v, v),
@@ -266,6 +269,13 @@ def build(out: Path) -> None:
     E.globals["cfg_comments"] = cfg.get("comments")
     E.globals["cve_pages"] = set(tl["cves"])          # identifiers that link to a timeline page
 
+    def cvelinks(text: str, root: str) -> Markup:
+        """Escape text and link each CVE id that has a timeline page."""
+        from markupsafe import escape as h  # noqa: PLC0415
+        return Markup(re.sub(r"CVE-\d{4}-\d{4,}", lambda m: f'<a class="id" href="{root}cve/{m[0]}/">{m[0]}</a>'
+                             if m[0] in E.globals["cve_pages"] else m[0], str(h(text))))
+    E.globals["cvelinks"] = cvelinks
+
     sitemap: list[tuple[str, str | None]] = []
 
     def page(tpl: str, path: str, page_key: str, lastmod: str | None = None, **ctx):
@@ -325,6 +335,11 @@ def build(out: Path) -> None:
     page("status.html", "status/", "status/", perf=perf)
     topics = topic_feeds(briefs, watch, cfg.get("stack_watchlist", []), base)
     page("feeds.html", "feeds/", "feeds/", topics=topics)
+    months = [json.loads(f.read_text()) for f in sorted((DATA / "trends").glob("*.json"), reverse=True)] \
+        if (DATA / "trends").exists() else []
+    page("trends_index.html", "trends/", "trends/", months=months)
+    for t in months:
+        page("trends.html", f"trends/{t['month']}/", "trends/", lastmod=t["generated_at"][:10], og_type="article", t=t)
     sys.path.insert(0, str(ROOT))
     from digest.timeline import anatomy, axis, gaps, ordered_events  # noqa: PLC0415
     tracked = len(tl["cves"])

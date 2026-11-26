@@ -1,0 +1,599 @@
+{
+ "month": "2026-11",
+ "partial": true,
+ "through": "2026-11-26",
+ "generated_at": "2026-11-26T14:58:25+00:00",
+ "source": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+ "total": 39,
+ "previous_month": 36,
+ "avg_12m": 26.1,
+ "vendors": [
+  [
+   "Mitel",
+   5
+  ],
+  [
+   "Danfoss",
+   3
+  ],
+  [
+   "Barracuda Networks",
+   2
+  ],
+  [
+   "Cisco",
+   2
+  ],
+  [
+   "Apache",
+   2
+  ],
+  [
+   "WordPress",
+   1
+  ],
+  [
+   "Apple",
+   1
+  ],
+  [
+   "SonicWall",
+   1
+  ]
+ ],
+ "products": [
+  [
+   "Mitel MiCollab",
+   5
+  ],
+  [
+   "Danfoss AK-SM 800A Series",
+   3
+  ],
+  [
+   "WordPress WordPress Core",
+   1
+  ],
+  [
+   "Apple Multiple Products",
+   1
+  ],
+  [
+   "SonicWall SonicOS SSLVPN",
+   1
+  ]
+ ],
+ "cwes": [
+  [
+   "CWE-78",
+   "OS command injection",
+   4
+  ],
+  [
+   "CWE-287",
+   "Improper authentication",
+   3
+  ],
+  [
+   "CWE-502",
+   "Deserialization of untrusted data",
+   3
+  ],
+  [
+   "CWE-288",
+   "Authentication bypass by alternate path",
+   2
+  ],
+  [
+   "CWE-94",
+   "Code injection",
+   2
+  ],
+  [
+   "CWE-636",
+   "Not failing securely",
+   2
+  ]
+ ],
+ "ransomware_known": 1,
+ "old_cves": 4,
+ "old_cutoff_year": 2024,
+ "median_window": 3,
+ "median_window_prev": 3,
+ "actions": [
+  {
+   "verb": "Patch",
+   "text": "15 of this month's entries reach their federal due date within a week (first: CVE-2026-133968, Project MONAI MONAI Label, due 2026-11-26)."
+  },
+  {
+   "verb": "Inventory",
+   "text": "Check exposure to Mitel first: 5 of 39 entries this month."
+  },
+  {
+   "verb": "Inventory",
+   "text": "4 entries carry CVE ids from 2024 or earlier: old, unpatched systems are still being exploited, so include end-of-life assets in the scan."
+  },
+  {
+   "verb": "Hunt",
+   "text": "Known ransomware use: CVE-2024-10441 (Synology DiskStation Manager (DSM))."
+  }
+ ],
+ "entries": [
+  {
+   "cve": "CVE-2026-119977",
+   "vendor": "WordPress",
+   "product": "WordPress Core",
+   "name": "WordPress WordPress Core Time-of-check Time-of-use (TOCTOU) Race Condition Vulnerability",
+   "added": "2026-11-03",
+   "due": "2026-11-06",
+   "ransomware": false,
+   "cwes": [
+    "CWE-367"
+   ]
+  },
+  {
+   "cve": "CVE-2024-27834",
+   "vendor": "Apple",
+   "product": "Multiple Products",
+   "name": "Apple Multiple Products Improper Authentication Vulnerability",
+   "added": "2026-11-04",
+   "due": "2026-11-18",
+   "ransomware": false,
+   "cwes": [
+    "CWE-287"
+   ]
+  },
+  {
+   "cve": "CVE-2026-19868",
+   "vendor": "SonicWall",
+   "product": "SonicOS SSLVPN",
+   "name": "SonicWall SonicOS SSLVPN Use of Single-factor Authentication Vulnerability",
+   "added": "2026-11-06",
+   "due": "2026-11-20",
+   "ransomware": false,
+   "cwes": [
+    "CWE-308"
+   ]
+  },
+  {
+   "cve": "CVE-2026-102895",
+   "vendor": "GPUStack",
+   "product": "GPUStack",
+   "name": "GPUStack Improper Authentication Vulnerability",
+   "added": "2026-11-09",
+   "due": "2026-11-12",
+   "ransomware": false,
+   "cwes": [
+    "CWE-287",
+    "CWE-290",
+    "CWE-346"
+   ]
+  },
+  {
+   "cve": "CVE-2026-116779",
+   "vendor": "SignalWire",
+   "product": "FreeSwitch",
+   "name": "SignalWire FreeSwitch Code Injection Vulnerability",
+   "added": "2026-11-09",
+   "due": "2026-11-12",
+   "ransomware": false,
+   "cwes": [
+    "CWE-77",
+    "CWE-78",
+    "CWE-749"
+   ]
+  },
+  {
+   "cve": "CVE-2026-123158",
+   "vendor": "OpenBSD",
+   "product": "OpenSSH",
+   "name": "OpenBSD OpenSSH Unexpected Status Code or Return Value Vulnerability",
+   "added": "2026-11-09",
+   "due": "2026-11-12",
+   "ransomware": false,
+   "cwes": [
+    "CWE-394"
+   ]
+  },
+  {
+   "cve": "CVE-2026-123218",
+   "vendor": "IBM",
+   "product": "Aspera Faspex",
+   "name": "IBM Aspera Faspex Incorrect Authorization Vulnerability",
+   "added": "2026-11-09",
+   "due": "2026-11-12",
+   "ransomware": false,
+   "cwes": [
+    "CWE-863"
+   ]
+  },
+  {
+   "cve": "CVE-2026-111560",
+   "vendor": "Barracuda Networks",
+   "product": "Multiple Products",
+   "name": "Barracuda Networks Multiple Products OS Command Injection Vulnerability",
+   "added": "2026-11-10",
+   "due": "2026-11-13",
+   "ransomware": false,
+   "cwes": [
+    "CWE-78"
+   ]
+  },
+  {
+   "cve": "CVE-2026-111793",
+   "vendor": "Openwave Messaging Limited",
+   "product": "Webtop Media Transcoder",
+   "name": "Openwave Messaging Limited Webtop Media Transcoder Incorrect Resource Transfer Between Spheres Vulnerability",
+   "added": "2026-11-10",
+   "due": "2026-11-24",
+   "ransomware": false,
+   "cwes": [
+    "CWE-669"
+   ]
+  },
+  {
+   "cve": "CVE-2026-116606",
+   "vendor": "Barracuda Networks",
+   "product": "Barracuda Email Security Gateway (ESG)",
+   "name": "Barracuda Networks Email Security Gateway (ESG) Authentication Bypass Using an Alternate Path or Channel Vulnerability",
+   "added": "2026-11-10",
+   "due": "2026-11-13",
+   "ransomware": false,
+   "cwes": [
+    "CWE-288"
+   ]
+  },
+  {
+   "cve": "CVE-2026-124194",
+   "vendor": "Microsoft",
+   "product": "Office",
+   "name": "Microsoft Office Outlook Missing User Interaction for Potentially Unsafe Action Vulnerability",
+   "added": "2026-11-10",
+   "due": "2026-11-24",
+   "ransomware": false,
+   "cwes": [
+    "CWE-356"
+   ]
+  },
+  {
+   "cve": "CVE-2026-125350",
+   "vendor": "Google",
+   "product": "Chromium",
+   "name": "Google Chromium Use-After-Free Vulnerability",
+   "added": "2026-11-10",
+   "due": "2026-11-24",
+   "ransomware": false,
+   "cwes": [
+    "CWE-416"
+   ]
+  },
+  {
+   "cve": "CVE-2026-20320",
+   "vendor": "Cisco",
+   "product": "BroadWorks",
+   "name": "Cisco BroadWorks Improper Restriction of XML External Entity Reference Vulnerability",
+   "added": "2026-11-10",
+   "due": "2026-11-24",
+   "ransomware": false,
+   "cwes": [
+    "CWE-611"
+   ]
+  },
+  {
+   "cve": "CVE-2026-114713",
+   "vendor": "UnrealIRCd",
+   "product": "UnrealIRCd",
+   "name": "UnrealIRCd Improper Neutralization of Delimiters Vulnerability",
+   "added": "2026-11-13",
+   "due": "2026-11-16",
+   "ransomware": false,
+   "cwes": [
+    "CWE-140"
+   ]
+  },
+  {
+   "cve": "CVE-2026-123039",
+   "vendor": "Check Point",
+   "product": "Multiple Products",
+   "name": "Check Point Multiple Products Incorrect Permission Assignment for Critical Resource Vulnerability",
+   "added": "2026-11-13",
+   "due": "2026-11-16",
+   "ransomware": false,
+   "cwes": [
+    "CWE-732",
+    "CWE-862"
+   ]
+  },
+  {
+   "cve": "CVE-2026-115731",
+   "vendor": "Perforce",
+   "product": "Puppet Enterprise",
+   "name": "Perforce Puppet Enterprise Deserialization of Untrusted Data Vulnerability",
+   "added": "2026-11-17",
+   "due": "2026-12-01",
+   "ransomware": false,
+   "cwes": [
+    "CWE-502",
+    "CWE-94"
+   ]
+  },
+  {
+   "cve": "CVE-2024-10441",
+   "vendor": "Synology",
+   "product": "DiskStation Manager (DSM)",
+   "name": "Synology DiskStation Manager (DSM) Improper Encoding or Escaping of Output Vulnerability",
+   "added": "2026-11-18",
+   "due": "2026-11-21",
+   "ransomware": true,
+   "cwes": [
+    "CWE-116"
+   ]
+  },
+  {
+   "cve": "CVE-2026-40217",
+   "vendor": "BerriAI",
+   "product": "LiteLLM",
+   "name": "BerriAI LiteLLM Unprotected Alternate Channel Vulnerability",
+   "added": "2026-11-18",
+   "due": "2026-12-02",
+   "ransomware": false,
+   "cwes": [
+    "CWE-420"
+   ]
+  },
+  {
+   "cve": "CVE-2026-90436",
+   "vendor": "Apache",
+   "product": "Axis",
+   "name": "Apache Axis Unsafe Reflection Vulnerability",
+   "added": "2026-11-18",
+   "due": "2026-11-21",
+   "ransomware": false,
+   "cwes": [
+    "CWE-470"
+   ]
+  },
+  {
+   "cve": "CVE-2026-90817",
+   "vendor": "Vanderbilt University",
+   "product": "Research Electronic Data Capture (REDCap)",
+   "name": "Vanderbilt University Research Electronic Data Capture (REDCap) Code Injection Vulnerability",
+   "added": "2026-11-18",
+   "due": "2026-11-21",
+   "ransomware": false,
+   "cwes": [
+    "CWE-73",
+    "CWE-94"
+   ]
+  },
+  {
+   "cve": "CVE-2025-42884",
+   "vendor": "SAP",
+   "product": "NetWeaver",
+   "name": "SAP NetWeaver Improper Neutralization of Special Elements in Data Query Logic Vulnerability",
+   "added": "2026-11-20",
+   "due": "2026-11-23",
+   "ransomware": false,
+   "cwes": [
+    "CWE-943"
+   ]
+  },
+  {
+   "cve": "CVE-2026-123890",
+   "vendor": "Broadcom",
+   "product": "VMware vCenter",
+   "name": "VMWare vCenter Authentication Bypass Using an Alternate Path or Channel Vulnerability",
+   "added": "2026-11-20",
+   "due": "2026-11-23",
+   "ransomware": false,
+   "cwes": [
+    "CWE-288"
+   ]
+  },
+  {
+   "cve": "CVE-2026-129448",
+   "vendor": "Apache",
+   "product": "Roller",
+   "name": "Apache Roller Deserialization of Untrusted Data Vulnerability",
+   "added": "2026-11-20",
+   "due": "2026-11-23",
+   "ransomware": false,
+   "cwes": [
+    "CWE-502"
+   ]
+  },
+  {
+   "cve": "CVE-2026-76466",
+   "vendor": "Cisco",
+   "product": "Expressway Series",
+   "name": "Cisco Expressway Series Use of Hard-coded Credentials Vulnerability",
+   "added": "2026-11-20",
+   "due": "2026-11-23",
+   "ransomware": false,
+   "cwes": [
+    "CWE-798"
+   ]
+  },
+  {
+   "cve": "CVE-2026-133968",
+   "vendor": "Project MONAI",
+   "product": "MONAI Label",
+   "name": "Project MONAI MONAI Label Path Traversal Vulnerability",
+   "added": "2026-11-23",
+   "due": "2026-11-26",
+   "ransomware": false,
+   "cwes": [
+    "CWE-24"
+   ]
+  },
+  {
+   "cve": "CVE-2026-134624",
+   "vendor": "N-able",
+   "product": "MailAssure",
+   "name": "N-able MailAssure (SpamExperts) Server-Side Request Forgery (SSRF) Vulnerability",
+   "added": "2026-11-23",
+   "due": "2026-11-26",
+   "ransomware": false,
+   "cwes": [
+    "CWE-918"
+   ]
+  },
+  {
+   "cve": "CVE-2026-131914",
+   "vendor": "Idunno",
+   "product": "AntiCsrf",
+   "name": "Idunno AntiCsrf Deserialization of Untrusted Data Vulnerability",
+   "added": "2026-11-24",
+   "due": "2026-11-27",
+   "ransomware": false,
+   "cwes": [
+    "CWE-502"
+   ]
+  },
+  {
+   "cve": "CVE-2026-132165",
+   "vendor": "Drupal",
+   "product": "Core",
+   "name": "Drupal Core Remote Code Execution Vulnerability",
+   "added": "2026-11-24",
+   "due": "2026-11-27",
+   "ransomware": false,
+   "cwes": [
+    "CWE-636"
+   ]
+  },
+  {
+   "cve": "CVE-2026-132224",
+   "vendor": "Optimizely",
+   "product": "Web Experimentation",
+   "name": "Optimizely Web Experimentation External Control of Critical State Data Vulnerability",
+   "added": "2026-11-24",
+   "due": "2026-11-27",
+   "ransomware": false,
+   "cwes": [
+    "CWE-642"
+   ]
+  },
+  {
+   "cve": "CVE-2023-25914",
+   "vendor": "Danfoss",
+   "product": "AK-SM 800A Series",
+   "name": "Danfoss AK-SM 800A Series Path Traversal Vulnerability",
+   "added": "2026-11-25",
+   "due": "2026-11-28",
+   "ransomware": false,
+   "cwes": [
+    "CWE-22"
+   ]
+  },
+  {
+   "cve": "CVE-2023-25915",
+   "vendor": "Danfoss",
+   "product": "AK-SM 800A Series",
+   "name": "Danfoss AK-SM 800A Series Improper Input Validation Vulnerability",
+   "added": "2026-11-25",
+   "due": "2026-11-28",
+   "ransomware": false,
+   "cwes": [
+    "CWE-20"
+   ]
+  },
+  {
+   "cve": "CVE-2025-41450",
+   "vendor": "Danfoss",
+   "product": "AK-SM 800A Series",
+   "name": "Danfoss AK-SM 800A Series Improper Authentication Vulnerability",
+   "added": "2026-11-25",
+   "due": "2026-12-09",
+   "ransomware": false,
+   "cwes": [
+    "CWE-305"
+   ]
+  },
+  {
+   "cve": "CVE-2026-103406",
+   "vendor": "Hewlett Packard Enterprise (HPE)",
+   "product": "Juniper Session Smart Conductor and Session Smart Router",
+   "name": "Hewlett Packard Enterprise (HPE) Juniper Session Smart Conductor and Session Smart Router OS Command Injection Vulnerability",
+   "added": "2026-11-25",
+   "due": "2026-11-28",
+   "ransomware": false,
+   "cwes": [
+    "CWE-78"
+   ]
+  },
+  {
+   "cve": "CVE-2026-133275",
+   "vendor": "Mitel",
+   "product": "MiCollab",
+   "name": "Mitel MiCollab Unrestricted Upload of File with Dangerous Type Vulnerability",
+   "added": "2026-11-25",
+   "due": "2026-11-28",
+   "ransomware": false,
+   "cwes": [
+    "CWE-434"
+   ]
+  },
+  {
+   "cve": "CVE-2026-133303",
+   "vendor": "Mitel",
+   "product": "MiCollab",
+   "name": "Mitel MiCollab XML Injection Vulnerability",
+   "added": "2026-11-25",
+   "due": "2026-11-28",
+   "ransomware": false,
+   "cwes": [
+    "CWE-91"
+   ]
+  },
+  {
+   "cve": "CVE-2026-133311",
+   "vendor": "Mitel",
+   "product": "MiCollab",
+   "name": "Mitel MiCollab Weak Authentication Vulnerability",
+   "added": "2026-11-25",
+   "due": "2026-12-09",
+   "ransomware": false,
+   "cwes": [
+    "CWE-1390"
+   ]
+  },
+  {
+   "cve": "CVE-2026-133323",
+   "vendor": "Mitel",
+   "product": "MiCollab",
+   "name": "Mitel MiCollab OS Command Injection Vulnerability",
+   "added": "2026-11-25",
+   "due": "2026-11-28",
+   "ransomware": false,
+   "cwes": [
+    "CWE-78"
+   ]
+  },
+  {
+   "cve": "CVE-2026-133324",
+   "vendor": "Mitel",
+   "product": "MiCollab",
+   "name": "Mitel MiCollab Not Failing Securely Vulnerability",
+   "added": "2026-11-25",
+   "due": "2026-11-28",
+   "ransomware": false,
+   "cwes": [
+    "CWE-636"
+   ]
+  },
+  {
+   "cve": "CVE-2026-133469",
+   "vendor": "Vates",
+   "product": "Xen Orchestra",
+   "name": "Vates Xen Orchestra Improper Validation of Specified Type of Input Vulnerability",
+   "added": "2026-11-25",
+   "due": "2026-11-28",
+   "ransomware": false,
+   "cwes": [
+    "CWE-287",
+    "CWE-1287"
+   ]
+  }
+ ]
+}

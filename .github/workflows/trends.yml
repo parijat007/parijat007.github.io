@@ -1,0 +1,43 @@
+name: KEV trends
+
+# Daily: this month to date. On the 1st (and 2nd, in case the schedule is late): the month that just ended.
+# Every figure is counted from the CISA KEV catalog (digest/kev_trends.py). The site picks the file up on
+# its next deploy (the hourly watch deploys every hour).
+on:
+  schedule:
+    - cron: "41 6 * * *"
+  workflow_dispatch:
+    inputs:
+      month:
+        description: "Month, e.g. 2026-10 (blank = this month to date)"
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: data-writer
+  cancel-in-progress: false
+
+jobs:
+  trends:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install --require-hashes -r requirements.lock
+      - name: Count
+        env:
+          MONTH: ${{ inputs.month }}
+        run: |
+          if [ -n "$MONTH" ]; then python -m digest.kev_trends "$MONTH"; exit 0; fi
+          python -m digest.kev_trends
+          [ "$(date -u +%d)" -le 2 ] && python -m digest.kev_trends --last || true
+      - name: Commit
+        run: tools/publish.sh "kev trends $(date -u +%F)"

@@ -399,6 +399,42 @@ h3.sub + .creds + h3.sub { margin-top: 1.4rem; }
 .detections li { padding: .3rem 0; }
 .det-kind { display: inline-block; min-width: 4.5rem; color: var(--muted); font-size: .9rem; }
 
+/* KEV trends */
+.trend-facts { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); margin: 0 0 2rem; }
+.trend-facts div { background: var(--panel); border-radius: 8px; padding: .9rem 1rem; }
+.trend-facts dt { color: var(--muted); font-size: .85rem; }
+.trend-facts dd { margin: .25rem 0 0; font-size: 1.6rem; font-weight: 700; }
+.trend-facts dd .muted { font-size: .9rem; font-weight: 400; }
+.trend-actions { max-width: var(--measure); padding-left: 1.1rem; }
+.trend-actions li { margin: .35rem 0; }
+.trend-split { display: grid; gap: 0 3rem; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); }
+.bars { list-style: none; padding: 0; margin: .5rem 0 0; max-width: 46rem; }
+.bars li { display: grid; grid-template-columns: minmax(9rem, 16rem) 1fr 2.5rem; gap: .75rem; align-items: center; padding: .3rem 0; }
+.bar-label { font-size: .93rem; }
+.bar { height: .65rem; min-width: 2px; background: var(--info); border-radius: 2px; }
+.bar.w0 { width: 0%; }
+.bar.w1 { width: 5%; }
+.bar.w2 { width: 10%; }
+.bar.w3 { width: 15%; }
+.bar.w4 { width: 20%; }
+.bar.w5 { width: 25%; }
+.bar.w6 { width: 30%; }
+.bar.w7 { width: 35%; }
+.bar.w8 { width: 40%; }
+.bar.w9 { width: 45%; }
+.bar.w10 { width: 50%; }
+.bar.w11 { width: 55%; }
+.bar.w12 { width: 60%; }
+.bar.w13 { width: 65%; }
+.bar.w14 { width: 70%; }
+.bar.w15 { width: 75%; }
+.bar.w16 { width: 80%; }
+.bar.w17 { width: 85%; }
+.bar.w18 { width: 90%; }
+.bar.w19 { width: 95%; }
+.bar.w20 { width: 100%; }
+.bar-n { font-variant-numeric: tabular-nums; text-align: right; }
+.muted { color: var(--muted); }
 /* Anatomy of a bug */
 .anatomy-story { max-width: var(--measure); font-size: 1.08rem; }
 .axis { margin: 1.25rem 0; max-width: 820px; }
