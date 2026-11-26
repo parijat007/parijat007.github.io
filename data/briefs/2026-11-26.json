@@ -1,0 +1,245 @@
+{
+ "run_date": "2026-11-26",
+ "quiet_day": false,
+ "executive_pulse": "CISA added 10 KEV items including Mitel MiCollab, Juniper Session Smart, and Drupal Fail2Install. Microsoft confirmed ARTEX agentic AI framework abuse by multiple threat groups. Cisco PSIRT released advisories for nginx and UCS.",
+ "notes": "CVE-2026-131914 (Idunno) and CVE-2026-132165 (Drupal) are updates to previously reported IDs. Mitel MiCollab vulnerabilities are consolidated into a single item. Tenda and D-Link router CVEs are excluded due to low stack relevance and lack/",
+ "items": [
+  {
+   "rank": 1,
+   "headline": "CISA Adds 10 KEV Items: Mitel, Juniper, Drupal, Danfoss",
+   "category": "VULNERABILITY",
+   "severity": "CRITICAL",
+   "exploitation": "EXPLOITED_CONFIRMED",
+   "is_update": false,
+   "stack_match": [],
+   "target": "Mitel MiCollab, Juniper Session Smart, Drupal Core, Danfoss AK-SM 800A, Vates Xen Orchestra",
+   "identifiers": [
+    "CVE-2026-133275",
+    "CVE-2026-103406",
+    "CVE-2026-132165",
+    "CVE-2026-133323",
+    "CVE-2026-133469",
+    "CVE-2025-41450"
+   ],
+   "kev_due_date": "2026-11-28",
+   "summary": "CISA added 10 vulnerabilities to KEV. Mitel MiCollab has 5 flaws (RCE, file upload, auth bypass). Juniper Session Smart has OS command injection. Drupal Fail2Install (CVE-2026-132165) is under active exploitation. Danfoss AK-SM 800A has path traversal and auth flaws.",
+   "action": "Apply vendor patches immediately. Mitel MISA-2026-0012. Juniper 2026-10 bulletin. Drupal 10.4.7/11.1.5. Danfoss DSA-2023-08-01/DSA-2025-03-01.",
+   "hunt": null,
+   "fixed_versions": null,
+   "confidence": "LOW",
+   "primary_source": "https://www.cisa.gov/news-events/alerts/2026/11/25/cisa-adds-10-known-exploited-vulnerabilities-catalog",
+   "corroborating_sources": [
+    "https://thehackernews.com/2026/11/hackers-exploit-10-vulnerabilities.html"
+   ],
+   "source_tiers": [
+    "authority",
+    "press"
+   ],
+   "remediation": {
+    "weakness": "Authentication bypass",
+    "compensating_controls": [
+     "Restrict management and admin interfaces to a dedicated admin network or VPN; block them from the internet",
+     "Require phishing-resistant MFA for administrative access where the product supports it",
+     "Rotate admin credentials and API keys, and remove unknown admin accounts"
+    ],
+    "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event",
+    "fixed_versions": null
+   },
+   "risk": {
+    "kev": true,
+    "epss": {
+     "score": 0.0255,
+     "percentile": 0.857
+    },
+    "ssvc": {
+     "exploitation": "active",
+     "automatable": "no",
+     "technical_impact": "total"
+    }
+   },
+   "verify_flags": 5
+  },
+  {
+   "rank": 2,
+   "headline": "Microsoft: ARTEX Agentic AI Framework Abused by Threat Actors",
+   "category": "AI_THREAT",
+   "severity": "HIGH",
+   "exploitation": "EXPLOITED_REPORTED",
+   "is_update": false,
+   "stack_match": [],
+   "target": "ARTEX, Storm-0940, Storm-3358, Onyx Sleet, Pearl Sleet, Crystal Typhoon, Salt Typhoon",
+   "identifiers": [
+    "ThreatDefence/agentic-attack-detections"
+   ],
+   "kev_due_date": null,
+   "summary": "Microsoft identified ARTEX framework abuse by multiple threat groups for network reconnaissance, credential attacks, and web exploitation. ThreatDefence/agentic-attack-detections provides KQL/Sigma/Suricata/YARA detections for ARTEX and related frameworks.",
+   "action": "Deploy ThreatDefence/agentic-attack-detections rules. Hunt for ARTEX IOCs and agentic AI tool usage in logs.",
+   "hunt": "Microsoft Sentinel/Defender XDR: KQL hunts for ARTEX, Cairn, PentAGI, HexStrike, CyberStrikeAI, Strix, Hermes Agent, Agent Zero, RedAmon, Xalgorix, Pentest Swarm AI.",
+   "fixed_versions": null,
+   "confidence": "LOW",
+   "primary_source": "https://www.microsoft.com/en-us/security/blog/2026/11/25/what-defenders-need-to-know-artex-agentic-ai-framework-threat-actors-abuse/",
+   "corroborating_sources": [],
+   "source_tiers": [
+    "research"
+   ],
+   "remediation": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching",
+    "fixed_versions": null
+   },
+   "risk": null,
+   "verify_flags": 1
+  },
+  {
+   "rank": 3,
+   "headline": "AWS: Kiro Web RCE and Config Remediation Flaws",
+   "category": "VULNERABILITY",
+   "severity": "HIGH",
+   "exploitation": "NO_KNOWN_EXPLOIT",
+   "is_update": false,
+   "stack_match": [
+    "AWS"
+   ],
+   "target": "AWS Kiro Web, AWS Config",
+   "identifiers": [
+    "CVE-2026-136267",
+    "CVE-2026-134070"
+   ],
+   "kev_due_date": null,
+   "summary": "Kiro Web has RCE via tool-call markup in agent sessions. AWS Config remediation runbook has input sanitization flaw. Both disclosed in AWS Security Bulletins.",
+   "action": "Review Kiro Web agent session handling. Audit AWS Config remediation runbooks.",
+   "hunt": null,
+   "fixed_versions": null,
+   "confidence": "LOW",
+   "primary_source": "https://aws.amazon.com/security/security-bulletins/rss/2026-202-aws/",
+   "corroborating_sources": [],
+   "source_tiers": [
+    "vendor"
+   ],
+   "remediation": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching",
+    "fixed_versions": null
+   },
+   "risk": null,
+   "verify_flags": 1
+  },
+  {
+   "rank": 4,
+   "headline": "GitHub: ThreatDefence Agentic AI Detection Rules",
+   "category": "GITHUB_REPO",
+   "severity": "INFO",
+   "exploitation": "N/A",
+   "is_update": false,
+   "stack_match": [
+    "Splunk",
+    "LLM"
+   ],
+   "target": "ThreatDefence/agentic-attack-detections",
+   "identifiers": [
+    "ThreatDefence/agentic-attack-detections"
+   ],
+   "kev_due_date": null,
+   "summary": "Detection rules and IOCs for AI agent attack frameworks: ARTEX, Cairn, PentAGI, HexStrike, CyberStrikeAI, Strix, Hermes Agent, Agent Zero, RedAmon, Xalgorix, Pentest Swarm AI. KQL hunts for Microsoft Sentinel and Defender XDR, Sigma, Suricata, Zeek, YARA, Splunk, Elastic, STIX 2.1.",
+   "action": "Evaluate and deploy detection rules for agentic AI threats.",
+   "hunt": null,
+   "fixed_versions": null,
+   "confidence": "HIGH",
+   "primary_source": "https://github.com/ThreatDefence/agentic-attack-detections",
+   "corroborating_sources": [],
+   "source_tiers": [
+    "data"
+   ],
+   "risk": null
+  }
+ ],
+ "meta": {
+  "generated_at": "2026-11-26T10:45:23+00:00",
+  "mode": "analyst",
+  "prompt_version": "v2.1",
+  "model": "Qwen3.6-35B-A3B (local)",
+  "provider": "local",
+  "window_start": "2026-11-25 04:45 UTC",
+  "window_end": "2026-11-26 10:45 UTC",
+  "items_screened": 40,
+  "dropped": [
+   "dropped (URL not in input): Cisco: nginx Critical RCEs Affecting Cisco Products"
+  ],
+  "sources": {
+   "CISA KEV": "ok (10 new)",
+   "NVD": "ok (10)",
+   "GitHub Advisory": "ok (6)",
+   "GitHub": "ok (10)",
+   "CISA Advisories": "ok (1)",
+   "Microsoft MSRC": "ok (0)",
+   "Microsoft Security": "ok (2)",
+   "Palo Alto PSIRT": "ok (0)",
+   "Fortinet PSIRT": "ok (0)",
+   "Cisco PSIRT": "ok (3)",
+   "AWS Security Bulletins": "ok (2)",
+   "Unit 42": "ok (1)",
+   "Google Threat Intel": "ok (0)",
+   "BleepingComputer": "ok (10)",
+   "The Hacker News": "ok (13)",
+   "SecurityWeek": "ok (10)",
+   "The Record": "ok (5)",
+   "Krebs on Security": "ok (0)"
+  },
+  "verification": {
+   "verifier": "Gemini Flash (free tier)",
+   "status": "checked",
+   "items": 4,
+   "flagged": [
+    {
+     "rank": 1,
+     "headline": "CISA Adds 10 KEV Items: Mitel, Juniper, Drupal, Danfoss",
+     "unsupported": [
+      "Drupal Fail2Install (CVE-2026-132165) is under active exploitation.",
+      "Mitel MISA-2026-0012.",
+      "Juniper 2026-10 bulletin.",
+      "Drupal 10.4.7/11.1.5.",
+      "Danfoss DSA-2023-08-01/DSA-2025-03-01."
+     ]
+    },
+    {
+     "rank": 2,
+     "headline": "Microsoft: ARTEX Agentic AI Framework Abused by Threat Actors",
+     "unsupported": [
+      "ThreatDefence/agentic-attack-detections provides KQL/Sigma/Suricata/YARA detections for ARTEX and related frameworks."
+     ]
+    },
+    {
+     "rank": 3,
+     "headline": "AWS: Kiro Web RCE and Config Remediation Flaws",
+     "unsupported": [
+      "AWS Config remediation runbook has input sanitization flaw."
+     ]
+    }
+   ]
+  },
+  "perf": {
+   "collect_s": 24.3,
+   "llm_s": 205.6,
+   "total_s": 229.9,
+   "attempts": [
+    {
+     "provider": "local",
+     "model": "local",
+     "attempt": 1,
+     "seconds": 89.1,
+     "ok": true
+    }
+   ],
+   "runner": "mac",
+   "schedule_delay_min": null
+  }
+ }
+}
