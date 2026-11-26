@@ -1246,3 +1246,42 @@ def test_unblock_runs_once_when_triggered_twice():
     assert recent_run(runs, "2", _now()) is False     # the earlier of the pair goes ahead
     assert recent_run(runs, "3", _now()) is True      # the later one skips
     assert recent_run([{**r, "conclusion": "failure"} if r["id"] == 2 else r for r in runs], "3", _now()) is False
+
+
+def test_ai_notes_keep_to_the_inputs(tmp_path, monkeypatch):
+    from datetime import date
+    from digest import ai_notes as A
+    items = [{"title": "What defenders need to know about ARTEX, the agentic AI framework", "url": "https://ms.example/a",
+              "source_name": "Microsoft Security", "source_tier": "vendor", "text": "Several groups abuse ARTEX; 3 campaigns.",
+              "source_type": "rss"},
+             {"title": "user/agent-repo", "url": "https://github.com/u/r", "source_tier": "press", "source_type": "github_repo",
+              "text": "LLM agent tooling"}]
+    assert A.worth_a_note(A.ai_items(items)) and not A.worth_a_note(items[1:])
+    note = {"title": "AI Security Daily: ARTEX abuse", "summary": "Groups abuse ARTEX. It hit 40% of firms.",
+            "body": [{"heading": "What happened", "markdown": "Microsoft saw 3 campaigns. Version 9.9.9 fixes it."}],
+            "actions": [{"verb": "Patch", "text": "Install 9.9.9."}, {"verb": "Inventory", "text": "Find agent frameworks."}],
+            "hunt": None, "status": [{"claim": "ARTEX abused", "state": "confirmed", "note": "Microsoft"}],
+            "sources": [{"title": "a", "url": "https://ms.example/a"}, {"title": "x", "url": "https://evil.example/"}],
+            "visual": {"title": "ARTEX", "figures": [{"value": "3", "label": "campaigns", "state": "reported"},
+                                                     {"value": "40%", "label": "of firms", "state": "reported"}]}}
+    probs = A.check(note, items)
+    assert any("evil.example" in p for p in probs) and any("9.9.9" in p for p in probs) and any("40%" in p for p in probs)
+    A.scrub(note, items)
+    assert note["summary"] == "Groups abuse ARTEX." and note["body"][0]["markdown"] == "Microsoft saw 3 campaigns."
+    assert [a["verb"] for a in note["actions"]] == ["Inventory"] and len(note["sources"]) == 1
+    assert note["visual"]["figures"] == [{"value": "3", "label": "campaigns", "state": "reported"}]
+    assert note["status"][0]["state"] == "confirmed"          # Microsoft is a vendor source
+    slug, md = A.to_markdown(note, "daily", date(2026, 11, 26), "local")
+    assert slug == "2026-11-26-ai-daily-artex-abuse" and "## What to do" in md and "AI Security Daily" in md
+    with pytest.raises(SystemExit, match="not a note draft id"):
+        A.publish("../../etc/passwd")
+
+
+def test_autopilot_note_commands_owner_only():
+    from digest.linkedin import owner_commands
+    ups = [{"message": {"chat": {"id": 42, "type": "private"}, "text": "/note ok 2026-11-26-ai-daily-artex-abuse"}},
+           {"message": {"chat": {"id": 42, "type": "private"}, "text": "/note drop 2026-11-27-ai-spotlight-mcp"}},
+           {"message": {"chat": {"id": 7, "type": "private"}, "text": "/note ok 2026-11-26-ai-daily-artex-abuse"}},
+           {"message": {"chat": {"id": 42, "type": "private"}, "text": "/note ok ../../x"}}]
+    assert owner_commands(ups, "42") == [("note-ok", "2026-11-26-ai-daily-artex-abuse"),
+                                         ("note-drop", "2026-11-27-ai-spotlight-mcp")]

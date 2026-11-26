@@ -93,6 +93,10 @@ fi
 [[ -n "$HC_URL" ]] && curl -fsS -m 10 "$HC_URL" >/dev/null || true
 echo "=== $(date '+%F %T') brief run done ==="
 
+# AI Security note (daily; the weekly Spotlight on Wednesdays) while the local model is still loaded. It is only
+# a draft: it goes to Telegram and is published when you reply /note ok <id>. Never blocks the brief.
+caffeinate -i "$REPO_DIR/.venv/bin/python" -m digest.ai_notes auto || echo "AI note draft failed (the brief is unaffected)"
+
 # Sundays: a full git bundle outside GitHub (an off-site copy if the repo or account is ever lost). Keeps 8.
 if [[ "$(date +%u)" == "7" ]]; then
   mkdir -p "$HOME/watchfloor-backups"

@@ -80,3 +80,13 @@ Publish and edit need `confirm=true`, which Claude sends only after you say yes 
 you before each call. Both run the judge and refuse on FAIL. Tokens stay in Keychain; no tool returns them.
 The server is plain Python with no extra packages (`digest/linkedin_mcp.py`); its log is
 `/tmp/watchfloor.linkedin-mcp.log`.
+
+## AI Security notes on autopilot
+After the 5:45 brief, the Mac drafts an AI Security note while the local model is loaded: a short daily
+note, or the weekly Spotlight on Wednesdays. It uses only what the brief collected, and only on days with
+real AI security news. The draft goes to Telegram (full text in `~/.watchfloor/notes/`). Reply:
+
+    /note ok ID      publish it to theparijat.com/notes/ (the LinkedIn draft follows within 10 minutes)
+    /note drop ID    discard it
+
+Published notes say they were drafted by a model from the cited sources and approved by you.

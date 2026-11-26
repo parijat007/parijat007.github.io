@@ -526,6 +526,7 @@ def status() -> None:
 # ---------- autopilot: Telegram approval ----------
 
 CMD = re.compile(r"^/(post|skip)\s+([0-9]{8}-[0-9]{4}-[0-9a-f]{6})\s*$")
+NOTE_CMD = re.compile(r"^/note\s+(ok|drop)\s+([0-9]{4}-[0-9]{2}-[0-9]{2}-ai-(?:daily|spotlight)-[a-z0-9-]{1,60})\s*$")
 
 
 def _tg(method: str, **kw) -> dict:
@@ -549,8 +550,11 @@ def owner_commands(updates: list[dict], chat: str) -> list[tuple[str, str]]:
             log.info("ignored a message from chat %s (%s): not the owner's private chat %s",
                      m.get("chat", {}).get("id"), m.get("chat", {}).get("type"), chat)
             continue
-        if (c := CMD.match((m.get("text") or "").strip())):
+        text = (m.get("text") or "").strip()
+        if (c := CMD.match(text)):
             out.append((c.group(1), c.group(2)))
+        elif (c := NOTE_CMD.match(text)):
+            out.append(("note-" + c.group(1), c.group(2)))
     return out
 
 
@@ -590,6 +594,17 @@ def autopilot(cfg: dict) -> None:
     if updates:
         off_f.write_text(str(updates[-1]["update_id"] + 1))
     for cmd, did in owner_commands(updates, chat):
+        if cmd.startswith("note-"):
+            from . import ai_notes  # noqa: PLC0415
+            try:
+                if cmd == "note-ok":
+                    say(f"Published: {ai_notes.publish(did)}\nThe LinkedIn draft follows within 10 minutes.")
+                else:
+                    (ai_notes.DRAFTS / f"{did}.md").rename(ai_notes.DRAFTS / f"{did}.dropped")
+                    say(f"Dropped note {did}. Nothing was published.")
+            except (SystemExit, OSError) as e:
+                say(f"Note {did}: {e}")
+            continue
         f = STORE / f"{did}.json"
         if not f.exists():
             say(f"No draft {did}.")
