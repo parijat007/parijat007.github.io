@@ -149,3 +149,12 @@ linkedin:
   api_version: "202608"          # LinkedIn-Version header (YYYYMM)
   redirect_port: 8766            # must match the redirect URL in your LinkedIn app
   never_name: [Hearst, Morgan Stanley, Merrill, "Johnson & Johnson", Ford, MTA]   # drafts naming these are blocked
+
+# Comments (giscus: GitHub Discussions, GitHub sign-in). Off until category_id is filled in: enable
+# Discussions on the repo, add a "Comments" category (Announcement type, so only giscus/you start threads),
+# install https://github.com/apps/giscus on this repo, then copy the category id from https://giscus.app.
+comments:
+  repo: parijat007/parijat007.github.io
+  repo_id: R_kgDOV2z48A
+  category: Comments
+  category_id: ""
