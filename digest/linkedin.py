@@ -564,7 +564,10 @@ def autopilot(cfg: dict) -> None:
     """Draft new notes, then act on /post and /skip replies. /post publishes only after the judge passes."""
     STORE.mkdir(parents=True, exist_ok=True)
     chat = os.environ.get("TELEGRAM_CHAT_ID") or secret("telegram-chat-id")
-    say = (lambda t: _tg("sendMessage", chat_id=chat, text=t, disable_web_page_preview=True)) if chat else print
+    def say(text: str) -> None:
+        """Reply to the owner in Telegram (nothing is printed: messages can quote drafts and ids)."""
+        if chat:
+            _tg("sendMessage", chat_id=chat, text=text, disable_web_page_preview=True)
 
     # 1. every note from the last three days with no draft yet (a news note and a topic note can share a day);
     #    at most two per run so one busy day cannot flood Telegram
