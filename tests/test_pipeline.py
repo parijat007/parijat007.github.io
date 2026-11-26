@@ -313,22 +313,32 @@ def test_linkedin_publish_needs_approval_and_posts_once(monkeypatch, tmp_path):
     monkeypatch.setattr(L, "STORE", tmp_path)
     cfg = {"site": {"url": "https://theparijat.com"}, "linkedin": {"never_name": []}}
     text = "Finding.\n\n" + "Detail line. " * 30 + "\nhttps://theparijat.com/notes/n/"
-    (tmp_path / "d1.json").write_text(json.dumps({"id": "d1", "status": "draft", "text": text,
-        "source": {"kind": "note", "title": "t", "link": "https://theparijat.com/notes/n/"}}))
+    (tmp_path / "img.png").write_bytes(b"png")
+    (tmp_path / "d1.json").write_text(json.dumps({"id": "d1", "status": "draft", "text": text, "provider": "gemini",
+        "source": {"kind": "note", "title": "t", "link": "https://theparijat.com/notes/n/"},
+        "source_raw": "the note", "image": str(tmp_path / "img.png"), "image_text": "", "alt": "Chart"}))
     monkeypatch.setattr(L, "secret", lambda n: {"linkedin-access-token": "tok",
                                                 "linkedin-person-urn": "urn:li:person:abc"}.get(n))
-    sent = []
+    monkeypatch.setattr(L.post_judge, "judge", lambda *a: {"verdict": "pass", "facts": [], "judge": "Groq", "issues": []})
+    sent, put = [], []
 
     class R:
         status_code, text, headers = 201, "", {"x-restli-id": "urn:li:share:1"}
-    monkeypatch.setattr(L.requests, "post", lambda url, **kw: sent.append((url, kw)) or R())
+
+    class Init:
+        status_code = 200
+        def json(self): return {"value": {"uploadUrl": "https://up.test/1", "image": "urn:li:image:9"}}
+    monkeypatch.setattr(L.requests, "post", lambda url, **kw: sent.append((url, kw)) or (Init() if "images" in url else R()))
+    monkeypatch.setattr(L.requests, "put", lambda url, **kw: put.append(url) or R())
     monkeypatch.setattr("builtins.input", lambda *_: "n")
     L.publish(cfg, "d1")
-    assert sent == []                                   # declined: nothing posted
+    assert sent == [] and put == []                     # declined: nothing uploaded or posted
     monkeypatch.setattr("builtins.input", lambda *_: "y")
     L.publish(cfg, "d1")
-    url, kw = sent[0]
+    assert sent[0][0].endswith("/rest/images?action=initializeUpload") and put == ["https://up.test/1"]
+    url, kw = sent[1]
     assert url.endswith("/rest/posts") and kw["json"]["author"] == "urn:li:person:abc"
+    assert kw["json"]["content"] == {"media": {"id": "urn:li:image:9", "altText": "Chart"}}
     assert kw["headers"]["LinkedIn-Version"] and kw["json"]["visibility"] == "PUBLIC"
     with pytest.raises(SystemExit):
         L.publish(cfg, "d1")                            # already published: refuses to repost
@@ -972,3 +982,67 @@ def test_channel_posts_recent_notes_once(tmp_path, monkeypatch):
     assert channel.post_notes("2026-11-26", "https://site.test", tmp_path) == ["2026-11-25-spot"]
     assert channel.post_notes("2026-11-27", "https://site.test", tmp_path) == []          # once only
     assert sent == ["AI Security Spotlight: tools\n\nShort summary.\n\nRead it: https://site.test/notes/2026-11-25-spot/"]
+
+
+def test_judge_fact_check_catches_numbers_not_in_source():
+    from digest.post_judge import fact_check, tokens
+    assert tokens("found in 22 percent of 834 servers; fixed in v0.1.36 (CVE-2026-135614), 1,423 attempts, 2.5% rise") == \
+        {"22%", "834", "0.1.36", "CVE-2026-135614", "1423", "2.5%"}
+    src = "OX found 22% of 834 flagged servers. Fixed in 0.1.36. CVE-2026-135614. 1,423 attempts."
+    assert fact_check("22 percent of 834; upgrade to 0.1.36; 1423 attempts https://x.test/2099/9.9.9 #Top10", "", src) == []
+    assert fact_check("upgrade to 0.1.35", "1,500 attempts", src) == \
+        ["post: '0.1.35' is not in the source", "image: '1500' is not in the source"]
+
+
+def test_judge_blocks_on_facts_and_needs_a_second_model(monkeypatch):
+    from digest import post_judge
+    cfg = {"llm": {"chain": ["gemini"], "providers": {"gemini": {"api_key_env": ["GEMINI_API_KEY"]}}}}
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    v = post_judge.judge("fixed in 0.1.36", "", "fixed in 0.1.36", cfg, writer="gemini")
+    assert v["verdict"] == "unavailable"            # the writer may not judge itself
+    v = post_judge.judge("fixed in 9.9.9", "", "fixed in 0.1.36", cfg, writer="gemini")
+    assert v["verdict"] == "fail" and v["facts"]
+
+
+def test_judge_review_verdicts(monkeypatch):
+    from digest import llm, post_judge
+    cfg = {"llm": {"chain": ["gemini", "groq"], "providers": {"gemini": {}, "groq": {"label": "Groq"}}}}
+    answers = iter(['{"verdict":"pass","issues":[{"kind":"unclear","quote":"x","why":"y"}]}',
+                    '{"verdict":"pass","issues":[{"kind":"missing_caveat","quote":"22%","why":"flagged is not malicious"}]}'])
+    calls = []
+    monkeypatch.setattr(llm, "complete", lambda name, *a: calls.append(name) or next(answers))
+    assert post_judge.judge("a", "", "a", cfg, "gemini+edited")["verdict"] == "pass"   # unclear alone is advice
+    v = post_judge.judge("a", "", "a", cfg, "gemini")
+    assert v["verdict"] == "fail" and v["judge"] == "Groq" and calls == ["groq", "groq"]
+    assert "missing_caveat" in post_judge.report(v)
+
+
+def test_post_image_from_note(tmp_path):
+    from PIL import Image
+    from digest import post_visual
+    meta = {"title": "T", "summary": "S", "visual": {"title": "When the tool tells the agent", "highlight": 2,
+            "steps": ["one", "two", "three"], "figures": [{"value": "22%", "label": "of 834", "state": "reported"}]}}
+    spec = post_visual.spec_from_note(meta)
+    out = post_visual.render(spec, tmp_path / "p.png")
+    assert Image.open(out).size == (1080, 1350)
+    assert post_visual.numbers(spec).splitlines() == ["When the tool tells the agent", "one", "two", "three", "22%", "of 834"]
+    card = post_visual.spec_from_note({"title": "Note", "summary": "A  short\n summary."})
+    assert card == {"title": "Note", "detail": "A short summary."}
+    post_visual.render(card, tmp_path / "c.png")
+
+
+def test_linkedin_publish_blocked_by_judge(tmp_path, monkeypatch):
+    from digest import linkedin
+    monkeypatch.setattr(linkedin, "STORE", tmp_path)
+    d = {"id": "d1", "status": "draft", "provider": "gemini", "text": "x" * 300 + " https://site.test/notes/n/",
+         "source": {"kind": "file", "title": "n", "link": "https://site.test/notes/n/"}, "source_raw": "nothing"}
+    (tmp_path / "d1.json").write_text(json.dumps(d))
+    monkeypatch.setattr(linkedin, "secret", lambda n: "tok" if "token" in n else "urn:li:person:1")
+    monkeypatch.setattr(linkedin.post_judge, "judge", lambda *a: {"verdict": "fail", "facts": ["post: '9' x"], "judge": None, "issues": []})
+    monkeypatch.setattr(linkedin, "post", lambda *a, **k: pytest.fail("must not post"))
+    with pytest.raises(SystemExit, match="Not published"):
+        linkedin.publish({"site": {"url": "https://site.test"}}, "d1", yes=True)
+    monkeypatch.setattr(linkedin.post_judge, "judge", lambda *a: {"verdict": "unavailable", "facts": [], "judge": None, "issues": []})
+    with pytest.raises(SystemExit, match="skip-judge"):
+        linkedin.publish({"site": {"url": "https://site.test"}}, "d1", yes=True)
+    assert json.loads((tmp_path / "d1.json").read_text())["judge"]["verdict"] == "unavailable"
