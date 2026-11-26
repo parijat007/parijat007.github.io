@@ -142,6 +142,20 @@ def run_merge_queue(repo: str, owner: str, now: datetime) -> list[str]:
     return msgs
 
 
+# ---------- 2b. new code-scanning alerts (CodeQL, Scorecard) ----------
+
+def new_code_alerts(repo: str, now: datetime) -> list[str]:
+    """Open code-scanning alerts first seen in the last hour (the agent runs hourly)."""
+    try:
+        alerts = gh("GET", f"/repos/{repo}/code-scanning/alerts?state=open&sort=created&direction=desc&per_page=30")
+    except RuntimeError as e:
+        log.info("code scanning alerts not readable (%s)", str(e)[:80])
+        return []
+    fresh = [a for a in alerts if now - _ts(a["created_at"]) < timedelta(minutes=60)]
+    return [f"New code-scanning alert ({a['tool']['name']}, {a['rule'].get('security_severity_level') or a['rule'].get('severity')}): "
+            f"{a['rule'].get('description') or a['rule']['id']}\n{a['html_url']}" for a in fresh[:5]]
+
+
 # ---------- 3. owner to-do ----------
 
 def _dns(name: str, rtype: str) -> list[str]:
@@ -263,6 +277,8 @@ def main() -> None:
         except RuntimeError as e:
             msgs.append(f"{r['name']} failed and could not be re-run ({str(e)[:100]}): {r['html_url']}")
     msgs += [f"{r['name']} failed twice (the automatic re-run failed too): {r['html_url']}" for r in alert]
+
+    msgs += new_code_alerts(repo, now)
 
     if os.environ.get("WF_AUTOMERGE", "on") != "off":
         msgs += run_merge_queue(repo, owner, now)

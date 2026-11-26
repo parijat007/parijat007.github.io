@@ -1,0 +1,60 @@
+name: GitHub events to Telegram
+
+# Sends the owner one Telegram message per event that needs their attention: a PR opened, merged or closed; a
+# failed run of a workflow the unblock agent does not already retry; a new discussion or comment; a new issue;
+# a star or fork. tools/tg_event.py composes the text from the event file (standard library only).
+#
+# pull_request_target is used so Dependabot and fork PRs can notify too (plain pull_request gets no secrets
+# for those). It is safe here because nothing from the PR is checked out or run: the job checks out the
+# default branch only, and event text never reaches a shell command.
+on:
+  pull_request_target:
+    types: [opened, ready_for_review, closed]
+  workflow_run:
+    workflows: ["CI", "CodeQL", "Security checks", "OpenSSF Scorecard", "Health check", "Self-test (all models, no publishing)",
+                "Weekly backup", "Model evaluation", "Performance", "Unblock agent", "KEV trends"]
+    types: [completed]
+  discussion:
+    types: [created]
+  discussion_comment:
+    types: [created]
+  issues:
+    types: [opened]
+  watch:
+    types: [started]
+  fork:
+
+permissions: {}
+
+jobs:
+  notify:
+    # skip workflow runs that succeeded before even starting a runner
+    if: github.event_name != 'workflow_run' || contains(fromJSON('["failure","timed_out","startup_failure"]'), github.event.workflow_run.conclusion)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}   # never the PR's code
+          persist-credentials: false
+          sparse-checkout: tools/tg_event.py
+          sparse-checkout-cone-mode: false
+      - name: Changed files (PRs only; names, not contents)
+        if: startsWith(github.event_name, 'pull_request')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          {
+            echo "PR_FILES<<EOF_FILES"
+            gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR}/files?per_page=100" --jq '.[].filename' || true
+            echo "EOF_FILES"
+          } >> "$GITHUB_ENV"
+      - name: Send
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python3 tools/tg_event.py

@@ -30,6 +30,7 @@ jobs:
       pull-requests: write       # the hold-window comment
       actions: write             # re-run failed jobs, dispatch the deploy
       checks: read
+      security-events: read      # new code-scanning alerts -> Telegram
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with: { persist-credentials: false }
