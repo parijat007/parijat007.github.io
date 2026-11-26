@@ -1310,3 +1310,23 @@ def test_ai_topics_rotation_and_grounding(tmp_path, monkeypatch):
     assert slug.startswith("2026-11-27-ai-topic-") and f"topic_id: {first['id']}" in md
     (tmp_path / f"{slug}.md").write_text(md)
     assert T.next_topic()["id"] == ts[1]["id"]                              # a pending draft is not repeated
+
+def test_anatomy_gaps_story_and_comparison():
+    from digest.timeline import anatomy, axis, gaps
+    def rec(pub, poc=None, kev=None, due=None, det=None):
+        ev = {"published": {"date": pub}}
+        if poc: ev["poc_first_seen"] = {"date": poc, "count": 2}
+        if kev: ev["kev_added"] = {"date": kev, "due": due}
+        if det: ev["detection_seen"] = {"date": det, "count": 1}
+        return {"events": ev}
+    r = rec("2026-11-19", poc="2026-11-19", kev="2026-11-20", due="2026-11-23")
+    pool = {"a": r, **{f"x{i}": rec("2026-10-01", poc=f"2026-10-{2 + i:02d}", kev=f"2026-10-{5 + i:02d}", due="2026-10-30")
+                       for i in range(6)}}
+    assert gaps(r) == {"poc": 0, "kev": 1, "deadline": 3}
+    a = anatomy(r, pool)
+    assert a["story"][0] == "NVD published the CVE on 19 November 2026."
+    assert "same day" in a["story"][1] and "1 day after publication" in a["story"][2]
+    kev = next(x for x in a["rows"] if x["key"] == "kev")
+    assert kev["faster_than"] == 86 and kev["n"] == 7
+    assert next(x for x in a["rows"] if x["key"] == "deadline")["faster_than"] is None
+    assert axis(r)["points"][-1]["key"] == "kev_due"

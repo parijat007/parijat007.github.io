@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Anatomy of a bug — {{ p.name }}{% endblock %}
+{% block desc %}How fast exploited vulnerabilities move: from publication to public exploit code, CISA confirmation and the first public detection, for every CVE Watchfloor tracks.{% endblock %}
+{% block main %}
+<section class="page-head"><h1>Anatomy of a bug</h1>
+<p class="lede">For every CVE Watchfloor tracks: how many days passed from publication to public exploit code, to CISA confirming exploitation, and to the first public detection rule. Medians across {{ tracked }} CVEs: proof of concept {{ med.poc if med.poc is not none else "–" }} days, CISA KEV {{ med.kev if med.kev is not none else "–" }} days, detection {{ med.detect if med.detect is not none else "–" }} days.</p></section>
+<div class="table-scroll"><table class="watch">
+<thead><tr><th scope="col">CVE</th><th scope="col">What</th><th scope="col">To PoC</th><th scope="col">To KEV</th><th scope="col">To detection</th></tr></thead>
+<tbody>{% for r in rows %}<tr>
+<td class="num"><a class="id" href="{{ root }}cve/{{ r.cve }}/">{{ r.cve }}</a></td><td>{{ r.title }}</td>
+{% for k in ("poc", "kev", "detect") %}<td class="num">{{ (r.gaps[k] | string | replace("-", "−")) ~ " d" if k in r.gaps else "–" }}</td>{% endfor %}
+</tr>{% endfor %}</tbody></table></div>
+<p class="note">Days between dated events from NVD, PoC-in-GitHub, CISA KEV, SigmaHQ and nuclei-templates. A negative number means it happened before NVD published the CVE: exploit code or exploitation that came first, often a zero-day. "–" means the event has not happened, or Watchfloor has no date for it yet.</p>
+{% endblock %}
