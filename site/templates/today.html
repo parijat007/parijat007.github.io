@@ -28,7 +28,7 @@
 {% endif %}
 
 <section class="strip" aria-labelledby="strip-h">
-  <div class="strip-head"><h2 id="strip-h">Last 24 hours of the watch</h2><p>Updated {{ watch.updated | ago }}. Each cell is one hour; a dot marks a new KEV listing.</p></div>
+  <div class="strip-head"><h2 id="strip-h">Last 24 hours of the watch</h2><p>Updated <time datetime="{{ watch.updated }}" data-ago>{{ watch.updated | ago }}</time>. Each cell is one hour; a dot marks a new KEV listing.</p></div>
   <div class="cells" role="img" aria-label="{{ cells | sum(attribute='n') }} new advisories and KEV entries in the last 24 hours">
     {% for c in cells %}<span class="cell{% if c.kev %} kev{% endif %}" data-n="{{ [c.n, 4] | min }}" title="{{ c.label }}: {{ c.n }} new"></span>{% endfor %}
   </div>

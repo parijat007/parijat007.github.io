@@ -33,7 +33,7 @@
       {% for c in cells %}<span class="cell{% if c.kev %} kev{% endif %}" data-n="{{ [c.n, 4] | min }}" title="{{ c.label }}: {{ c.n }} new"></span>{% endfor %}
     </div>
     <div class="cell-scale" aria-hidden="true"><span>24 h ago</span><span>now</span></div>
-    <p class="live-foot">Last 24 hours, updated {{ watch.updated | ago }}. <a href="{{ root }}today/">Read today's brief</a> or <a href="{{ root }}watch/">open the hourly watch</a>.</p>
+    <p class="live-foot">Last 24 hours, updated <time datetime="{{ watch.updated }}" data-ago>{{ watch.updated | ago }}</time>. <a href="{{ root }}today/">Read today's brief</a> or <a href="{{ root }}watch/">open the hourly watch</a>.</p>
   </aside>
 </section>
 

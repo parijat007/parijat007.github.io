@@ -218,6 +218,11 @@ a.plain:hover { text-decoration: underline; text-decoration-color: var(--breach)
 .cells.mini .cell { height: 22px; }
 .cells.mini .cell[data-n="0"] { background: var(--base); box-shadow: inset 0 0 0 1px var(--rule); }
 .live-foot { color: var(--muted); font-size: .85rem; margin: .7rem 0 0; }
+.quiet { color: var(--muted); max-width: var(--measure); margin: -0.75rem 0 1.5rem; padding-left: .75rem; border-left: 2px solid var(--rule); }
+.quiet time { color: var(--text); }
+.quiet .stale-note { display: none; }
+.quiet.stale { border-left-color: var(--deadline); }
+.quiet.stale .stale-note { display: inline; color: var(--text); }
 .live-foot a { color: var(--text); }
 section.two { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 2rem; border-bottom: 1px solid var(--rule); padding: 2.5rem 0; }
 section.two > h2 { font-size: 1.15rem; margin: .15rem 0 0; }

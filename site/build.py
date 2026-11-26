@@ -93,6 +93,7 @@ def _riskline(r):
 def env() -> Environment:
     e = Environment(loader=FileSystemLoader(SITE / "templates"), autoescape=select_autoescape(["html", "xml"]),
                     trim_blocks=True, lstrip_blocks=True)
+    e.tests["ok_status"] = lambda v: str(v).startswith("ok")
     e.filters.update(
         sev=lambda v: LABELS["sev"].get(v, v), xlabel=lambda v: LABELS["x"].get(v, v),
         cat=lambda v: LABELS["cat"].get(v, v), kindlabel=lambda v: LABELS["kind"].get(v, v),
