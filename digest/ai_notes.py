@@ -97,7 +97,7 @@ def worth_a_note(items: list[dict]) -> bool:
 
 def _user(items: list[dict]) -> str:
     rows = [{k: it.get(k) for k in ("title", "url", "source_name", "source_tier", "published", "cves", "kev")}
-            | {"text": str(it.get("text", ""))[:2500]} for it in items[:12]]
+            | {"text": str(it.get("text", ""))[:9000 if it.get("source_type") == "reference" else 2500]} for it in items[:12]]
     return "<items>\n" + json.dumps(rows, ensure_ascii=False, indent=1).replace("</", "<\\/") + "\n</items>"
 
 
