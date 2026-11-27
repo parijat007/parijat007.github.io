@@ -2615,8 +2615,62 @@
    "briefs": [],
    "detections": [],
    "title": "CVE-2026-62840 Linux Kernel Elevation of Privilege Vulnerability"
+  },
+  "CVE-2026-137567": {
+   "cve": "CVE-2026-137567",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-27"
+    },
+    "published": {
+     "date": "2026-11-26",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-137567"
+    }
+   },
+   "epss": [],
+   "briefs": [
+    "2026-11-27"
+   ],
+   "detections": [],
+   "title": "CVE-2026-137567: Heap Out-of-Bounds Write in llama.cpp GGML RPC Server Leads to RCE"
+  },
+  "CVE-2026-137499": {
+   "cve": "CVE-2026-137499",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-27"
+    },
+    "published": {
+     "date": "2026-11-26",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-137499"
+    }
+   },
+   "epss": [],
+   "briefs": [
+    "2026-11-27"
+   ],
+   "detections": [],
+   "title": "CVE-2026-137498 & CVE-2026-137499: Critical Flaws in Budibase Server Enable Filter Erasure and ATO"
+  },
+  "CVE-2026-137498": {
+   "cve": "CVE-2026-137498",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-27"
+    },
+    "published": {
+     "date": "2026-11-26",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-137498"
+    }
+   },
+   "epss": [],
+   "briefs": [
+    "2026-11-27"
+   ],
+   "detections": [],
+   "title": "CVE-2026-137498 & CVE-2026-137499: Critical Flaws in Budibase Server Enable Filter Erasure and ATO"
   }
  },
  "detections_checked": "2026-11-27",
- "updated": "2026-11-27T10:21:43+00:00"
+ "updated": "2026-11-27T11:18:34+00:00"
 }
