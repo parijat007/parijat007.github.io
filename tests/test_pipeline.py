@@ -1519,5 +1519,5 @@ def test_ovh_and_zai_providers_are_configured():
     from digest.config import load_config
     pr = load_config()["llm"]["providers"]
     assert "github" not in pr                                   # GitHub Models was retired (answered a bare "OK")
-    assert pr["ovh"]["base_url"].startswith("https://oai.endpoints.kepler.ai.cloud.ovh.net") and not pr["ovh"].get("api_key_env")
+    assert pr["ovh"]["base_url"] == "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1" and not pr["ovh"].get("api_key_env")
     assert pr["zai"]["api_key_env"] == ["ZAI_API_KEY"] and all(m.endswith("-flash") for m in pr["zai"]["models"])
