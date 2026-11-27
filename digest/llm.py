@@ -100,8 +100,11 @@ def _openai_compat(name: str, pc: dict, system: str, user: str) -> tuple[str, di
     try:
         data = r.json()
     except ValueError:
+        safe = {k: v for k, v in r.headers.items() if k.lower() in ("server", "x-github-request-id", "x-ms-error-code",
+                                                                     "x-ratelimit-remaining-requests", "via", "www-authenticate")}
         raise RuntimeError(f"{name}: non-JSON response HTTP {r.status_code} "
-                           f"content-type={r.headers.get('content-type')} url={r.url} body={r.text[:300]!r}") from None
+                           f"content-type={r.headers.get('content-type')} url={r.url} body={r.text[:300]!r} "
+                           f"headers={safe} history={[h.status_code for h in r.history]}") from None
     if not data.get("choices"):
         raise RuntimeError(f"{name}: no choices in response: {str(data)[:300]}")
     choice = data["choices"][0]
