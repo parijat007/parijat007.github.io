@@ -645,21 +645,26 @@ def autopilot(cfg: dict) -> None:
     #    at most two per run so one busy day cannot flood Telegram
     drafted = {json.loads(f.read_text()).get("source", {}).get("link") for f in STORE.glob("*.json")}
     today = datetime.now(timezone.utc).date()
-    made = 0
+    todo = []
     for f in sorted((ROOT / "data" / "notes").glob("*.md"), reverse=True):
         try:
             if (today - datetime.fromisoformat(f.stem[:10]).date()).days > 3:
                 break
         except ValueError:
             continue
-        link = f"{_site(cfg)}/notes/{f.stem}/"
-        if link in drafted or (STORE / f".skip-{f.stem}").exists() or made >= 2:
-            continue
-        try:
-            notify_draft(draft(cfg, source_from_note(cfg, f.stem)))
-            made += 1
-        except SystemExit as e:
-            log.info("could not draft %s (%s)", f.stem, e)
+        if f"{_site(cfg)}/notes/{f.stem}/" not in drafted and not (STORE / f".skip-{f.stem}").exists():
+            todo.append(f.stem)
+    # Draft on the Mac's own model when there is work: it is started for the job and stopped after, so cloud
+    # free quotas are left for the cloud jobs (the judge still uses a different, cloud model).
+    local = llm.ensure_local(cfg["llm"]) if todo and "llm" in cfg else None
+    try:
+        for stem in todo[:2]:
+            try:
+                notify_draft(draft(cfg, source_from_note(cfg, stem)))
+            except SystemExit as e:
+                log.info("could not draft %s (%s)", stem, e)
+    finally:
+        llm.stop_local(local)
 
     # 1b. last month's KEV trends, on the 1st to the 3rd
     if datetime.now(timezone.utc).day <= 3:

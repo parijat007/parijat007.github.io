@@ -100,8 +100,11 @@ def _openai_compat(name: str, pc: dict, system: str, user: str) -> tuple[str, di
     try:
         data = r.json()
     except ValueError:
+        safe = {k: v for k, v in r.headers.items() if k.lower() in ("server", "x-github-request-id", "x-ms-error-code",
+                                                                     "x-ratelimit-remaining-requests", "via", "www-authenticate")}
         raise RuntimeError(f"{name}: non-JSON response HTTP {r.status_code} "
-                           f"content-type={r.headers.get('content-type')} url={r.url} body={r.text[:300]!r}") from None
+                           f"content-type={r.headers.get('content-type')} url={r.url} body={r.text[:300]!r} "
+                           f"headers={safe} history={[h.status_code for h in r.history]}") from None
     if not data.get("choices"):
         raise RuntimeError(f"{name}: no choices in response: {str(data)[:300]}")
     choice = data["choices"][0]
@@ -148,7 +151,7 @@ def chain(cfg: dict) -> list[str]:
     return [c.strip() for c in env.split(",") if c.strip()] if env else cfg.get("chain", ["local"])
 
 
-RETRYABLE = ("HTTP 404", "HTTP 400", "HTTP 410", "deprecated", "not found", "does not exist", "HTTP 429", "HTTP 500", "HTTP 502",
+RETRYABLE = ("HTTP 413", "tokens_limit_reached", "HTTP 404", "HTTP 400", "HTTP 410", "deprecated", "not found", "does not exist", "HTTP 429", "HTTP 500", "HTTP 502",
              "HTTP 503", "HTTP 504", "truncated", "no choices")
 
 
@@ -231,3 +234,44 @@ def local_up(cfg: dict) -> bool:
         return requests.get(base.removesuffix("/v1") + "/health", timeout=3).status_code == 200
     except requests.RequestException:
         return False
+
+
+def ensure_local(cfg: dict):
+    """Start the Mac's local model for a short job (e.g. a LinkedIn draft) when it is not running, so routine
+    drafting uses the Mac instead of free cloud quotas. Returns the process to stop afterwards, or None when the
+    model was already up, cannot be started here, or another llama-server (e.g. a SEC545 batch) holds the memory."""
+    import shutil  # noqa: PLC0415
+    import subprocess  # noqa: PLC0415
+    import time  # noqa: PLC0415
+    if os.environ.get("WF_LOCAL_ONDEMAND", "1") == "0" or local_up(cfg):
+        return None
+    server, model = os.environ.get("LLAMA_SERVER", ""), os.path.expanduser(os.environ.get("MODEL_PATH", ""))
+    if not (server and model and os.path.exists(server) and os.path.exists(model)):
+        return None
+    if shutil.which("pgrep") and subprocess.run(["pgrep", "-x", "llama-server"], capture_output=True).returncode == 0:
+        log.info("local model: another llama-server is running; leaving the memory to it")
+        return None
+    port, ctx = os.environ.get("LLAMA_PORT", "8080"), os.environ.get("LLAMA_CTX", "32768")
+    logf = open(os.path.expanduser("~/Library/Logs/watchfloor-llama.log"), "ab")  # noqa: SIM115
+    proc = subprocess.Popen([server, "-m", model, "--port", port, "-c", ctx, "-ngl", "99", "-fa", "on", "-ctk", "q8_0",
+                             "-ctv", "q8_0", "--jinja", "--host", "127.0.0.1"], stdout=logf, stderr=logf)
+    for _ in range(90):
+        if local_up(cfg):
+            log.info("local model: started for this job")
+            return proc
+        if proc.poll() is not None:
+            break
+        time.sleep(2)
+    log.warning("local model: did not start; using cloud models")
+    proc.terminate()
+    return None
+
+
+def stop_local(proc) -> None:
+    if proc is not None:
+        proc.terminate()
+        try:
+            proc.wait(timeout=30)
+        except Exception:  # noqa: BLE001
+            proc.kill()
+        log.info("local model: stopped")

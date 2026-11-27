@@ -16,6 +16,7 @@ export GEMINI_API_KEY="$(kc gemini-apikey)"
 export TELEGRAM_BOT_TOKEN="$(kc telegram-bot-token)" TELEGRAM_CHAT_ID="$(kc telegram-chat-id)"
 export WF_LOCAL_BASE_URL="http://127.0.0.1:${LLAMA_PORT}/v1"
 GH_TOKEN="$(kc github-push-token)"
+export GITHUB_MODELS_TOKEN="$(kc github-models-token)"
 export GROQ_API_KEY="$(kc groq-apikey)" OPENROUTER_API_KEY="$(kc openrouter-apikey)" CLOUDFLARE_ACCOUNT_ID="$(kc cloudflare-account)" CLOUDFLARE_API_TOKEN="$(kc cloudflare-token)"
 HC_URL="$(kc healthcheck-url-brief)"
 

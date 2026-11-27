@@ -25,6 +25,7 @@ on:
 
 permissions:
   contents: read
+  models: read                 # GitHub Models (free OpenAI models)
 
 jobs:
   selftest:
@@ -45,7 +46,8 @@ jobs:
       - name: Self-test
         if: ${{ !inputs.channel_welcome }}
         env:
-          WF_LLM_CHAIN:       ${{ inputs.providers || 'gemini,groq,cloudflare,openrouter' }}
+          WF_LLM_CHAIN:       ${{ inputs.providers || (github.event_name == 'pull_request' && 'groq,cloudflare,openrouter,gemini') || 'gemini,groq,cloudflare,openrouter' }}
+          GITHUB_MODELS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_TOKEN:       ${{ secrets.GITHUB_TOKEN }}
           GEMINI_API_KEY:     ${{ secrets.GEMINI_API_KEY }}
           GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
@@ -64,7 +66,8 @@ jobs:
       - name: Second-model check (sample brief, live model)
         if: ${{ !inputs.channel_welcome }}
         env:
-          WF_LLM_CHAIN:       ${{ inputs.providers || 'gemini,groq,cloudflare,openrouter' }}
+          WF_LLM_CHAIN:       ${{ inputs.providers || (github.event_name == 'pull_request' && 'groq,cloudflare,openrouter,gemini') || 'gemini,groq,cloudflare,openrouter' }}
+          GITHUB_MODELS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WF_VERIFY_AS_WRITER: gemini
           GEMINI_API_KEY:     ${{ secrets.GEMINI_API_KEY }}
           GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
@@ -75,7 +78,8 @@ jobs:
       - name: LinkedIn judge (three real drafts with known verdicts, live model)
         if: ${{ !inputs.channel_welcome }}
         env:
-          WF_LLM_CHAIN:       ${{ inputs.providers || 'gemini,groq,cloudflare,openrouter' }}
+          WF_LLM_CHAIN:       ${{ inputs.providers || (github.event_name == 'pull_request' && 'groq,cloudflare,openrouter,gemini') || 'gemini,groq,cloudflare,openrouter' }}
+          GITHUB_MODELS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GEMINI_API_KEY:     ${{ secrets.GEMINI_API_KEY }}
           GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -85,7 +89,8 @@ jobs:
       - name: LinkedIn draft from the latest note (live models, nothing posted or sent)
         if: ${{ !inputs.channel_welcome }}
         env:
-          WF_LLM_CHAIN:       ${{ inputs.providers || 'gemini,groq,cloudflare,openrouter' }}
+          WF_LLM_CHAIN:       ${{ inputs.providers || (github.event_name == 'pull_request' && 'groq,cloudflare,openrouter,gemini') || 'gemini,groq,cloudflare,openrouter' }}
+          GITHUB_MODELS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WF_LINKEDIN_DIR:    ${{ runner.temp }}/linkedin
           GEMINI_API_KEY:     ${{ secrets.GEMINI_API_KEY }}
           GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
@@ -96,7 +101,8 @@ jobs:
       - name: AI Security note from the saved inputs (live models, dry run, nothing sent)
         if: ${{ !inputs.channel_welcome }}
         env:
-          WF_LLM_CHAIN:       ${{ inputs.providers || 'gemini,groq,cloudflare,openrouter' }}
+          WF_LLM_CHAIN:       ${{ inputs.providers || (github.event_name == 'pull_request' && 'groq,cloudflare,openrouter,gemini') || 'gemini,groq,cloudflare,openrouter' }}
+          GITHUB_MODELS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WF_NOTES_DIR:       ${{ runner.temp }}/notes
           GEMINI_API_KEY:     ${{ secrets.GEMINI_API_KEY }}
           GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}

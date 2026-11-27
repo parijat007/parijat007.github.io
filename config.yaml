@@ -36,6 +36,21 @@ llm:
       max_items: 40
       max_text_chars: 400
       timeout_seconds: 75         # per model; a healthy Gemini Flash answers in ~15 s
+    github:         # NOT IN ANY CHAIN YET: from Actions the endpoint answered a bare "OK" (27 Nov), cause unknown.
+                    # GitHub Models: OpenAI GPT models, free and rate-limited, through your GitHub account. In Actions the
+                    # built-in token works (job permission models: read); on the Mac it is optional (Keychain
+                    # github-models-token, a fine-grained token with only "Models: read"). Small request limits:
+                    # keep inputs short.
+      base_url: https://models.github.ai/inference
+      models: [openai/gpt-4.1, openai/gpt-4.1-mini, openai/gpt-4o-mini]
+      label: GitHub Models (OpenAI, free tier)
+      headers: {Accept: application/vnd.github+json, X-GitHub-Api-Version: "2022-11-28"}   # without these: "OK" in plain text
+      api_key_env: [GITHUB_MODELS_TOKEN, GITHUB_TOKEN]
+      json: object
+      max_items: 15
+      max_text_chars: 250
+      max_output_tokens: 3500
+      timeout_seconds: 120
     groq:           # Groq free tier (no card). Key: console.groq.com/keys. ~8K tokens/min, so a smaller input
       base_url: https://api.groq.com/openai/v1
       models: [openai/gpt-oss-120b]
