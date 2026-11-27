@@ -123,7 +123,14 @@ def test_no_sideways_scroll_on_a_phone(browser, base_url, path):
         if (['auto', 'scroll', 'hidden'].includes(getComputedStyle(p).overflowX)) return true; } return false; };
       return [...document.querySelectorAll('body *')].filter(el =>
         el.getBoundingClientRect().right > de.clientWidth + 1 && !boxed(el)).slice(0, 5)
-        .map(el => el.tagName.toLowerCase() + (el.className ? '.' + el.className : ''));
+        .map(el => {   // a CSS-like path with classes and the overflow, so the culprit rule is easy to find
+          const name = e => e.tagName.toLowerCase() + (typeof e.className === 'string' && e.className.trim()
+            ? '.' + e.className.trim().split(/\s+/).join('.') : '');
+          const path = [];
+          for (let e = el; e && e !== document.body && path.length < 4; e = e.parentElement) path.unshift(name(e));
+          const r = el.getBoundingClientRect();
+          return `${path.join(' > ')} (right edge ${Math.round(r.right)}px, width ${Math.round(r.width)}px)`;
+        });
     }""")
     ctx.close()
     assert not over, f"{path} scrolls sideways on a 375px screen because of: {over}"
