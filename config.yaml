@@ -64,7 +64,7 @@ llm:
       timeout_seconds: 150
     groq:           # Groq free tier (no card). Key: console.groq.com/keys. ~8K tokens/min, so a smaller input
       base_url: https://api.groq.com/openai/v1
-      models: [openai/gpt-oss-120b]
+      models: [openai/gpt-oss-120b, qwen/qwen3.8-27b, openai/gpt-oss-20b]   # each has its own daily limit (1K requests, 200K tokens)
       label: gpt-oss-120b (Groq free tier)
       api_key_env: [GROQ_API_KEY]
       json: object
