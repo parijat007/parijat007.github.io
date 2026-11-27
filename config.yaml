@@ -9,7 +9,7 @@ max_items_to_llm: 40        # pre-ranked cap on items sent to the model (token c
 # Analyst model chain. First provider that answers wins; if all fail, a facts-only brief is published.
 # On the Mac: local -> gemini -> groq -> openrouter.  In GitHub Actions: WF_LLM_CHAIN=gemini,groq,openrouter
 llm:
-  chain: [local, gemini, groq, cloudflare, zai, openrouter]
+  chain: [local, gemini, groq, cloudflare, sambanova, zai, openrouter]
   providers:
     local:          # llama.cpp llama-server on the M1 Max. $0, nothing leaves the machine.
       base_url: http://127.0.0.1:8080/v1
@@ -50,6 +50,18 @@ llm:
       max_text_chars: 300
       max_output_tokens: 4000
       timeout_seconds: 120
+    sambanova:      # SambaNova Cloud Free tier: applies while no payment method is linked; about 20 requests/day per
+                    # model; content used only to provide the service. Key: cloud.sambanova.ai -> APIs
+                    # (Keychain sambanova-apikey, GitHub secret SAMBANOVA_API_KEY). Model ids confirmed by the self-test.
+      base_url: https://api.sambanova.ai/v1
+      models: [gpt-oss-120b, DeepSeek-V3.1, MiniMax-M2.7]
+      label: SambaNova Cloud (free tier)
+      api_key_env: [SAMBANOVA_API_KEY]
+      json: object
+      max_items: 30
+      max_text_chars: 300
+      max_output_tokens: 6000
+      timeout_seconds: 150
     zai:            # Z.ai (Zhipu) GLM Flash models, listed free. Key: z.ai -> API keys (Keychain zai-apikey,
                     # GitHub secret ZAI_API_KEY). Rate limits are not published.
       base_url: https://api.z.ai/api/paas/v4
@@ -101,7 +113,7 @@ llm:
 # Second-model checks (brief verification and the LinkedIn judge) use only these, first one with a key that is not
 # the writer. Z.ai is left out: in the 27 Nov self-test it failed a correct, revised draft (too strict to judge).
 verify:
-  chain: [local, gemini, groq, cloudflare, openrouter]
+  chain: [local, gemini, groq, cloudflare, sambanova, openrouter]
 
 site:
   url: "https://theparijat.com"

@@ -16,7 +16,7 @@ export GEMINI_API_KEY="$(kc gemini-apikey)"
 export TELEGRAM_BOT_TOKEN="$(kc telegram-bot-token)" TELEGRAM_CHAT_ID="$(kc telegram-chat-id)"
 export WF_LOCAL_BASE_URL="http://127.0.0.1:${LLAMA_PORT}/v1"
 GH_TOKEN="$(kc github-push-token)"
-export ZAI_API_KEY="$(kc zai-apikey)"
+export ZAI_API_KEY="$(kc zai-apikey)" SAMBANOVA_API_KEY="$(kc sambanova-apikey)"
 export WF_JOB=brief
 export GROQ_API_KEY="$(kc groq-apikey)" OPENROUTER_API_KEY="$(kc openrouter-apikey)" CLOUDFLARE_ACCOUNT_ID="$(kc cloudflare-account)" CLOUDFLARE_API_TOKEN="$(kc cloudflare-token)"
 HC_URL="$(kc healthcheck-url-brief)"
@@ -54,12 +54,12 @@ trap cleanup EXIT
 if pgrep -x llama-server >/dev/null && ! curl -fsS -m 3 "http://127.0.0.1:${LLAMA_PORT}/health" >/dev/null 2>&1; then
   # Another model is loaded (e.g. SEC545 generator or 70B judge). Two models can exceed 64 GB: use cloud.
   echo "another llama-server is running; not loading a second model. Using free cloud models."
-  export WF_LLM_CHAIN="gemini,groq,cloudflare,zai,openrouter"
+  export WF_LLM_CHAIN="gemini,groq,cloudflare,sambanova,zai,openrouter"
 elif curl -fsS -m 3 "http://127.0.0.1:${LLAMA_PORT}/health" >/dev/null 2>&1; then
   # Something is already serving (e.g. an overnight SEC545 batch). Don't hijack it.
   if ! curl -fsS -m 3 "http://127.0.0.1:${LLAMA_PORT}/v1/models" | grep -qi "$(basename "$MODEL_PATH" .gguf)"; then
     echo "port ${LLAMA_PORT} busy with another model (e.g. SEC545 batch); using free cloud models instead"
-    export WF_LLM_CHAIN="gemini,groq,cloudflare,zai,openrouter"
+    export WF_LLM_CHAIN="gemini,groq,cloudflare,sambanova,zai,openrouter"
   fi
 else
   echo "starting llama-server"
@@ -68,7 +68,7 @@ else
     -ctk q8_0 -ctv q8_0 --jinja --host 127.0.0.1 >>"$HOME/Library/Logs/watchfloor-llama.log" 2>&1 &
   LLAMA_PID=$!; STARTED=1
   for i in {1..90}; do curl -fsS -m 2 "http://127.0.0.1:${LLAMA_PORT}/health" >/dev/null 2>&1 && break; sleep 2; done
-  curl -fsS -m 2 "http://127.0.0.1:${LLAMA_PORT}/health" >/dev/null 2>&1 || { echo "llama-server failed to start; using cloud models"; export WF_LLM_CHAIN="gemini,groq,cloudflare,zai,openrouter"; }
+  curl -fsS -m 2 "http://127.0.0.1:${LLAMA_PORT}/health" >/dev/null 2>&1 || { echo "llama-server failed to start; using cloud models"; export WF_LLM_CHAIN="gemini,groq,cloudflare,sambanova,zai,openrouter"; }
 fi
 
 # Dependencies: reinstall from the hash-locked file only when it changed. A package whose fingerprint does not
