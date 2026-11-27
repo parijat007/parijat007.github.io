@@ -2696,6 +2696,16 @@
      "due": "2026-11-30",
      "ransomware": "Unknown",
      "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-27",
+     "source": "CISA Advisories",
+     "url": "https://www.cisa.gov/news-events/alerts/2026/11/27/cisa-adds-three-known-exploited-vulnerabilities-catalog"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-26",
+     "count": 1,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-120705.json"
     }
    },
    "epss": [],
@@ -2714,6 +2724,16 @@
      "due": "2026-11-30",
      "ransomware": "Unknown",
      "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-27",
+     "source": "CISA Advisories",
+     "url": "https://www.cisa.gov/news-events/alerts/2026/11/27/cisa-adds-three-known-exploited-vulnerabilities-catalog"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-26",
+     "count": 1,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-129243.json"
     }
    },
    "epss": [],
@@ -2741,6 +2761,11 @@
     "published": {
      "date": "2026-11-26",
      "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-136716"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-27",
+     "source": "CISA Advisories",
+     "url": "https://www.cisa.gov/news-events/alerts/2026/11/27/cisa-adds-three-known-exploited-vulnerabilities-catalog"
     }
    },
    "epss": [
@@ -2755,5 +2780,5 @@
   }
  },
  "detections_checked": "2026-11-27",
- "updated": "2026-11-27T20:20:23+00:00"
+ "updated": "2026-11-27T21:20:25+00:00"
 }

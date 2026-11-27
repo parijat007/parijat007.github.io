@@ -1,16 +1,61 @@
 {
- "updated": "2026-11-27T20:20:23+00:00",
+ "updated": "2026-11-27T21:20:25+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
-  "CISA Advisories": "ok (0)",
+  "CISA Advisories": "ok (1)",
   "Microsoft MSRC": "ok (1)",
   "Palo Alto PSIRT": "ok (0)",
   "Fortinet PSIRT": "ok (0)",
-  "Cisco PSIRT": "ok (2)",
+  "Cisco PSIRT": "ok (1)",
   "AWS Security Bulletins": "ok (0)"
  },
  "entries": [
+  {
+   "id": "/node/25863",
+   "kind": "ADVISORY",
+   "title": "CISA Adds Three Known Exploited Vulnerabilities to Catalog",
+   "summary": "CISA has added three new vulnerabilities to its Known Exploited Vulnerabilities (KEV) Catalog , based on evidence of active exploitation. CVE-2026-120705 OSGeo GeoServer XML Injection Vulnerability CVE-2026-129243 OSGeo GeoServer Incorrect Authorization Vulnerability CVE-2026-136",
+   "source": "CISA Advisories",
+   "url": "https://www.cisa.gov/news-events/alerts/2026/11/27/cisa-adds-three-known-exploited-vulnerabilities-catalog",
+   "published": "2026-11-27T12:00:00+00:00",
+   "cves": [
+    "CVE-2026-120705",
+    "CVE-2026-129243",
+    "CVE-2026-136716"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0121,
+    "percentile": 0.684
+   },
+   "poc": 1,
+   "kev_due": "2026-11-30",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-27T21:20:25+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   },
+   "affected": [
+    {
+     "category": "web",
+     "label": "Web & app server",
+     "product": "OSGeo GeoServer"
+    },
+    {
+     "category": "web",
+     "label": "Web & app server",
+     "product": "Drupal Core"
+    }
+   ]
+  },
   {
    "id": "CVE-2026-120705",
    "kind": "KEV",
