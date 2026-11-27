@@ -97,6 +97,8 @@ def run(no_alert: bool = False) -> int:
         n_aff = A.write_map(kev, {c: e["affected"] for e in entries if e["kind"] != "KEV" for c in e.get("cves", [])},
                             ROOT / "data" / "affected.json")
         log.info("affected map: %d CVEs", n_aff)
+        from .priority import write_ransomware
+        log.info("ransomware list: %d CVEs", write_ransomware(kev, ROOT / "data" / "kev_ransomware.json"))
     except Exception as e:  # noqa: BLE001
         log.warning("affected map failed: %s", e)
 

@@ -1,4 +1,4 @@
-{% extends "base.html" %}{% from "macros.html" import entry, tags %}
+{% extends "base.html" %}{% from "macros.html" import entry, tags, bottomline %}
 {% block title %}Today's brief — {{ p.brand }}{% endblock %}
 {% block desc %}{% if brief %}{{ brief.executive_pulse }}{% else %}Today's source-checked threat brief from Watchfloor.{% endif %}{% endblock %}
 {% block main %}
@@ -27,6 +27,8 @@
 <section class="page-head"><h1>No brief published yet today</h1><p class="lede">The daily brief publishes around 7 AM Eastern. The hourly watch below is live.</p></section>
 {% endif %}
 
+{% if brief and brief["items"] %}{{ bottomline(brief["items"], brief.run_date, root) }}{% endif %}
+
 <section class="strip" aria-labelledby="strip-h">
   <div class="strip-head"><h2 id="strip-h">Last 24 hours of the watch</h2><p>Updated <time datetime="{{ watch.updated }}" data-ago>{{ watch.updated | ago }}</time>. Each cell is one hour; a dot marks a new KEV listing.</p></div>
   <div class="cells" role="img" aria-label="{{ cells | sum(attribute='n') }} new advisories and KEV entries in the last 24 hours">
@@ -43,3 +45,4 @@
 </section>
 {% endif %}
 {% endblock %}
+{% block scripts %}<script src="{{ root }}static/mystack.js" defer></script><script src="{{ root }}static/copy.js" defer></script>{% endblock %}

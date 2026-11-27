@@ -1,4 +1,4 @@
-{% extends "base.html" %}{% from "macros.html" import affected %}
+{% extends "base.html" %}{% from "macros.html" import affected, prio, ransom, ticket %}
 {% block title %}Anatomy of {{ rec.cve }} — {{ p.name }}{% endblock %}
 {% block desc %}{{ rec.cve }}: when it was published, added to CISA KEV, given a public PoC and covered by public detections.{% endblock %}
 {% block main %}
@@ -10,6 +10,7 @@
 </section>
 
 {% set aff = affected_for([rec.cve], rec.title) %}{% if aff %}<div class="cve-affects">{{ affected(aff, root) }}</div>{% endif %}
+{% set v = prio_cve(rec) %}<p class="cve-prio">{{ prio(v, true) }} {{ ransom(v) }}</p>
 <dl class="facts cve-facts">
   {% if ev.kev_added %}<div><dt>CISA KEV</dt><dd>Listed {{ ev.kev_added.date | longdate }}{% if ev.kev_added.due %}; federal due date {{ ev.kev_added.due | longdate }}{% endif %}{% if ev.kev_added.ransomware == "Known" %}; known ransomware use{% endif %}</dd></div>{% endif %}
   {% if ep %}<div><dt>EPSS</dt><dd>{{ "%.1f" | format(ep[-1].score * 100) }}% chance of exploitation in the next 30 days{% if ep | length > 1 and ep[0].score != ep[-1].score %} (was {{ "%.1f" | format(ep[0].score * 100) }}% on {{ ep[0].date | longdate }}){% endif %}</dd></div>{% endif %}
@@ -46,8 +47,11 @@
 
 <section class="block" aria-labelledby="det-h"><h2 id="det-h">Detection pointers</h2>
 {% if rec.detections %}
-<ul class="detections">{% for d in rec.detections %}<li><span class="det-kind">{{ d.kind }}</span> <a href="{{ d.url }}" rel="noopener">{{ d.path.split('/')[-1] }}</a></li>{% endfor %}</ul>
+<ul class="detections">{% for d in rec.detections %}<li><span class="det-kind">{{ d.kind }}</span> <a href="{{ d.url }}" rel="noopener">{{ d.path.split('/')[-1] }}</a>{% if d.attack %} <span class="attack">ATT&amp;CK {% for t in d.attack %}<a href="https://attack.mitre.org/techniques/{{ t | replace('.', '/') }}/" rel="noopener">{{ t }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</span>{% endif %}</li>{% endfor %}</ul>
+{% set techs = rec.detections | selectattr("attack") | map(attribute="attack") | sum(start=[]) | unique | list %}{% if techs %}<p class="note">ATT&amp;CK techniques are the ones the Sigma rule authors tagged; Watchfloor does not infer them.</p>{% endif %}
 <p class="note">Public community content, linked as found and not tested by Watchfloor. Review and tune before you deploy it.</p>
 {% else %}<p>No public Sigma rule or nuclei template names this CVE yet. Checked daily.</p>{% endif %}
 </section>
+{{ ticket(ticket_cve(rec), "Ticket text for " ~ rec.cve) }}
 {% endblock %}
+{% block scripts %}<script src="{{ root }}static/copy.js" defer></script>{% endblock %}

@@ -7,6 +7,13 @@
 <div class="prose">
 <h2>Everything</h2>
 <p><a href="{{ root }}feed.xml">Daily brief (all items)</a></p>
+<p><a href="{{ root }}feeds/act-now.xml">Act now</a>: only items with confirmed exploitation ({{ cat_feeds['act-now']['items'] | length }} recent items). <a href="{{ root }}method/#priority">What "Act" means</a>.</p>
+<h2>By what is affected</h2>
+</div>
+<ul class="feeds">{% for slug, t in cat_feeds.items() if slug.startswith("affects-") %}
+<li><a href="{{ root }}feeds/{{ slug }}.xml">{{ t.name[9:] }}</a><span class="count">{{ t["items"] | length }} recent item{{ '' if t["items"] | length == 1 else 's' }}</span></li>{% endfor %}
+</ul>
+<div class="prose">
 <h2>By product</h2>
 </div>
 <ul class="feeds">{% for slug, t in topics.items() | sort(attribute='1.name') %}{% if t.name != "AI Security" %}

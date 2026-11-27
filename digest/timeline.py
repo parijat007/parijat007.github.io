@@ -33,6 +33,8 @@ DETECTION_REPOS = {   # name: (repo, branch, url prefix for a file)
     "Sigma": ("SigmaHQ/sigma", "master", "https://github.com/SigmaHQ/sigma/blob/master/"),
     "Nuclei": ("projectdiscovery/nuclei-templates", "main", "https://github.com/projectdiscovery/nuclei-templates/blob/main/"),
 }
+ATTACK_RE = re.compile(r"^\s*-\s*attack\.(t\d{4}(?:\.\d{3})?)\s*$", re.I | re.M)
+MAX_RULE_FETCHES = 20         # Sigma rule bodies read per run, for their ATT&CK tags
 MAX_NVD_LOOKUPS = 25          # per run, so a backlog never exhausts the NVD rate limit
 MAX_POC_LOOKUPS = 40
 
@@ -94,6 +96,17 @@ def detection_index() -> dict[str, list[dict]]:
     return out
 
 
+def attack_tags(path: str) -> list[str]:
+    """ATT&CK technique ids a SigmaHQ rule declares in its own tags (e.g. attack.t1190). Read, never inferred."""
+    try:
+        r = requests.get(f"https://raw.githubusercontent.com/SigmaHQ/sigma/master/{path}", headers=C.UA, timeout=30)
+        r.raise_for_status()
+    except requests.RequestException as e:
+        log.warning("sigma rule %s unavailable (%s)", path, e)
+        return []
+    return sorted({t.upper() for t in ATTACK_RE.findall(r.text)})
+
+
 def update(now: datetime, kev: dict, items: list[dict], watch_entries: list[dict], tiers: dict,
            root: Path = ROOT, fetch: bool = True) -> dict:
     data = json.loads((root / "data" / "cve_timeline.json").read_text()) if (root / "data" / "cve_timeline.json").exists() \
@@ -151,7 +164,14 @@ def update(now: datetime, kev: dict, items: list[dict], watch_entries: list[dict
                     found = idx.get(c, [])
                     if found and not cves[c]["detections"]:
                         cves[c]["events"]["detection_seen"] = {"date": today, "count": len(found)}
-                    cves[c]["detections"] = found[:8]
+                    old = {d["path"]: d for d in cves[c]["detections"]}
+                    cves[c]["detections"] = [{**d, **({"attack": old[d["path"]]["attack"]} if "attack" in old.get(d["path"], {}) else {})}
+                                             for d in found[:8]]
+                budget = MAX_RULE_FETCHES
+                for c in live:
+                    for d in cves[c]["detections"]:
+                        if d["kind"] == "Sigma" and "attack" not in d and budget > 0:
+                            d["attack"], budget = attack_tags(d["path"]), budget - 1
                 data["detections_checked"] = today
     data["updated"] = now.isoformat(timespec="seconds")
     (root / "data").mkdir(parents=True, exist_ok=True)
