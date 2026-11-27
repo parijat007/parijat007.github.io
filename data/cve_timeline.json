@@ -2684,8 +2684,76 @@
    ],
    "detections": [],
    "title": "CVE-2026-137498 & CVE-2026-137499: Critical Flaws in Budibase Server Enable Filter Erasure and ATO"
+  },
+  "CVE-2026-120705": {
+   "cve": "CVE-2026-120705",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-27"
+    },
+    "kev_added": {
+     "date": "2026-11-27",
+     "due": "2026-11-30",
+     "ransomware": "Unknown",
+     "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    }
+   },
+   "epss": [],
+   "briefs": [],
+   "detections": [],
+   "title": "OSGeo GeoServer XML Injection Vulnerability"
+  },
+  "CVE-2026-129243": {
+   "cve": "CVE-2026-129243",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-27"
+    },
+    "kev_added": {
+     "date": "2026-11-27",
+     "due": "2026-11-30",
+     "ransomware": "Unknown",
+     "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    }
+   },
+   "epss": [],
+   "briefs": [],
+   "detections": [],
+   "title": "OSGeo GeoServer Incorrect Authorization Vulnerability"
+  },
+  "CVE-2026-136716": {
+   "cve": "CVE-2026-136716",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-27"
+    },
+    "kev_added": {
+     "date": "2026-11-27",
+     "due": "2026-11-30",
+     "ransomware": "Unknown",
+     "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    },
+    "poc_first_seen": {
+     "date": "2026-11-26",
+     "count": 1,
+     "url": "https://github.com/nomi-sec/PoC-in-GitHub/blob/master/2026/CVE-2026-136716.json"
+    },
+    "published": {
+     "date": "2026-11-26",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-136716"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-27",
+     "score": 0.0121
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "Drupal Core Improper Check for Unusual or Exceptional Conditions Vulnerability"
   }
  },
  "detections_checked": "2026-11-27",
- "updated": "2026-11-27T17:21:25+00:00"
+ "updated": "2026-11-27T18:20:21+00:00"
 }

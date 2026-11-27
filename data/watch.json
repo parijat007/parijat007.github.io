@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-27T17:21:25+00:00",
+ "updated": "2026-11-27T18:20:21+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
@@ -11,6 +11,115 @@
   "AWS Security Bulletins": "ok (0)"
  },
  "entries": [
+  {
+   "id": "CVE-2026-120705",
+   "kind": "KEV",
+   "title": "OSGeo GeoServer XML Injection Vulnerability",
+   "summary": "OsGeo GeoServer contains an XML injection vulnerability that allows an unauthenticated remote attacker to cause the server to read local text files accessible to the GeoServer process or fetch attacker-specified HTTP or HTTPS URLs via a crafted ID parameter in the WFS 2.0 GetFeat",
+   "source": "CISA KEV",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-120705",
+   "published": "2026-11-27",
+   "cves": [
+    "CVE-2026-120705"
+   ],
+   "cvss": null,
+   "epss": null,
+   "poc": 0,
+   "kev_due": "2026-11-30",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-27T18:20:21+00:00",
+   "required_action": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discon",
+   "fix": {
+    "weakness": "Server-side request forgery",
+    "compensating_controls": [
+     "Restrict the server's outbound traffic to required destinations only",
+     "Block access to cloud instance metadata from the application (for example IMDSv2 with hop limit 1 on AWS)"
+    ],
+    "verify": "Review egress and metadata-service access logs from the affected host"
+   },
+   "affected": [
+    {
+     "category": "web",
+     "label": "Web & app server",
+     "product": "OSGeo GeoServer"
+    }
+   ]
+  },
+  {
+   "id": "CVE-2026-129243",
+   "kind": "KEV",
+   "title": "OSGeo GeoServer Incorrect Authorization Vulnerability",
+   "summary": "GeoServer contains an incorrect authorization vulnerability that allows an unauthenticated remote attacker to bypass service-level role checks and invoke operations protected solely by those checks via a request with a prefixed service parameter. This vulnerability can be chained",
+   "source": "CISA KEV",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-129243",
+   "published": "2026-11-27",
+   "cves": [
+    "CVE-2026-129243"
+   ],
+   "cvss": null,
+   "epss": null,
+   "poc": 0,
+   "kev_due": "2026-11-30",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-27T18:20:21+00:00",
+   "required_action": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discon",
+   "fix": {
+    "weakness": "Authentication bypass",
+    "compensating_controls": [
+     "Restrict management and admin interfaces to a dedicated admin network or VPN; block them from the internet",
+     "Require phishing-resistant MFA for administrative access where the product supports it",
+     "Rotate admin credentials and API keys, and remove unknown admin accounts"
+    ],
+    "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event"
+   },
+   "affected": [
+    {
+     "category": "web",
+     "label": "Web & app server",
+     "product": "OSGeo GeoServer"
+    }
+   ]
+  },
+  {
+   "id": "CVE-2026-136716",
+   "kind": "KEV",
+   "title": "Drupal Core Improper Check for Unusual or Exceptional Conditions Vulnerability",
+   "summary": "Drupal Core contains an improper check for unusual or exceptional conditions vulnerability that allows an unauthenticated remote attacker to take over a site via the exposed Drupal installer when the site is in one of the affected unusual or incomplete installation states.",
+   "source": "CISA KEV",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-136716",
+   "published": "2026-11-27",
+   "cves": [
+    "CVE-2026-136716"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.0121,
+    "percentile": 0.684
+   },
+   "poc": 1,
+   "kev_due": "2026-11-30",
+   "ransomware": "Unknown",
+   "stack_match": [],
+   "first_seen": "2026-11-27T18:20:21+00:00",
+   "required_action": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discon",
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   },
+   "affected": [
+    {
+     "category": "web",
+     "label": "Web & app server",
+     "product": "Drupal Core"
+    }
+   ]
+  },
   {
    "id": "CVE-2026-62840",
    "kind": "ADVISORY",
