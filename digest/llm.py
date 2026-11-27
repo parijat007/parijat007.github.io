@@ -135,6 +135,112 @@ def _error_detail(r) -> str:
 _EXHAUSTED: set[str] = set()   # "provider/model" that hit a per-day quota in this run
 
 
+# ---------- quota memory and usage log ----------
+# A model that answered "daily quota used up" is skipped until its quota resets (Gemini: midnight Pacific), across
+# runs on the same machine, instead of being asked again every ten minutes. Every call is logged so
+# `python -m digest.llm usage` shows where the day's requests went. Neither file holds prompts, answers or keys.
+
+def _state_dir():
+    from pathlib import Path  # noqa: PLC0415
+    return Path(os.environ.get("WF_STATE_DIR") or os.path.expanduser("~/.watchfloor"))
+
+
+def _next_reset(pc: dict):
+    from datetime import datetime, time, timedelta  # noqa: PLC0415
+    from zoneinfo import ZoneInfo  # noqa: PLC0415
+    tz = ZoneInfo(pc.get("quota_reset_tz", "UTC"))
+    now = datetime.now(tz)
+    return datetime.combine(now.date() + timedelta(days=1), time(0, 5), tz)
+
+
+def _quota() -> dict:
+    import json  # noqa: PLC0415
+    from datetime import datetime, timezone  # noqa: PLC0415
+    try:
+        data = json.loads((_state_dir() / "llm_quota.json").read_text())
+    except (OSError, ValueError):
+        return {}
+    now = datetime.now(timezone.utc)
+    return {k: v for k, v in data.items() if isinstance(v, str) and datetime.fromisoformat(v) > now}
+
+
+def is_exhausted(name: str, model: str) -> bool:
+    return f"{name}/{model}" in _EXHAUSTED or f"{name}/{model}" in _quota()
+
+
+def mark_exhausted(name: str, model: str, pc: dict) -> None:
+    import json  # noqa: PLC0415
+    _EXHAUSTED.add(f"{name}/{model}")
+    try:
+        data = _quota()
+        data[f"{name}/{model}"] = _next_reset(pc).isoformat()
+        d = _state_dir()
+        d.mkdir(parents=True, exist_ok=True)
+        (d / "llm_quota.json").write_text(json.dumps(data, indent=1))
+        log.info("%s/%s: daily quota used up; skipped until %s", name, model, data[f"{name}/{model}"])
+    except OSError as e:
+        log.warning("could not save the quota note (%s)", type(e).__name__)
+
+
+def record(name: str, model: str, status: str, usage: dict | None, seconds: float) -> None:
+    import json  # noqa: PLC0415
+    from datetime import datetime, timezone  # noqa: PLC0415
+    row = {"t": datetime.now(timezone.utc).isoformat(timespec="seconds"), "job": os.environ.get("WF_JOB", "")[:40],
+           "provider": name, "model": model, "status": status[:40], "s": round(seconds, 1),
+           "in": (usage or {}).get("prompt_tokens") or (usage or {}).get("input_tokens") or 0,
+           "out": (usage or {}).get("completion_tokens") or (usage or {}).get("output_tokens") or 0}
+    try:
+        d = _state_dir()
+        d.mkdir(parents=True, exist_ok=True)
+        f = d / "llm_usage.jsonl"
+        if f.exists() and f.stat().st_size > 2_000_000:            # keep the log small: drop the older half
+            lines = f.read_text().splitlines()
+            f.write_text("\n".join(lines[len(lines) // 2:]) + "\n")
+        with f.open("a") as fh:
+            fh.write(json.dumps(row) + "\n")
+    except OSError:
+        pass
+
+
+def usage_summary(days: int = 1) -> str:
+    import json  # noqa: PLC0415
+    from collections import Counter  # noqa: PLC0415
+    from datetime import datetime, timedelta, timezone  # noqa: PLC0415
+    since = datetime.now(timezone.utc) - timedelta(days=days)
+    ok, bad, tok = Counter(), Counter(), Counter()
+    try:
+        lines = (_state_dir() / "llm_usage.jsonl").read_text().splitlines()
+    except OSError:
+        return "no model calls logged on this machine yet"
+    for ln in lines:
+        try:
+            r = json.loads(ln)
+            if datetime.fromisoformat(r["t"]) < since:
+                continue
+        except (ValueError, KeyError):
+            continue
+        k = f"{r['provider']}/{r['model']}"
+        (ok if r["status"] == "ok" else bad)[k] += 1
+        tok[k] += r.get("in", 0) + r.get("out", 0)
+    keys = sorted(set(ok) | set(bad), key=lambda k: -(ok[k] + bad[k]))
+    out = [f"Model calls in the last {days} day(s) on this machine:"] + \
+          [f"  {k:55} ok {ok[k]:3}  failed {bad[k]:3}  tokens {tok[k]:,}" for k in keys] or ["  none"]
+    q = _quota()
+    if q:
+        out.append("Skipped until their daily quota resets:")
+        out += [f"  {k} until {v}" for k, v in sorted(q.items())]
+    return "\n".join(out)
+
+
+def prioritise(names: list[str], cfg: dict) -> list[str]:
+    """Background jobs (self-tests, the fixer, LinkedIn drafts, the judge: WF_JOB_PRIORITY=background) try the
+    providers marked `reserve: true` (Gemini) last, so their small daily quotas are left for the daily brief."""
+    if os.environ.get("WF_JOB_PRIORITY") != "background":
+        return names
+    reserved = [n for n in names if (cfg.get("providers") or {}).get(n, {}).get("reserve")]
+    return [n for n in names if n not in reserved] + reserved
+
+
 def _anthropic(name: str, pc: dict, system: str, user: str) -> tuple[str, dict]:
     import anthropic
 
@@ -148,7 +254,8 @@ def _anthropic(name: str, pc: dict, system: str, user: str) -> tuple[str, dict]:
 
 def chain(cfg: dict) -> list[str]:
     env = os.environ.get("WF_LLM_CHAIN")
-    return [c.strip() for c in env.split(",") if c.strip()] if env else cfg.get("chain", ["local"])
+    names = [c.strip() for c in env.split(",") if c.strip()] if env else cfg.get("chain", ["local"])
+    return prioritise(names, cfg)
 
 
 RETRYABLE = ("HTTP 413", "tokens_limit_reached", "HTTP 404", "HTTP 400", "HTTP 410", "deprecated", "not found", "does not exist", "HTTP 429", "HTTP 500", "HTTP 502",
@@ -204,9 +311,13 @@ def complete(name: str, cfg: dict, system: str, user: str) -> str:
     if pc.get("discover_free"):
         models = discover_free_models(pc) + [m for m in models if m not in _DISCOVERED.get(pc["base_url"], [])]
     last = None
+    import time as _t  # noqa: PLC0415
+    skipped = 0
     for m in models:
-        if f"{name}/{m}" in _EXHAUSTED:
+        if is_exhausted(name, m):
+            skipped += 1
             continue
+        t0 = _t.monotonic()
         # Move to the next model when this one is retired (404/400), overloaded (429/5xx),
         # slow (timeout) or cut off: one busy model must not take out the whole provider.
         try:
@@ -221,19 +332,23 @@ def complete(name: str, cfg: dict, system: str, user: str) -> str:
                 time.sleep(pc["wait_on_429"])
                 text, usage = fn(name, {**pc, "model": m}, system, user)
             log.info("LLM provider=%s model=%s usage=%s", name, m, usage)
+            record(name, m, "ok", usage, _t.monotonic() - t0)
             pc["_used_model"] = m
             return text
         except (RuntimeError, requests.RequestException) as e:
             err = e if isinstance(e, RuntimeError) else RuntimeError(f"{name}: {type(e).__name__} on {m}")
             msg = str(e)
-            if "PerDay" in msg:                          # daily quota gone: don't spend retries on it
-                _EXHAUSTED.add(f"{name}/{m}")
+            record(name, m, (re.search(r"HTTP \d+", msg) or [type(e).__name__])[0], None, _t.monotonic() - t0)
+            if "PerDay" in msg or "per day" in msg.lower():   # daily quota gone: skip it until it resets
+                mark_exhausted(name, m, pc)
             if last is None or "HTTP 404" not in msg:     # a retired model says less than an overload
                 last = err
             if "no API key" in msg or not (_retryable(msg) or isinstance(e, requests.RequestException)):
                 raise last from None
             log.warning("%s: model %s failed (%s), trying next model", name, m, msg[:260])
-    raise last or RuntimeError(f"{name}: every model is out of daily quota (HTTP 429 PerDay)" if models else f"{name}: no models configured")
+    if last is None and skipped:
+        raise RuntimeError(f"{name}: every model is out of daily quota (HTTP 429 PerDay); skipped until it resets")
+    raise last or RuntimeError(f"{name}: no models configured")
 
 
 def local_up(cfg: dict) -> bool:
@@ -284,3 +399,11 @@ def stop_local(proc) -> None:
         except Exception:  # noqa: BLE001
             proc.kill()
         log.info("local model: stopped")
+
+
+if __name__ == "__main__":
+    import sys
+    if sys.argv[1:2] == ["usage"]:
+        print(usage_summary(int(sys.argv[2]) if len(sys.argv) > 2 else 1))
+    else:
+        print("usage: python -m digest.llm usage [days]")
