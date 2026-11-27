@@ -1515,8 +1515,9 @@ def test_local_model_on_demand_is_a_no_op_without_a_mac_setup(monkeypatch):
     llm.stop_local(None)
 
 
-def test_github_models_provider_is_configured_for_the_actions_token():
+def test_ovh_and_zai_providers_are_configured():
     from digest.config import load_config
-    g = load_config()["llm"]["providers"]["github"]
-    assert g["base_url"] == "https://models.github.ai/inference" and "GITHUB_TOKEN" in g["api_key_env"]
-    assert all(m.startswith("openai/") for m in g["models"])
+    pr = load_config()["llm"]["providers"]
+    assert "github" not in pr                                   # GitHub Models was retired (answered a bare "OK")
+    assert pr["ovh"]["base_url"].startswith("https://oai.endpoints.kepler.ai.cloud.ovh.net") and not pr["ovh"].get("api_key_env")
+    assert pr["zai"]["api_key_env"] == ["ZAI_API_KEY"] and all(m.endswith("-flash") for m in pr["zai"]["models"])
