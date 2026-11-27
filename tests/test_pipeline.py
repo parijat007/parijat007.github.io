@@ -1521,3 +1521,32 @@ def test_ovh_and_zai_providers_are_configured():
     assert "github" not in pr                                   # GitHub Models was retired (answered a bare "OK")
     assert pr["ovh"]["base_url"] == "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1" and not pr["ovh"].get("api_key_env")
     assert pr["zai"]["api_key_env"] == ["ZAI_API_KEY"] and all(m.endswith("-flash") for m in pr["zai"]["models"])
+
+
+def test_quota_memory_usage_log_and_background_priority(monkeypatch):
+    from digest import llm
+    cfg = {"chain": ["local", "gemini", "groq", "zai"],
+           "providers": {"gemini": {"reserve": True, "quota_reset_tz": "America/Los_Angeles", "models": ["g1", "g2"]},
+                         "groq": {}, "zai": {}, "local": {}}}
+    monkeypatch.delenv("WF_LLM_CHAIN", raising=False)
+    monkeypatch.delenv("WF_JOB_PRIORITY", raising=False)
+    assert llm.chain(cfg) == ["local", "gemini", "groq", "zai"]
+    monkeypatch.setenv("WF_JOB_PRIORITY", "background")
+    assert llm.chain(cfg) == ["local", "groq", "zai", "gemini"]
+    calls = []
+
+    def fake(name, pc, system, user):
+        calls.append(pc["model"])
+        if pc["model"] == "g1":
+            raise RuntimeError("gemini: HTTP 429 quota=GenerateRequestsPerDayPerProjectPerModel-FreeTier")
+        return "{}", {"prompt_tokens": 10, "completion_tokens": 2}
+    monkeypatch.setattr(llm, "_openai_compat", fake)
+    llm._EXHAUSTED.clear()
+    assert llm.complete("gemini", cfg, "s", "u") == "{}" and calls == ["g1", "g2"]
+    llm._EXHAUSTED.clear()                                   # a new run on the same machine remembers the quota
+    calls.clear()
+    llm.complete("gemini", cfg, "s", "u")
+    assert calls == ["g2"] and llm.is_exhausted("gemini", "g1")
+    s = llm.usage_summary()
+    assert "gemini/g2" in s and "ok   2" in s and "gemini/g1" in s and "until" in s
+    llm._EXHAUSTED.clear()

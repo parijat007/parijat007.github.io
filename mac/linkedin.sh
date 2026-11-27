@@ -11,4 +11,5 @@ export GEMINI_API_KEY="$(kc gemini-apikey)" GROQ_API_KEY="$(kc groq-apikey)" OPE
 export TELEGRAM_BOT_TOKEN="$(kc telegram-bot-token)" TELEGRAM_CHAT_ID="$(kc telegram-chat-id)"
 export ZAI_API_KEY="$(kc zai-apikey)"   # optional: Z.ai GLM Flash
 export WF_LOCAL_BASE_URL="http://127.0.0.1:${LLAMA_PORT:-8091}/v1"
+export WF_JOB="${WF_JOB:-linkedin}" WF_JOB_PRIORITY=background   # drafts and the judge leave Gemini for the brief
 exec .venv/bin/python -m "${WF_MODULE:-digest.linkedin}" "$@"

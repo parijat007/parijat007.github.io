@@ -30,6 +30,9 @@ jobs:
   selftest:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    env:
+      WF_JOB: selftest
+      WF_JOB_PRIORITY: background   # chains try Gemini last; per-provider checks still test it
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with: { persist-credentials: false }

@@ -37,8 +37,8 @@ def _has_key(pc: dict) -> bool:
 
 
 def pick_verifier(cfg: dict, writer: str | None) -> str | None:
-    from .llm import chain  # noqa: PLC0415
-    order = cfg.get("verify", {}).get("chain") or [p for p in chain(cfg["llm"])]
+    from .llm import chain, prioritise  # noqa: PLC0415
+    order = prioritise(cfg.get("verify", {}).get("chain") or [p for p in chain(cfg["llm"])], cfg["llm"])
     for name in order:
         pc = cfg["llm"]["providers"].get(name)
         if name != writer and pc and _has_key(pc) and (name != "local" or os.environ.get("WF_LOCAL_OK")):

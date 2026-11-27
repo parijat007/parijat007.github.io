@@ -42,6 +42,8 @@ jobs:
       - env:
           GITHUB_TOKEN:       ${{ secrets.GITHUB_TOKEN }}
           RUN_ID:             ${{ inputs.run_id || github.event.workflow_run.id }}
+          WF_JOB:             fixer
+          WF_JOB_PRIORITY:    background   # Gemini last: its daily quota is kept for the brief
           DRY:                ${{ (inputs.dry_run || (inputs.ref && inputs.ref != 'main')) && '1' || '' }}
           WF_LLM_CHAIN:       gemini,groq,zai,openrouter,cloudflare
           GEMINI_API_KEY:     ${{ secrets.GEMINI_API_KEY }}

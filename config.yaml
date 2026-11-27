@@ -29,6 +29,8 @@ llm:
       # its own small budget. Alias gemini-flash-latest last: it points at one of the models above.
       models: [gemini-3.8-flash, gemini-3.6-flash, gemini-3.5-flash, gemini-3.5-flash-lite, gemini-flash-latest]
       label: Gemini Flash (free tier)
+      reserve: true               # background jobs try it last: its 20 requests/model/day are kept for the brief
+      quota_reset_tz: America/Los_Angeles   # free-tier quotas reset at midnight Pacific
       api_key_env: [GEMINI_API_KEY]
       json: object
       reasoning_effort: low       # hidden "thinking" tokens count against max_tokens; keep them small
