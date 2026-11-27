@@ -1,8 +1,8 @@
 {
  "month": "2026-11",
  "partial": true,
- "through": "2026-11-26",
- "generated_at": "2026-11-26T17:39:09+00:00",
+ "through": "2026-11-27",
+ "generated_at": "2026-11-27T01:05:55+00:00",
  "source": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
  "total": 39,
  "previous_month": 36,
@@ -95,6 +95,48 @@
    2
   ]
  ],
+ "categories": [
+  [
+   "web",
+   "Web & app server",
+   8
+  ],
+  [
+   "email",
+   "Email & collaboration",
+   7
+  ],
+  [
+   "network",
+   "Network device",
+   4
+  ],
+  [
+   "ai",
+   "AI & LLM tooling",
+   3
+  ],
+  [
+   "itops",
+   "IT management & backup",
+   3
+  ],
+  [
+   "ics",
+   "Industrial (ICS/OT)",
+   3
+  ],
+  [
+   "security",
+   "Security software",
+   2
+  ],
+  [
+   "virtual",
+   "Virtualisation & containers",
+   2
+  ]
+ ],
  "ransomware_known": 1,
  "old_cves": 4,
  "old_cutoff_year": 2024,
@@ -103,7 +145,7 @@
  "actions": [
   {
    "verb": "Patch",
-   "text": "15 of this month's entries reach their federal due date within a week (first: CVE-2026-133968, Project MONAI MONAI Label, due 2026-11-26)."
+   "text": "13 of this month's entries reach their federal due date within a week (first: CVE-2026-131914, Idunno AntiCsrf, due 2026-11-27)."
   },
   {
    "verb": "Inventory",
@@ -129,7 +171,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-367"
-   ]
+   ],
+   "category": "web"
   },
   {
    "cve": "CVE-2024-27834",
@@ -141,7 +184,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-287"
-   ]
+   ],
+   "category": "mobile"
   },
   {
    "cve": "CVE-2026-19868",
@@ -153,7 +197,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-308"
-   ]
+   ],
+   "category": "remote"
   },
   {
    "cve": "CVE-2026-102895",
@@ -167,7 +212,8 @@
     "CWE-287",
     "CWE-290",
     "CWE-346"
-   ]
+   ],
+   "category": "ai"
   },
   {
    "cve": "CVE-2026-116779",
@@ -181,7 +227,8 @@
     "CWE-77",
     "CWE-78",
     "CWE-749"
-   ]
+   ],
+   "category": "email"
   },
   {
    "cve": "CVE-2026-123158",
@@ -193,7 +240,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-394"
-   ]
+   ],
+   "category": "os"
   },
   {
    "cve": "CVE-2026-123218",
@@ -205,7 +253,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-863"
-   ]
+   ],
+   "category": "web"
   },
   {
    "cve": "CVE-2026-111560",
@@ -217,7 +266,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-78"
-   ]
+   ],
+   "category": "security"
   },
   {
    "cve": "CVE-2026-111793",
@@ -229,7 +279,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-669"
-   ]
+   ],
+   "category": "email"
   },
   {
    "cve": "CVE-2026-116606",
@@ -241,7 +292,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-288"
-   ]
+   ],
+   "category": "security"
   },
   {
    "cve": "CVE-2026-124194",
@@ -253,7 +305,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-356"
-   ]
+   ],
+   "category": "desktop"
   },
   {
    "cve": "CVE-2026-125350",
@@ -265,7 +318,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-416"
-   ]
+   ],
+   "category": "browser"
   },
   {
    "cve": "CVE-2026-20320",
@@ -277,7 +331,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-611"
-   ]
+   ],
+   "category": "network"
   },
   {
    "cve": "CVE-2026-114713",
@@ -289,7 +344,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-140"
-   ]
+   ],
+   "category": "other"
   },
   {
    "cve": "CVE-2026-123039",
@@ -302,7 +358,8 @@
    "cwes": [
     "CWE-732",
     "CWE-862"
-   ]
+   ],
+   "category": "network"
   },
   {
    "cve": "CVE-2026-115731",
@@ -315,7 +372,8 @@
    "cwes": [
     "CWE-502",
     "CWE-94"
-   ]
+   ],
+   "category": "itops"
   },
   {
    "cve": "CVE-2024-10441",
@@ -327,7 +385,8 @@
    "ransomware": true,
    "cwes": [
     "CWE-116"
-   ]
+   ],
+   "category": "itops"
   },
   {
    "cve": "CVE-2026-40217",
@@ -339,7 +398,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-420"
-   ]
+   ],
+   "category": "ai"
   },
   {
    "cve": "CVE-2026-90436",
@@ -351,7 +411,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-470"
-   ]
+   ],
+   "category": "web"
   },
   {
    "cve": "CVE-2026-90817",
@@ -364,7 +425,8 @@
    "cwes": [
     "CWE-73",
     "CWE-94"
-   ]
+   ],
+   "category": "web"
   },
   {
    "cve": "CVE-2025-42884",
@@ -376,7 +438,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-943"
-   ]
+   ],
+   "category": "web"
   },
   {
    "cve": "CVE-2026-123890",
@@ -388,7 +451,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-288"
-   ]
+   ],
+   "category": "virtual"
   },
   {
    "cve": "CVE-2026-129448",
@@ -400,7 +464,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-502"
-   ]
+   ],
+   "category": "web"
   },
   {
    "cve": "CVE-2026-76466",
@@ -412,7 +477,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-798"
-   ]
+   ],
+   "category": "network"
   },
   {
    "cve": "CVE-2026-133968",
@@ -424,7 +490,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-24"
-   ]
+   ],
+   "category": "ai"
   },
   {
    "cve": "CVE-2026-134624",
@@ -436,7 +503,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-918"
-   ]
+   ],
+   "category": "itops"
   },
   {
    "cve": "CVE-2026-131914",
@@ -448,7 +516,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-502"
-   ]
+   ],
+   "category": "dev"
   },
   {
    "cve": "CVE-2026-132165",
@@ -460,7 +529,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-636"
-   ]
+   ],
+   "category": "web"
   },
   {
    "cve": "CVE-2026-132224",
@@ -472,7 +542,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-642"
-   ]
+   ],
+   "category": "web"
   },
   {
    "cve": "CVE-2023-25914",
@@ -484,7 +555,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-22"
-   ]
+   ],
+   "category": "ics"
   },
   {
    "cve": "CVE-2023-25915",
@@ -496,7 +568,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-20"
-   ]
+   ],
+   "category": "ics"
   },
   {
    "cve": "CVE-2025-41450",
@@ -508,7 +581,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-305"
-   ]
+   ],
+   "category": "ics"
   },
   {
    "cve": "CVE-2026-103406",
@@ -520,7 +594,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-78"
-   ]
+   ],
+   "category": "network"
   },
   {
    "cve": "CVE-2026-133275",
@@ -532,7 +607,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-434"
-   ]
+   ],
+   "category": "email"
   },
   {
    "cve": "CVE-2026-133303",
@@ -544,7 +620,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-91"
-   ]
+   ],
+   "category": "email"
   },
   {
    "cve": "CVE-2026-133311",
@@ -556,7 +633,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-1390"
-   ]
+   ],
+   "category": "email"
   },
   {
    "cve": "CVE-2026-133323",
@@ -568,7 +646,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-78"
-   ]
+   ],
+   "category": "email"
   },
   {
    "cve": "CVE-2026-133324",
@@ -580,7 +659,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-636"
-   ]
+   ],
+   "category": "email"
   },
   {
    "cve": "CVE-2026-133469",
@@ -593,7 +673,8 @@
    "cwes": [
     "CWE-287",
     "CWE-1287"
-   ]
+   ],
+   "category": "virtual"
   }
  ]
 }

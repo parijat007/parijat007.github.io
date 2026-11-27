@@ -148,6 +148,8 @@ def ghsa_items(cfg: dict, since: datetime) -> list[dict]:
                 "cves": [cve] if cve else [], "severity": a.get("severity"),
                 "cvss": (a.get("cvss") or {}).get("score"),
                 "cwes": [w.get("cwe_id") for w in a.get("cwes", []) if w.get("cwe_id")],
+                "packages": [{"ecosystem": (p.get("package") or {}).get("ecosystem"),
+                              "name": (p.get("package") or {}).get("name")} for p in a.get("vulnerabilities", [])][:4],
             })
     return out
 

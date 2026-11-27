@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% from "macros.html" import affected %}
 {% block title %}Anatomy of {{ rec.cve }} — {{ p.name }}{% endblock %}
 {% block desc %}{{ rec.cve }}: when it was published, added to CISA KEV, given a public PoC and covered by public detections.{% endblock %}
 {% block main %}
@@ -9,6 +9,7 @@
 <p>{% if gap > 0 %}Added to CISA KEV {{ gap }} day{{ '' if gap == 1 else 's' }} after the CVE was published.{% elif gap == 0 %}Added to CISA KEV the day the CVE was published.{% else %}Listed in CISA KEV {{ -gap }} day{{ '' if gap == -1 else 's' }} before NVD published the CVE.{% endif %}</p>{% endif %}
 </section>
 
+{% set aff = affected_for([rec.cve], rec.title) %}{% if aff %}<div class="cve-affects">{{ affected(aff, root) }}</div>{% endif %}
 <dl class="facts cve-facts">
   {% if ev.kev_added %}<div><dt>CISA KEV</dt><dd>Listed {{ ev.kev_added.date | longdate }}{% if ev.kev_added.due %}; federal due date {{ ev.kev_added.due | longdate }}{% endif %}{% if ev.kev_added.ransomware == "Known" %}; known ransomware use{% endif %}</dd></div>{% endif %}
   {% if ep %}<div><dt>EPSS</dt><dd>{{ "%.1f" | format(ep[-1].score * 100) }}% chance of exploitation in the next 30 days{% if ep | length > 1 and ep[0].score != ep[-1].score %} (was {{ "%.1f" | format(ep[0].score * 100) }}% on {{ ep[0].date | longdate }}){% endif %}</dd></div>{% endif %}

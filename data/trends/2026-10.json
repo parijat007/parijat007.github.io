@@ -2,7 +2,7 @@
  "month": "2026-10",
  "partial": false,
  "through": null,
- "generated_at": "2026-11-26T14:58:24+00:00",
+ "generated_at": "2026-11-27T01:05:54+00:00",
  "source": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
  "total": 36,
  "previous_month": 43,
@@ -95,6 +95,48 @@
    2
   ]
  ],
+ "categories": [
+  [
+   "network",
+   "Network device",
+   6
+  ],
+  [
+   "web",
+   "Web & app server",
+   6
+  ],
+  [
+   "remote",
+   "VPN & remote access",
+   5
+  ],
+  [
+   "dev",
+   "Code & CI/CD",
+   5
+  ],
+  [
+   "other",
+   "Other",
+   2
+  ],
+  [
+   "desktop",
+   "Desktop & office app",
+   2
+  ],
+  [
+   "os",
+   "Operating system",
+   2
+  ],
+  [
+   "itops",
+   "IT management & backup",
+   2
+  ]
+ ],
  "ransomware_known": 0,
  "old_cves": 5,
  "old_cutoff_year": 2024,
@@ -122,7 +164,8 @@
    "cwes": [
     "CWE-22",
     "CWE-158"
-   ]
+   ],
+   "category": "network"
   },
   {
    "cve": "CVE-2026-102489",
@@ -134,7 +177,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-384"
-   ]
+   ],
+   "category": "other"
   },
   {
    "cve": "CVE-2026-102490",
@@ -146,7 +190,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-269"
-   ]
+   ],
+   "category": "identity"
   },
   {
    "cve": "CVE-2026-88779",
@@ -158,7 +203,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-119"
-   ]
+   ],
+   "category": "remote"
   },
   {
    "cve": "CVE-2015-3306",
@@ -170,7 +216,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-284"
-   ]
+   ],
+   "category": "desktop"
   },
   {
    "cve": "CVE-2015-5477",
@@ -182,7 +229,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-19"
-   ]
+   ],
+   "category": "network"
   },
   {
    "cve": "CVE-2016-3081",
@@ -194,7 +242,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-77"
-   ]
+   ],
+   "category": "dev"
   },
   {
    "cve": "CVE-2021-3199",
@@ -206,7 +255,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-22"
-   ]
+   ],
+   "category": "desktop"
   },
   {
    "cve": "CVE-2023-22894",
@@ -218,7 +268,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-312"
-   ]
+   ],
+   "category": "web"
   },
   {
    "cve": "CVE-2026-104935",
@@ -230,7 +281,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-290"
-   ]
+   ],
+   "category": "remote"
   },
   {
    "cve": "CVE-2026-96951",
@@ -242,7 +294,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-77"
-   ]
+   ],
+   "category": "os"
   },
   {
    "cve": "CVE-2026-0322",
@@ -254,7 +307,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-94"
-   ]
+   ],
+   "category": "network"
   },
   {
    "cve": "CVE-2026-105133",
@@ -266,7 +320,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-287"
-   ]
+   ],
+   "category": "itops"
   },
   {
    "cve": "CVE-2026-105134",
@@ -279,7 +334,8 @@
    "cwes": [
     "CWE-77",
     "CWE-78"
-   ]
+   ],
+   "category": "itops"
   },
   {
    "cve": "CVE-2026-76519",
@@ -291,7 +347,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-23"
-   ]
+   ],
+   "category": "security"
   },
   {
    "cve": "CVE-2026-21589",
@@ -303,7 +360,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-552"
-   ]
+   ],
+   "category": "dev"
   },
   {
    "cve": "CVE-2025-61624",
@@ -315,7 +373,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-22"
-   ]
+   ],
+   "category": "network"
   },
   {
    "cve": "CVE-2026-102764",
@@ -327,7 +386,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-290"
-   ]
+   ],
+   "category": "remote"
   },
   {
    "cve": "CVE-2026-106931",
@@ -339,7 +399,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-78"
-   ]
+   ],
+   "category": "other"
   },
   {
    "cve": "CVE-2026-110936",
@@ -351,7 +412,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-427"
-   ]
+   ],
+   "category": "ics"
   },
   {
    "cve": "CVE-2026-96652",
@@ -363,7 +425,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-918"
-   ]
+   ],
+   "category": "web"
   },
   {
    "cve": "CVE-2026-96654",
@@ -375,7 +438,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-84"
-   ]
+   ],
+   "category": "web"
   },
   {
    "cve": "CVE-2026-96655",
@@ -387,7 +451,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-918"
-   ]
+   ],
+   "category": "web"
   },
   {
    "cve": "CVE-2026-96656",
@@ -399,7 +464,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-73"
-   ]
+   ],
+   "category": "web"
   },
   {
    "cve": "CVE-2026-110447",
@@ -411,7 +477,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-78"
-   ]
+   ],
+   "category": "email"
   },
   {
    "cve": "CVE-2026-114625",
@@ -423,7 +490,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-89"
-   ]
+   ],
+   "category": "network"
   },
   {
    "cve": "CVE-2026-109618",
@@ -439,7 +507,8 @@
     "CWE-824",
     "CWE-1325",
     "CWE-1419"
-   ]
+   ],
+   "category": "dev"
   },
   {
    "cve": "CVE-2026-109619",
@@ -455,7 +524,8 @@
     "CWE-824",
     "CWE-1325",
     "CWE-1419"
-   ]
+   ],
+   "category": "dev"
   },
   {
    "cve": "CVE-2026-111497",
@@ -468,7 +538,8 @@
    "cwes": [
     "CWE-252",
     "CWE-787"
-   ]
+   ],
+   "category": "browser"
   },
   {
    "cve": "CVE-2026-48356",
@@ -480,7 +551,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-434"
-   ]
+   ],
+   "category": "web"
   },
   {
    "cve": "CVE-2026-41709",
@@ -492,7 +564,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-778"
-   ]
+   ],
+   "category": "virtual"
   },
   {
    "cve": "CVE-2026-46300",
@@ -504,7 +577,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-456"
-   ]
+   ],
+   "category": "os"
   },
   {
    "cve": "CVE-2026-76418",
@@ -516,7 +590,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-690"
-   ]
+   ],
+   "category": "network"
   },
   {
    "cve": "CVE-2026-97229",
@@ -528,7 +603,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-190"
-   ]
+   ],
+   "category": "dev"
   },
   {
    "cve": "CVE-2026-111357",
@@ -542,7 +618,8 @@
     "CWE-306",
     "CWE-862",
     "CWE-345"
-   ]
+   ],
+   "category": "remote"
   },
   {
    "cve": "CVE-2026-118527",
@@ -554,7 +631,8 @@
    "ransomware": false,
    "cwes": [
     "CWE-340"
-   ]
+   ],
+   "category": "remote"
   }
  ]
 }

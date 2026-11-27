@@ -1388,3 +1388,29 @@ def test_anatomy_gaps_story_and_comparison():
     assert kev["faster_than"] == 86 and kev["n"] == 7
     assert next(x for x in a["rows"] if x["key"] == "deadline")["faster_than"] is None
     assert axis(r)["points"][-1]["key"] == "kev_due"
+
+
+def test_affected_categories_spot_cases():
+    from digest import affected as A
+    cases = [("Linux", "Kernel", "", "os"), ("Microsoft", "Exchange Server", "", "email"),
+             ("Palo Alto Networks", "PAN-OS", "", "network"), ("Ivanti", "Connect Secure", "", "remote"),
+             ("Google", "Chromium V8", "", "browser"), ("VMware", "ESXi", "", "virtual"),
+             ("Barracuda Networks", "Multiple Products", "", "security"), ("GPUStack", "GPUStack", "", "ai"),
+             ("Microsoft", "Windows", "Windows Win32k Privilege Escalation", "os")]
+    for vendor, product, title, want in cases:
+        assert A.classify(vendor, product, title) == want, (vendor, product)
+    assert A.classify("", "", "", ecosystem="npm") == "dev"
+    assert A.classify("", "", "Totally unknown widget flaw") == "other"
+    tags = A.for_cves(["CVE-2099-0001"], {"CVE-2099-0001": {"vendorProject": "Microsoft", "product": "Windows",
+                                                           "vulnerabilityName": "Windows SMB flaw"}}, "", "kev")
+    assert tags[0]["category"] == "os" and tags[0]["label"]
+    assert set(A.CATEGORIES) >= {"os", "network", "web", "ai", "other"}
+
+
+def test_affected_icons_exist_for_every_category():
+    from digest import affected as A
+    svg = (Path(__file__).resolve().parents[1] / "site" / "static" / "affected.svg").read_text()
+    for cat in A.CATEGORIES:
+        assert f'id="i-{cat}"' in svg, cat
+    assert "<script" not in svg and "href=\"http" not in svg
+

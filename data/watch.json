@@ -37,7 +37,13 @@
      "Prevent execution in upload directories"
     ],
     "verify": "Search web roots for recently created script files"
-   }
+   },
+   "affected": [
+    {
+     "category": "web",
+     "label": "Web & app server"
+    }
+   ]
   },
   {
    "id": "GHSA-743w-g9pf-8p94",
@@ -66,7 +72,13 @@
      "Run the service as a non-privileged user and restrict outbound connections"
     ],
     "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
-   }
+   },
+   "affected": [
+    {
+     "category": "web",
+     "label": "Web & app server"
+    }
+   ]
   },
   {
    "id": "CVE-2026-133469",
@@ -98,7 +110,14 @@
      "Rotate admin credentials and API keys, and remove unknown admin accounts"
     ],
     "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event"
-   }
+   },
+   "affected": [
+    {
+     "category": "virtual",
+     "label": "Virtualisation & containers",
+     "product": "Vates Xen Orchestra"
+    }
+   ]
   },
   {
    "id": "CVE-2025-41450",
@@ -130,7 +149,14 @@
      "Rotate admin credentials and API keys, and remove unknown admin accounts"
     ],
     "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event"
-   }
+   },
+   "affected": [
+    {
+     "category": "ics",
+     "label": "Industrial (ICS/OT)",
+     "product": "Danfoss AK-SM 800A Series"
+    }
+   ]
   },
   {
    "id": "CVE-2023-25914",
@@ -161,7 +187,14 @@
      "Restrict the service account's file system permissions"
     ],
     "verify": "Search web logs for '../' and encoded variants against the affected paths"
-   }
+   },
+   "affected": [
+    {
+     "category": "ics",
+     "label": "Industrial (ICS/OT)",
+     "product": "Danfoss AK-SM 800A Series"
+    }
+   ]
   },
   {
    "id": "CVE-2023-25915",
@@ -192,7 +225,14 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "ics",
+     "label": "Industrial (ICS/OT)",
+     "product": "Danfoss AK-SM 800A Series"
+    }
+   ]
   },
   {
    "id": "CVE-2026-133324",
@@ -223,7 +263,14 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "email",
+     "label": "Email & collaboration",
+     "product": "Mitel MiCollab"
+    }
+   ]
   },
   {
    "id": "CVE-2026-133275",
@@ -254,7 +301,14 @@
      "Prevent execution in upload directories"
     ],
     "verify": "Search web roots for recently created script files"
-   }
+   },
+   "affected": [
+    {
+     "category": "email",
+     "label": "Email & collaboration",
+     "product": "Mitel MiCollab"
+    }
+   ]
   },
   {
    "id": "CVE-2026-133311",
@@ -285,7 +339,14 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "email",
+     "label": "Email & collaboration",
+     "product": "Mitel MiCollab"
+    }
+   ]
   },
   {
    "id": "CVE-2026-133303",
@@ -316,7 +377,14 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "email",
+     "label": "Email & collaboration",
+     "product": "Mitel MiCollab"
+    }
+   ]
   },
   {
    "id": "CVE-2026-133323",
@@ -348,7 +416,14 @@
      "Run the service as a non-privileged user and restrict outbound connections"
     ],
     "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
-   }
+   },
+   "affected": [
+    {
+     "category": "email",
+     "label": "Email & collaboration",
+     "product": "Mitel MiCollab"
+    }
+   ]
   },
   {
    "id": "/node/25859",
@@ -383,7 +458,19 @@
      "Rotate admin credentials and API keys, and remove unknown admin accounts"
     ],
     "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event"
-   }
+   },
+   "affected": [
+    {
+     "category": "ics",
+     "label": "Industrial (ICS/OT)",
+     "product": "Danfoss AK-SM 800A Series"
+    },
+    {
+     "category": "network",
+     "label": "Network device",
+     "product": "Hewlett Packard Enterprise (HPE) Juniper Session Smart Conductor and Session Smart Router"
+    }
+   ]
   },
   {
    "id": "8a3ba16e94b79cd525d1214a165327e022b528b7",
@@ -416,7 +503,13 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "cloud",
+     "label": "Cloud & SaaS"
+    }
+   ]
   },
   {
    "id": "b2366e512e289d41c35483befdee62c51d858f99",
@@ -449,7 +542,13 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "ai",
+     "label": "AI & LLM tooling"
+    }
+   ]
   },
   {
    "id": "9dc239af4c7c042dbd17e3d3b2839e9f1cbf1ec2",
@@ -482,7 +581,13 @@
      "Block access to cloud instance metadata from the application (for example IMDSv2 with hop limit 1 on AWS)"
     ],
     "verify": "Review egress and metadata-service access logs from the affected host"
-   }
+   },
+   "affected": [
+    {
+     "category": "cloud",
+     "label": "Cloud & SaaS"
+    }
+   ]
   },
   {
    "id": "9b270cdae1efe7fb2670de7243cf455ac4fdc705",
@@ -515,7 +620,13 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "cloud",
+     "label": "Cloud & SaaS"
+    }
+   ]
   },
   {
    "id": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-ucs-uefi-sb-bypass-eb6xC5GW",
@@ -544,7 +655,13 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "network",
+     "label": "Network device"
+    }
+   ]
   },
   {
    "id": "894e27f00a93648d0c5efbc5ac12da50db16c339",
@@ -577,7 +694,13 @@
      "Enable platform exploit mitigations and restart the service after patching"
     ],
     "verify": "Monitor for crashes or unexpected restarts of the affected service"
-   }
+   },
+   "affected": [
+    {
+     "category": "cloud",
+     "label": "Cloud & SaaS"
+    }
+   ]
   },
   {
    "id": "GHSA-crj3-q72p-ggqm",
@@ -610,7 +733,13 @@
      "Limit administrative sessions and require re-authentication for sensitive actions"
     ],
     "verify": "Review web logs for script payloads in parameters"
-   }
+   },
+   "affected": [
+    {
+     "category": "other",
+     "label": "Other"
+    }
+   ]
   },
   {
    "id": "CVE-2026-103406",
@@ -642,7 +771,14 @@
      "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode"
     ],
     "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
-   }
+   },
+   "affected": [
+    {
+     "category": "network",
+     "label": "Network device",
+     "product": "Hewlett Packard Enterprise (HPE) Juniper Session Smart Conductor and Session Smart Router"
+    }
+   ]
   },
   {
    "id": "https://security.paloaltonetworks.com/PAN-SA-2026-0015",
@@ -669,7 +805,13 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "network",
+     "label": "Network device"
+    }
+   ]
   },
   {
    "id": "https://security.paloaltonetworks.com/PAN-SA-2026-0005",
@@ -696,7 +838,13 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "network",
+     "label": "Network device"
+    }
+   ]
   },
   {
    "id": "/node/25848",
@@ -729,7 +877,24 @@
      "Run the service with least privilege and no outbound internet access where possible"
     ],
     "verify": "Hunt for unexpected child processes spawned by the application server process"
-   }
+   },
+   "affected": [
+    {
+     "category": "other",
+     "label": "Other",
+     "product": "Idunno AntiCsrf"
+    },
+    {
+     "category": "web",
+     "label": "Web & app server",
+     "product": "Drupal Core"
+    },
+    {
+     "category": "other",
+     "label": "Other",
+     "product": "Optimizely Web Experimentation"
+    }
+   ]
   },
   {
    "id": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-oct2026-node-js-Jj3SQ19u",
@@ -763,7 +928,14 @@
      "Run the service as a non-privileged user and restrict outbound connections"
     ],
     "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
-   }
+   },
+   "affected": [
+    {
+     "category": "browser",
+     "label": "Browser",
+     "product": "Google Brotli"
+    }
+   ]
   },
   {
    "id": "GHSA-c4hm-4h84-2cf3",
@@ -798,7 +970,13 @@
      "Run the service as a non-privileged user and restrict outbound connections"
     ],
     "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
-   }
+   },
+   "affected": [
+    {
+     "category": "virtual",
+     "label": "Virtualisation & containers"
+    }
+   ]
   },
   {
    "id": "CVE-2026-112732",
@@ -830,7 +1008,13 @@
      "Run the service as a non-privileged user and restrict outbound connections"
     ],
     "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
-   }
+   },
+   "affected": [
+    {
+     "category": "desktop",
+     "label": "Desktop & office app"
+    }
+   ]
   },
   {
    "id": "f3822d55098115f56753be6d8573fdead57e59f3",
@@ -863,7 +1047,13 @@
      "Enable platform exploit mitigations and restart the service after patching"
     ],
     "verify": "Monitor for crashes or unexpected restarts of the affected service"
-   }
+   },
+   "affected": [
+    {
+     "category": "cloud",
+     "label": "Cloud & SaaS"
+    }
+   ]
   },
   {
    "id": "0bada62e5376e7ff04ad2589232c726edc9d9ec3",
@@ -896,7 +1086,16 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "cloud",
+     "label": "Cloud & SaaS",
+     "platforms": [
+      "Windows"
+     ]
+    }
+   ]
   },
   {
    "id": "CVE-2026-132224",
@@ -927,7 +1126,14 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "other",
+     "label": "Other",
+     "product": "Optimizely Web Experimentation"
+    }
+   ]
   },
   {
    "id": "CVE-2026-131914",
@@ -958,7 +1164,14 @@
      "Run the service with least privilege and no outbound internet access where possible"
     ],
     "verify": "Hunt for unexpected child processes spawned by the application server process"
-   }
+   },
+   "affected": [
+    {
+     "category": "other",
+     "label": "Other",
+     "product": "Idunno AntiCsrf"
+    }
+   ]
   },
   {
    "id": "CVE-2026-132165",
@@ -990,7 +1203,14 @@
      "Run the service as a non-privileged user and restrict outbound connections"
     ],
     "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
-   }
+   },
+   "affected": [
+    {
+     "category": "web",
+     "label": "Web & app server",
+     "product": "Drupal Core"
+    }
+   ]
   },
   {
    "id": "/node/25841",
@@ -1016,7 +1236,13 @@
      "Enable platform exploit mitigations and restart the service after patching"
     ],
     "verify": "Monitor for crashes or unexpected restarts of the affected service"
-   }
+   },
+   "affected": [
+    {
+     "category": "ics",
+     "label": "Industrial (ICS/OT)"
+    }
+   ]
   },
   {
    "id": "/node/25842",
@@ -1047,7 +1273,13 @@
      "Enable platform exploit mitigations and restart the service after patching"
     ],
     "verify": "Monitor for crashes or unexpected restarts of the affected service"
-   }
+   },
+   "affected": [
+    {
+     "category": "ics",
+     "label": "Industrial (ICS/OT)"
+    }
+   ]
   },
   {
    "id": "/node/25840",
@@ -1074,7 +1306,13 @@
      "Run the service as a non-privileged user and restrict outbound connections"
     ],
     "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
-   }
+   },
+   "affected": [
+    {
+     "category": "other",
+     "label": "Other"
+    }
+   ]
   },
   {
    "id": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-clamav-multi-e93M3vdA",
@@ -1102,7 +1340,13 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "network",
+     "label": "Network device"
+    }
+   ]
   },
   {
    "id": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-phpaftershell-nov-2026-kT9pL4Xe",
@@ -1137,7 +1381,13 @@
      "Run the service as a non-privileged user and restrict outbound connections"
     ],
     "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
-   }
+   },
+   "affected": [
+    {
+     "category": "dev",
+     "label": "Code & CI/CD"
+    }
+   ]
   },
   {
    "id": "/node/25838",
@@ -1169,7 +1419,19 @@
      "Restrict the service account's file system permissions"
     ],
     "verify": "Search web logs for '../' and encoded variants against the affected paths"
-   }
+   },
+   "affected": [
+    {
+     "category": "other",
+     "label": "Other",
+     "product": "Project MONAI MONAI Label"
+    },
+    {
+     "category": "itops",
+     "label": "IT management & backup",
+     "product": "N-able MailAssure"
+    }
+   ]
   },
   {
    "id": "CVE-2026-69291",
@@ -1201,7 +1463,16 @@
      "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode"
     ],
     "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
-   }
+   },
+   "affected": [
+    {
+     "category": "os",
+     "label": "Operating system",
+     "platforms": [
+      "Windows"
+     ]
+    }
+   ]
   },
   {
    "id": "CVE-2026-78462",
@@ -1233,7 +1504,13 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "dev",
+     "label": "Code & CI/CD"
+    }
+   ]
   },
   {
    "id": "CVE-2026-72965",
@@ -1265,7 +1542,16 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "os",
+     "label": "Operating system",
+     "platforms": [
+      "Windows"
+     ]
+    }
+   ]
   },
   {
    "id": "CVE-2026-87697",
@@ -1297,7 +1583,13 @@
      "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode"
     ],
     "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
-   }
+   },
+   "affected": [
+    {
+     "category": "os",
+     "label": "Operating system"
+    }
+   ]
   },
   {
    "id": "CVE-2026-70175",
@@ -1329,7 +1621,13 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "dev",
+     "label": "Code & CI/CD"
+    }
+   ]
   },
   {
    "id": "CVE-2026-70197",
@@ -1361,7 +1659,13 @@
      "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode"
     ],
     "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
-   }
+   },
+   "affected": [
+    {
+     "category": "dev",
+     "label": "Code & CI/CD"
+    }
+   ]
   },
   {
    "id": "CVE-2026-96225",
@@ -1393,7 +1697,13 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "os",
+     "label": "Operating system"
+    }
+   ]
   },
   {
    "id": "CVE-2026-96233",
@@ -1425,7 +1735,13 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "dev",
+     "label": "Code & CI/CD"
+    }
+   ]
   },
   {
    "id": "CVE-2026-109481",
@@ -1457,7 +1773,13 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "dev",
+     "label": "Code & CI/CD"
+    }
+   ]
   },
   {
    "id": "CVE-2026-119848",
@@ -1489,7 +1811,16 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "os",
+     "label": "Operating system",
+     "platforms": [
+      "Windows"
+     ]
+    }
+   ]
   },
   {
    "id": "CVE-2026-133968",
@@ -1521,7 +1852,14 @@
      "Run the service as a non-privileged user and restrict outbound connections"
     ],
     "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
-   }
+   },
+   "affected": [
+    {
+     "category": "other",
+     "label": "Other",
+     "product": "Project MONAI MONAI Label"
+    }
+   ]
   },
   {
    "id": "CVE-2026-134624",
@@ -1552,7 +1890,14 @@
      "Block access to cloud instance metadata from the application (for example IMDSv2 with hop limit 1 on AWS)"
     ],
     "verify": "Review egress and metadata-service access logs from the affected host"
-   }
+   },
+   "affected": [
+    {
+     "category": "itops",
+     "label": "IT management & backup",
+     "product": "N-able MailAssure"
+    }
+   ]
   },
   {
    "id": "GHSA-2r3w-c2vx-fv5g",
@@ -1586,7 +1931,14 @@
      "Rotate admin credentials and API keys, and remove unknown admin accounts"
     ],
     "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event"
-   }
+   },
+   "affected": [
+    {
+     "category": "virtual",
+     "label": "Virtualisation & containers",
+     "product": "Vates Xen Orchestra"
+    }
+   ]
   },
   {
    "id": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-vcs-static-cred-hr7EWZ8t",
@@ -1615,7 +1967,13 @@
      "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode"
     ],
     "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
-   }
+   },
+   "affected": [
+    {
+     "category": "network",
+     "label": "Network device"
+    }
+   ]
   },
   {
    "id": "CVE-2026-129448",
@@ -1646,7 +2004,14 @@
      "Run the service with least privilege and no outbound internet access where possible"
     ],
     "verify": "Hunt for unexpected child processes spawned by the application server process"
-   }
+   },
+   "affected": [
+    {
+     "category": "web",
+     "label": "Web & app server",
+     "product": "Apache Roller"
+    }
+   ]
   },
   {
    "id": "CVE-2026-123890",
@@ -1680,7 +2045,14 @@
      "Rotate admin credentials and API keys, and remove unknown admin accounts"
     ],
     "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event"
-   }
+   },
+   "affected": [
+    {
+     "category": "virtual",
+     "label": "Virtualisation & containers",
+     "product": "Broadcom VMware vCenter"
+    }
+   ]
   },
   {
    "id": "CVE-2025-42884",
@@ -1711,7 +2083,14 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "web",
+     "label": "Web & app server",
+     "product": "SAP NetWeaver"
+    }
+   ]
   },
   {
    "id": "CVE-2026-76466",
@@ -1745,7 +2124,14 @@
      "Change any credentials the vendor allows you to change and monitor for logins by built-in accounts"
     ],
     "verify": "Search authentication logs for logins by built-in or service accounts from unexpected sources"
-   }
+   },
+   "affected": [
+    {
+     "category": "network",
+     "label": "Network device",
+     "product": "Cisco Expressway Series"
+    }
+   ]
   },
   {
    "id": "GHSA-4hrh-34w3-5ww8",
@@ -1777,7 +2163,13 @@
      "Rotate admin credentials and API keys, and remove unknown admin accounts"
     ],
     "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event"
-   }
+   },
+   "affected": [
+    {
+     "category": "desktop",
+     "label": "Desktop & office app"
+    }
+   ]
   },
   {
    "id": "GHSA-mc8w-wjhw-45x5",
@@ -1810,7 +2202,13 @@
      "Restrict the service account's file system permissions"
     ],
     "verify": "Search web logs for '../' and encoded variants against the affected paths"
-   }
+   },
+   "affected": [
+    {
+     "category": "other",
+     "label": "Other"
+    }
+   ]
   },
   {
    "id": "GHSA-wj7x-58c2-5793",
@@ -1842,7 +2240,13 @@
      "Rotate admin credentials and API keys, and remove unknown admin accounts"
     ],
     "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event"
-   }
+   },
+   "affected": [
+    {
+     "category": "desktop",
+     "label": "Desktop & office app"
+    }
+   ]
   },
   {
    "id": "GHSA-hq2p-f2vj-v3cm",
@@ -1873,7 +2277,13 @@
      "Use a least-privilege database account for the application"
     ],
     "verify": "Review web logs for SQL syntax in parameters and database logs for errors from the application account"
-   }
+   },
+   "affected": [
+    {
+     "category": "other",
+     "label": "Other"
+    }
+   ]
   },
   {
    "id": "GHSA-9x8x-crjq-g64h",
@@ -1904,7 +2314,13 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "ai",
+     "label": "AI & LLM tooling"
+    }
+   ]
   },
   {
    "id": "GHSA-p34x-fmph-9fjx",
@@ -1935,7 +2351,13 @@
      "Restrict the service account's file system permissions"
     ],
     "verify": "Search web logs for '../' and encoded variants against the affected paths"
-   }
+   },
+   "affected": [
+    {
+     "category": "other",
+     "label": "Other"
+    }
+   ]
   },
   {
    "id": "GHSA-p32v-8v8j-j534",
@@ -1967,7 +2389,13 @@
      "Run the service as a non-privileged user and restrict outbound connections"
     ],
     "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
-   }
+   },
+   "affected": [
+    {
+     "category": "other",
+     "label": "Other"
+    }
+   ]
   },
   {
    "id": "GHSA-58x9-vjvp-6mx8",
@@ -1999,7 +2427,13 @@
      "Run the service as a non-privileged user and restrict outbound connections"
     ],
     "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
-   }
+   },
+   "affected": [
+    {
+     "category": "other",
+     "label": "Other"
+    }
+   ]
   },
   {
    "id": "GHSA-3fhm-p725-h3g3",
@@ -2031,7 +2465,13 @@
      "Run the service as a non-privileged user and restrict outbound connections"
     ],
     "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
-   }
+   },
+   "affected": [
+    {
+     "category": "other",
+     "label": "Other"
+    }
+   ]
   },
   {
    "id": "GHSA-x8q7-6c7m-52gw",
@@ -2063,7 +2503,13 @@
      "Run the service as a non-privileged user and restrict outbound connections"
     ],
     "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
-   }
+   },
+   "affected": [
+    {
+     "category": "desktop",
+     "label": "Desktop & office app"
+    }
+   ]
   },
   {
    "id": "GHSA-833v-v58w-294h",
@@ -2096,7 +2542,13 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "ai",
+     "label": "AI & LLM tooling"
+    }
+   ]
   },
   {
    "id": "GHSA-q8v2-3j4h-xg2p",
@@ -2128,7 +2580,13 @@
      "Run the service as a non-privileged user and restrict outbound connections"
     ],
     "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
-   }
+   },
+   "affected": [
+    {
+     "category": "dev",
+     "label": "Code & CI/CD"
+    }
+   ]
   },
   {
    "id": "GHSA-x9xr-53qx-9qcf",
@@ -2160,7 +2618,13 @@
      "Run the service as a non-privileged user and restrict outbound connections"
     ],
     "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
-   }
+   },
+   "affected": [
+    {
+     "category": "dev",
+     "label": "Code & CI/CD"
+    }
+   ]
   },
   {
    "id": "GHSA-xwcw-j52r-34x4",
@@ -2192,7 +2656,13 @@
      "Run the service as a non-privileged user and restrict outbound connections"
     ],
     "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
-   }
+   },
+   "affected": [
+    {
+     "category": "dev",
+     "label": "Code & CI/CD"
+    }
+   ]
   },
   {
    "id": "GHSA-8fh7-7q4q-cq52",
@@ -2224,7 +2694,13 @@
      "Rotate admin credentials and API keys, and remove unknown admin accounts"
     ],
     "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event"
-   }
+   },
+   "affected": [
+    {
+     "category": "desktop",
+     "label": "Desktop & office app"
+    }
+   ]
   },
   {
    "id": "/node/25833",
@@ -2262,7 +2738,29 @@
      "Rotate admin credentials and API keys, and remove unknown admin accounts"
     ],
     "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event"
-   }
+   },
+   "affected": [
+    {
+     "category": "web",
+     "label": "Web & app server",
+     "product": "SAP NetWeaver"
+    },
+    {
+     "category": "virtual",
+     "label": "Virtualisation & containers",
+     "product": "Broadcom VMware vCenter"
+    },
+    {
+     "category": "web",
+     "label": "Web & app server",
+     "product": "Apache Roller"
+    },
+    {
+     "category": "network",
+     "label": "Network device",
+     "product": "Cisco Expressway Series"
+    }
+   ]
   },
   {
    "id": "CVE-2024-7532",
@@ -2293,7 +2791,13 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "browser",
+     "label": "Browser"
+    }
+   ]
   },
   {
    "id": "CVE-2023-1531",
@@ -2324,7 +2828,13 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "browser",
+     "label": "Browser"
+    }
+   ]
   },
   {
    "id": "https://security.paloaltonetworks.com/CVE-2026-123633",
@@ -2358,7 +2868,13 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "network",
+     "label": "Network device"
+    }
+   ]
   },
   {
    "id": "https://security.paloaltonetworks.com/CVE-2026-114938",
@@ -2391,7 +2907,13 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "network",
+     "label": "Network device"
+    }
+   ]
   },
   {
    "id": "https://fortiguard.fortinet.com/psirt/FG-IR-26-279",
@@ -2425,7 +2947,13 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "web",
+     "label": "Web & app server"
+    }
+   ]
   },
   {
    "id": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nginx-nov-2026-e8jska2s",
@@ -2462,7 +2990,13 @@
      "Run the service as a non-privileged user and restrict outbound connections"
     ],
     "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
-   }
+   },
+   "affected": [
+    {
+     "category": "web",
+     "label": "Web & app server"
+    }
+   ]
   },
   {
    "id": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-nov2026-java-rce-eCa6ss9z",
@@ -2496,7 +3030,13 @@
      "Run the service as a non-privileged user and restrict outbound connections"
     ],
     "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries"
-   }
+   },
+   "affected": [
+    {
+     "category": "network",
+     "label": "Network device"
+    }
+   ]
   },
   {
    "id": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-emudhra-info-ScS22A1r",
@@ -2524,7 +3064,13 @@
      "Apply vendor-provided mitigations or IPS/WAF signatures where published"
     ],
     "verify": "Confirm the installed version on every instance after patching"
-   }
+   },
+   "affected": [
+    {
+     "category": "network",
+     "label": "Network device"
+    }
+   ]
   }
  ]
 }

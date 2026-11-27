@@ -276,6 +276,21 @@ def build(out: Path) -> None:
                              if m[0] in E.globals["cve_pages"] else m[0], str(h(text))))
     E.globals["cvelinks"] = cvelinks
 
+    from digest import affected as AFF  # noqa: PLC0415
+    _aff_map = json.loads((DATA / "affected.json").read_text()) if (DATA / "affected.json").exists() else {}
+
+    def affected_for(cves=None, title: str = "", source: str | None = None) -> list[dict]:
+        """Affected tags for a set of CVEs (data/affected.json, written by the watch), else from the title."""
+        seen, out = set(), []
+        for c in cves or []:
+            for t in _aff_map.get(str(c).upper(), []):
+                if (t["category"], t.get("product")) not in seen:
+                    seen.add((t["category"], t.get("product")))
+                    out.append(t)
+        return out[:6] or ([AFF.tag(title=title, source=source)] if title else [])
+    E.globals["affected_for"] = affected_for
+    E.globals["aff_labels"] = AFF.CATEGORIES
+
     sitemap: list[tuple[str, str | None]] = []
 
     def page(tpl: str, path: str, page_key: str, lastmod: str | None = None, **ctx):

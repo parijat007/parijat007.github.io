@@ -76,6 +76,8 @@ def compute(kev: dict, ym: str, today: date | None = None) -> dict:
     vendors = Counter(v["vendorProject"] for v in rows)
     products = Counter(f"{v['vendorProject']} {v['product']}" for v in rows)
     cwes = Counter(c for v in rows for c in (v.get("cwes") or []))
+    from .affected import CATEGORIES, classify  # noqa: PLC0415
+    cats = Counter(classify(v["vendorProject"], v["product"], v.get("vulnerabilityName", "")) for v in rows)
     ransomware = [v for v in rows if v.get("knownRansomwareCampaignUse") == "Known"]
     old = [v for v in rows if int(v["cveID"].split("-")[1]) <= year - 2]
     def windows(rs):
@@ -106,12 +108,14 @@ def compute(kev: dict, ym: str, today: date | None = None) -> dict:
         "avg_12m": round(sum(last12) / 12, 1) if last12 else None,
         "vendors": vendors.most_common(8), "products": products.most_common(5),
         "cwes": [[c, CWE.get(c, ""), n] for c, n in cwes.most_common(6)],
+        "categories": [[c, CATEGORIES[c], n] for c, n in cats.most_common(8)],
         "ransomware_known": len(ransomware), "old_cves": len(old), "old_cutoff_year": year - 2,
         "median_window": windows(rows), "median_window_prev": windows(month_entries(kev, _prev(ym))),
         "actions": actions,
         "entries": [{"cve": v["cveID"], "vendor": v["vendorProject"], "product": v["product"],
                      "name": v.get("vulnerabilityName", ""), "added": v["dateAdded"], "due": v.get("dueDate"),
-                     "ransomware": v.get("knownRansomwareCampaignUse") == "Known", "cwes": v.get("cwes") or []}
+                     "ransomware": v.get("knownRansomwareCampaignUse") == "Known", "cwes": v.get("cwes") or [],
+                     "category": classify(v["vendorProject"], v["product"], v.get("vulnerabilityName", ""))}
                     for v in rows],
     }
 
