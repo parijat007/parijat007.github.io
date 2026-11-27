@@ -1319,6 +1319,7 @@ def test_ai_topics_rotation_and_grounding(tmp_path, monkeypatch):
     from digest import ai_notes as A
     from digest import ai_topics as T
     monkeypatch.setattr(A, "DRAFTS", tmp_path)
+    monkeypatch.setattr(T, "done_ids", lambda: [])                         # independent of what is published
     ts = T.topics()
     assert len(ts) >= 30 and len({t["id"] for t in ts}) == len(ts)
     assert all((T.CACHE / f"{t['id']}.txt").exists() for t in ts)          # every topic has its official text
