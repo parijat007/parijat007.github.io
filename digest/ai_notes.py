@@ -212,12 +212,32 @@ def to_markdown(note: dict, kind: str, day: date, provider: str, extra: dict | N
     acts = note.get("actions") or []
     if acts or note.get("hunt"):
         body.append("## What to do\n")
-        body += [f"- **{a['verb']}:** {a['text']}" for a in acts]
+        body += [ln for a in acts if (ln := _action_line(a))]
         if note.get("hunt"):
             body.append(f"\n**Hunt** (adapt to your logging): {note['hunt']}")
         body.append("")
     md = "---\n" + yaml.safe_dump(fm, sort_keys=False, allow_unicode=True, width=110) + "---\n\n" + "\n".join(body)
     return slug, md
+
+
+VERBS = ("Patch", "Inventory", "Contain", "Hunt", "Detect")
+
+
+def _action_line(a) -> str | None:
+    """One "What to do" bullet. Models do not always keep the requested shape ({"verb", "text"}): accept a plain
+    string, another key for the step, or a verb inside the text; skip anything with no step at all."""
+    if isinstance(a, str):
+        text, verb = a.strip(), ""
+    elif isinstance(a, dict):
+        text = str(a.get("text") or a.get("step") or a.get("action") or a.get("description") or "").strip()
+        verb = str(a.get("verb") or a.get("type") or a.get("category") or "").strip()
+    else:
+        return None
+    if not text:
+        return None
+    if not verb and (m := re.match(rf"^\**({'|'.join(VERBS)})\**\s*[:\-]\s*", text, re.I)):
+        verb, text = m.group(1).capitalize(), text[m.end():]
+    return f"- **{verb}:** {text}" if verb else f"- {text}"
 
 
 def key(slug: str) -> str:

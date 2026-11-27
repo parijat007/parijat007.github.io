@@ -1493,3 +1493,12 @@ def test_fixer_rejects_unsafe_or_out_of_scope_edits():
     assert F.failing_ids("FAILED tests/e2e/test_site_e2e.py::test_a[/today/] - Assert\nFAILED tests/x.py::test_b") == \
         ["tests/e2e/test_site_e2e.py::test_a[/today/]", "tests/x.py::test_b"]
     assert "site/templates/today.html" in F.context_files("[browser tests] /today/ scrolls sideways")
+
+
+def test_note_actions_accept_any_model_shape():
+    from digest.ai_notes import _action_line
+    assert _action_line({"verb": "Patch", "text": "Update X"}) == "- **Patch:** Update X"
+    assert _action_line({"action": "Rotate keys"}) == "- Rotate keys"
+    assert _action_line("Contain: isolate the host") == "- **Contain:** isolate the host"
+    assert _action_line({"type": "Hunt", "step": "Search logs"}) == "- **Hunt:** Search logs"
+    assert _action_line({"verb": "Patch"}) is None and _action_line(3) is None
