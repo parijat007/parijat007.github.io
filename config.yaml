@@ -9,7 +9,7 @@ max_items_to_llm: 40        # pre-ranked cap on items sent to the model (token c
 # Analyst model chain. First provider that answers wins; if all fail, a facts-only brief is published.
 # On the Mac: local -> gemini -> groq -> openrouter.  In GitHub Actions: WF_LLM_CHAIN=gemini,groq,openrouter
 llm:
-  chain: [local, gemini, groq, cloudflare, ovh, zai, openrouter]
+  chain: [local, gemini, groq, cloudflare, zai, openrouter]
   providers:
     local:          # llama.cpp llama-server on the M1 Max. $0, nothing leaves the machine.
       base_url: http://127.0.0.1:8080/v1
@@ -36,8 +36,9 @@ llm:
       max_items: 40
       max_text_chars: 400
       timeout_seconds: 75         # per model; a healthy Gemini Flash answers in ~15 s
-    ovh:            # OVHcloud AI Endpoints (EU). Anonymous use, no key: 2 requests/min per IP and per model, so each
-                    # model is its own small budget. OVHcloud states no training on inputs. Small jobs only.
+    ovh:            # NOT IN ANY CHAIN: anonymous OVHcloud answers short requests but returns HTTP 429 for brief-sized
+                    # ones (27 Nov self-test, even after waiting). A key (400/min) needs an OVHcloud Public Cloud project.
+                    # OVHcloud AI Endpoints (EU), states no training on inputs.
       base_url: https://oai.endpoints.kepler.ai.cloud.ovh.net/v1
       models: [gpt-oss-120b, Qwen3.5-397B-A17B, Mistral-Small-3.2-24B-Instruct-2506, Olala-v1.0-summarise]
       label: OVHcloud AI Endpoints (anonymous)
