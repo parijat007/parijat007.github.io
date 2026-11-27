@@ -1111,7 +1111,8 @@ def test_linkedin_autopilot_only_obeys_owner_private_chat():
            {"message": {"chat": {"id": 42, "type": "private"}, "text": "/post 20261125-2333-2dc936; rm -rf"}},
            {"message": {"chat": {"id": 42, "type": "private"}, "text": " /skip 20261126-0101-abcdef "}},
            {"channel_post": {"chat": {"id": 42}, "text": "/post 20261125-2333-2dc936"}}]
-    assert owner_commands(ups, "42") == [("post", "20261125-2333-2dc936"), ("skip", "20261126-0101-abcdef")]
+    assert owner_commands(ups, "42") == [("post", "20261125-2333-2dc936"), ("help", ""),
+                                         ("skip", "20261126-0101-abcdef")]
 
 
 def test_linkedin_autopilot_post_reply_publishes_through_the_judge(tmp_path, monkeypatch):
@@ -1310,7 +1311,7 @@ def test_autopilot_note_commands_owner_only():
            {"message": {"chat": {"id": 7, "type": "private"}, "text": "/note ok 2026-11-26-ai-daily-artex-abuse"}},
            {"message": {"chat": {"id": 42, "type": "private"}, "text": "/note ok ../../x"}}]
     assert owner_commands(ups, "42") == [("note-ok", "2026-11-26-ai-daily-artex-abuse"),
-                                         ("note-drop", "2026-11-27-ai-spotlight-mcp")]
+                                         ("note-drop", "2026-11-27-ai-spotlight-mcp"), ("help", "")]
 
 
 def test_ai_topics_rotation_and_grounding(tmp_path, monkeypatch):
@@ -1446,3 +1447,49 @@ def test_write_ransomware_list(tmp_path):
     kev = {"CVE-1": {"knownRansomwareCampaignUse": "Known"}, "CVE-2": {"knownRansomwareCampaignUse": "Unknown"}}
     assert P.write_ransomware(kev, tmp_path / "r.json") == 1
     assert json.loads((tmp_path / "r.json").read_text()) == ["CVE-1"]
+
+
+def test_telegram_buttons_owner_only_and_help_once():
+    from digest.linkedin import owner_commands
+    own = {"id": 42, "type": "private"}
+    ups = [{"callback_query": {"id": "1", "from": {"id": 42}, "message": {"chat": own}, "data": "p:20261125-2333-2dc936"}},
+           {"callback_query": {"id": "2", "from": {"id": 42}, "message": {"chat": own}, "data": "nd:0123456789ab"}},
+           {"callback_query": {"id": "3", "from": {"id": 7}, "message": {"chat": own}, "data": "p:20261125-2333-2dc936"}},
+           {"callback_query": {"id": "4", "from": {"id": 42}, "message": {"chat": own}, "data": "p:../../x"}},
+           {"message": {"chat": own, "text": "/post"}},
+           {"message": {"chat": own, "text": "/note"}}]
+    assert owner_commands(ups, "42") == [("post", "20261125-2333-2dc936"), ("note-drop", "#0123456789ab"), ("help", "")]
+
+
+def test_note_button_handle_resolves_only_waiting_drafts(tmp_path, monkeypatch):
+    from digest import ai_notes as A
+    monkeypatch.setattr(A, "DRAFTS", tmp_path)
+    slug = "2026-11-27-ai-topic-prompt-injection-direct-and-indirect-instructions-hidden-in-content"
+    (tmp_path / f"{slug}.md").write_text("x")
+    assert len(f"no:{A.key(slug)}".encode()) <= 64
+    assert A.slug_for(A.key(slug)) == slug
+    assert A.slug_for("ffffffffffff") is None and A.slug_for("../x") is None
+
+
+def test_fixer_rejects_unsafe_or_out_of_scope_edits():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("autofix", Path(__file__).resolve().parents[1] / "tools" / "autofix.py")
+    F = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(F)
+    css = (Path(__file__).resolve().parents[1] / "site" / "static" / "style.css").read_text()
+    line = next(ln for ln in css.splitlines() if ln.startswith(".bottomline h2"))
+    assert F.check_edits([{"path": "site/static/style.css", "find": line, "replace": line.replace("1.05rem", "1rem")}]) == []
+    bad = [
+        {"path": "tests/test_pipeline.py", "find": "x", "replace": "y"},
+        {"path": ".github/workflows/ci.yml", "find": "x", "replace": "y"},
+        {"path": "site/static/style.css", "find": line, "replace": line + "\n@import url(https://evil.example/x.css);"},
+        {"path": "site/templates/base.html", "find": "<body>", "replace": "<body onload=\"x()\">"},
+        {"path": "site/build.py", "find": "import json", "replace": "import json\nimport os; os.system('id')"},
+        {"path": "site/templates/base.html", "find": "<body>", "replace": "<body>{{ cycler.__init__.__globals__ }}"},
+        {"path": "site/static/style.css", "find": "no such text anywhere", "replace": "y"},
+    ]
+    for e in bad:
+        assert F.check_edits([e]), e
+    assert F.failing_ids("FAILED tests/e2e/test_site_e2e.py::test_a[/today/] - Assert\nFAILED tests/x.py::test_b") == \
+        ["tests/e2e/test_site_e2e.py::test_a[/today/]", "tests/x.py::test_b"]
+    assert "site/templates/today.html" in F.context_files("[browser tests] /today/ scrolls sideways")

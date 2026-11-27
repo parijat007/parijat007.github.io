@@ -389,10 +389,13 @@ def notify_draft(d: dict) -> None:
         with open(d["image"], "rb") as fh:
             requests.post(f"https://api.telegram.org/bot{tok}/sendPhoto", data={"chat_id": chat,
                           "caption": f"Image for draft {d['id']}"}, files={"photo": fh}, timeout=60)
-    msg = (f"{head}\n\n{d['text']}\n\nTo publish, reply:  /post {d['id']}\nTo drop it, reply:  /skip {d['id']}\n"
-           "(or on the Mac: ./mac/linkedin.sh publish ID)")
-    requests.post(f"https://api.telegram.org/bot{tok}/sendMessage",
-                  json={"chat_id": chat, "text": msg[:4000], "disable_web_page_preview": True}, timeout=20)
+    msg = (f"{head}\n\n{d['text']}\n\nTap Post or Skip below (acted on within 10 minutes; Post still goes "
+           f"through the judge). Typed backup: /post {d['id']}")
+    r = requests.post(f"https://api.telegram.org/bot{tok}/sendMessage", timeout=20,
+                      json={"chat_id": chat, "text": msg[:4000], "disable_web_page_preview": True,
+                            "reply_markup": {"inline_keyboard": [[{"text": "Post", "callback_data": f"p:{d['id']}"},
+                                                                  {"text": "Skip", "callback_data": f"s:{d['id']}"}]]}})
+    log.info("telegram: draft notice %s", "sent" if r.ok else f"NOT sent (HTTP {r.status_code})")
 
 
 # ---------- publishing ----------
@@ -564,6 +567,8 @@ def status() -> None:
 # ---------- autopilot: Telegram approval ----------
 
 CMD = re.compile(r"^/(post|skip)\s+([0-9]{8}-[0-9]{4}-[0-9a-f]{6})\s*$")
+DRAFT_ID = r"[0-9]{8}-[0-9]{4}-[0-9a-f]{6}"
+BUTTON = re.compile(rf"^(?:(p|s):({DRAFT_ID})|(no|nd):([0-9a-f]{{12}}))$")
 NOTE_CMD = re.compile(r"^/note\s+(ok|drop)\s+([0-9]{4}-[0-9]{2}-[0-9]{2}-ai-(?:daily|spotlight|topic)-[a-z0-9-]{1,60})\s*$")
 
 
@@ -580,12 +585,33 @@ def _tg(method: str, **kw) -> dict:
     return r.json()
 
 
+def _from_owner(chat_obj: dict, chat: str) -> bool:
+    return str(chat_obj.get("id")) == str(chat) and chat_obj.get("type") == "private"
+
+
 def owner_commands(updates: list[dict], chat: str) -> list[tuple[str, str]]:
-    """(/post|/skip, id) from the owner's private chat only. Anything else, from anyone else, is ignored."""
+    """Desk commands from the owner's private chat only: button taps and typed /post, /skip, /note commands.
+
+    Note buttons carry a 12-character handle ("#<handle>") that the autopilot resolves to a waiting draft.
+    A message from the owner that is not a command comes back as ("help", "") so the bot can say what it expects
+    (typing "/post" alone, e.g. by tapping the highlighted word, used to be ignored silently).
+    """
     out = []
     for u in updates:
+        if (q := u.get("callback_query")):
+            msg = q.get("message") or {}
+            if str((q.get("from") or {}).get("id")) != str(chat) or not _from_owner(msg.get("chat") or {}, chat):
+                log.info("ignored a button tap that did not come from the owner's private chat")
+                continue
+            if not (b := BUTTON.match(q.get("data") or "")):
+                continue
+            if b.group(1):
+                out.append(("post" if b.group(1) == "p" else "skip", b.group(2)))
+            else:
+                out.append(("note-ok" if b.group(3) == "no" else "note-drop", "#" + b.group(4)))
+            continue
         m = u.get("message") or {}
-        if str(m.get("chat", {}).get("id")) != str(chat) or m.get("chat", {}).get("type") != "private":
+        if not _from_owner(m.get("chat") or {}, chat):
             log.info("ignored a message that did not come from the owner's private chat with the bot")
             continue
         text = (m.get("text") or "").strip()
@@ -594,8 +620,15 @@ def owner_commands(updates: list[dict], chat: str) -> list[tuple[str, str]]:
         elif (c := NOTE_CMD.match(text)):
             out.append(("note-" + c.group(1), c.group(2)))
         else:
-            log.info("a message from the owner was not a desk command (expected /post ID, /skip ID or /note ok|drop ID)")
-    return out
+            log.info("a message from the owner was not a desk command")
+            out.append(("help", ""))
+    # one help reply per run is enough
+    return [c for i, c in enumerate(out) if c[0] != "help" or ("help", "") not in out[:i]]
+
+
+HELP = ("I act on the Post / Skip and Publish / Drop buttons under each draft. Typed commands also work, "
+        "in full on one line: /post ID, /skip ID, /note ok ID or /note drop ID. "
+        "Tapping a highlighted /post or /note in a message sends only that word, which I cannot act on.")
 
 
 def autopilot(cfg: dict) -> None:
@@ -652,18 +685,29 @@ def autopilot(cfg: dict) -> None:
         return
     # Telegram keeps unread messages until they are confirmed, so nothing is stored here: read them, then
     # confirm them by asking for the next update id.
-    res = _tg("getUpdates", timeout=0, allowed_updates=["message"])
+    res = _tg("getUpdates", timeout=0, allowed_updates=["message", "callback_query"])
     updates = res.get("result") or []
     log.info("telegram: %d new message(s)", len(updates))
     if updates:
         _tg("getUpdates", offset=updates[-1]["update_id"] + 1, limit=1, timeout=0)
+    for u in updates:  # stop the spinner on any button the owner tapped
+        if (q := u.get("callback_query")) and str((q.get("from") or {}).get("id")) == str(chat):
+            _tg("answerCallbackQuery", callback_query_id=q["id"], text="Got it. Working on it.")
     cmds = owner_commands(updates, chat)
     log.info("telegram: %d desk command(s) to act on", len(cmds))
     labels = {"post": "post", "skip": "skip", "note-ok": "publish note", "note-drop": "drop note"}
     for cmd, did in cmds:
-        log.info("acting on a '%s' command", labels.get(cmd, "unknown"))
+        log.info("acting on a '%s' command", labels.get(cmd, cmd))
+        if cmd == "help":
+            say(HELP)
+            continue
         if cmd.startswith("note-"):
             from . import ai_notes  # noqa: PLC0415
+            if did.startswith("#"):
+                if not (slug := ai_notes.slug_for(did[1:])):
+                    say("That note is no longer waiting (already published or dropped).")
+                    continue
+                did = slug
             try:
                 if cmd == "note-ok":
                     say(f"Published: {ai_notes.publish(did)}\nThe LinkedIn draft follows within 10 minutes.")
