@@ -41,6 +41,7 @@ llm:
       base_url: https://oai.endpoints.kepler.ai.cloud.ovh.net/v1
       models: [gpt-oss-120b, Qwen3.5-397B-A17B, Mistral-Small-3.2-24B-Instruct-2506, Olala-v1.0-summarise]
       label: OVHcloud AI Endpoints (anonymous)
+      wait_on_429: 35          # the limit is per minute: wait it out once per model instead of failing over
       json: object
       max_items: 20
       max_text_chars: 300

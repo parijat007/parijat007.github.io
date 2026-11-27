@@ -210,7 +210,16 @@ def complete(name: str, cfg: dict, system: str, user: str) -> str:
         # Move to the next model when this one is retired (404/400), overloaded (429/5xx),
         # slow (timeout) or cut off: one busy model must not take out the whole provider.
         try:
-            text, usage = fn(name, {**pc, "model": m}, system, user)
+            try:
+                text, usage = fn(name, {**pc, "model": m}, system, user)
+            except RuntimeError as e:
+                # Providers with per-minute anonymous limits (OVHcloud: 2/min per model) ask to wait, not to give up.
+                if not (pc.get("wait_on_429") and "HTTP 429" in str(e)):
+                    raise
+                import time  # noqa: PLC0415
+                log.info("%s: %s is rate limited; waiting %ss and trying it once more", name, m, pc["wait_on_429"])
+                time.sleep(pc["wait_on_429"])
+                text, usage = fn(name, {**pc, "model": m}, system, user)
             log.info("LLM provider=%s model=%s usage=%s", name, m, usage)
             pc["_used_model"] = m
             return text
