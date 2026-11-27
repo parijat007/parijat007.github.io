@@ -183,3 +183,17 @@ def test_hidden_files_are_published(browser, base_url):
     body = page.inner_text("body") if resp else ""
     page.close()
     assert resp and resp.status == 200 and body.startswith("Contact:"), f"security.txt not served: {resp and resp.status}"
+
+
+@pytest.mark.live
+def test_watch_affected_icons_and_filter(base_url, page_with_checks):
+    page = page_with_checks
+    page.goto(base_url + "/watch/", wait_until="load")
+    assert page.locator("table.watch tbody tr .affected svg use").count() > 0
+    opts = page.eval_on_selector_all("select[data-cat] option", "os => os.map(o => o.value).filter(Boolean)")
+    assert opts
+    page.select_option("select[data-cat]", opts[0])
+    cats = page.eval_on_selector_all("table.watch tbody tr:not([hidden])", "rs => rs.map(r => r.dataset.cats)")
+    assert cats and all(opts[0] in c.split() for c in cats)
+    page.select_option("select[data-cat]", "")
+    assert page.locator("table.watch tbody tr:not([hidden])").count() == page.locator("table.watch tbody tr").count()

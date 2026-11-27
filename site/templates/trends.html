@@ -24,6 +24,9 @@
 <section class="block" aria-labelledby="v-h"><h2 id="v-h">Most listed vendors</h2>
 <ol class="bars">{% set top = t.vendors[0][1] if t.vendors else 1 %}{% for v, n in t.vendors %}
 <li><span class="bar-label">{{ v }}</span><span class="bar w{{ (n / top * 20) | round | int }}"></span><span class="bar-n">{{ n }}</span></li>{% endfor %}</ol></section>
+{% if t.categories %}<section class="block" aria-labelledby="c-h"><h2 id="c-h">What was hit</h2>
+<ol class="bars">{% set top = t.categories[0][2] %}{% for c, label, n in t.categories %}
+<li><span class="bar-label"><svg class="ico ico-inline" aria-hidden="true"><use href="{{ root }}static/affected.svg#i-{{ c }}"></use></svg> {{ label }}</span><span class="bar w{{ (n / top * 20) | round | int }}"></span><span class="bar-n">{{ n }}</span></li>{% endfor %}</ol></section>{% endif %}
 <section class="block" aria-labelledby="w-h"><h2 id="w-h">Most common weaknesses</h2>
 <ol class="bars">{% set top = t.cwes[0][2] if t.cwes else 1 %}{% for c, name, n in t.cwes %}
 <li><span class="bar-label">{{ name or c }} <span class="muted">{{ c }}</span></span><span class="bar w{{ (n / top * 20) | round | int }}"></span><span class="bar-n">{{ n }}</span></li>{% endfor %}</ol></section>
@@ -33,7 +36,7 @@
 <div class="table-scroll"><table class="watch">
 <thead><tr><th scope="col">CVE</th><th scope="col">Vendor and product</th><th scope="col">Added</th><th scope="col">Due</th><th scope="col">Ransomware</th></tr></thead>
 <tbody>{% for e in t.entries %}<tr>
-<td class="num">{{ cvelinks(e.cve, root) }}</td><td>{{ e.vendor }} {{ e.product }}<br><span class="muted">{{ e.name }}</span></td>
+<td class="num">{{ cvelinks(e.cve, root) }}</td><td>{% if e.category %}<svg class="ico ico-inline" aria-label="{{ aff_labels[e.category] }}" role="img"><use href="{{ root }}static/affected.svg#i-{{ e.category }}"></use></svg> {% endif %}{{ e.vendor }} {{ e.product }}<br><span class="muted">{{ e.name }}</span></td>
 <td class="num">{{ e.added | nicedate }}</td><td class="num">{{ e.due | nicedate if e.due else "–" }}</td><td>{{ "Known" if e.ransomware else "–" }}</td>
 </tr>{% endfor %}</tbody></table></div></section>
 

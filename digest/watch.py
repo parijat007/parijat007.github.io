@@ -78,6 +78,14 @@ def run(no_alert: bool = False) -> int:
             known[it["id"]] = _entry(it, it["_kind"], stamp)
             fresh.append(known[it["id"]])
 
+    from . import affected as A                      # what each row affects (icons on the site)
+    by_id = {it["id"]: it for it in items}
+    for e in known.values():
+        it = by_id.get(e["id"], {})
+        pk = (it.get("packages") or [{}])[0]
+        e["affected"] = A.for_cves(e.get("cves", []), kev, e.get("title", ""), e.get("source"),
+                                   pk.get("ecosystem"), pk.get("name")) if (it or "affected" not in e) else e["affected"]
+
     keep_after = (now - timedelta(days=w.get("retain_days", 7))).isoformat()
     entries = sorted((e for e in known.values() if e["first_seen"] >= keep_after),
                      key=lambda e: (e["first_seen"], e["kind"] == "KEV"), reverse=True)
@@ -85,6 +93,12 @@ def run(no_alert: bool = False) -> int:
     OUT.write_text(json.dumps({"updated": stamp, "sources": status, "entries": entries},
                               indent=1, ensure_ascii=False))
     log.info("watch: %d entries (%d new)", len(entries), len(fresh))
+    try:
+        n_aff = A.write_map(kev, {c: e["affected"] for e in entries if e["kind"] != "KEV" for c in e.get("cves", [])},
+                            ROOT / "data" / "affected.json")
+        log.info("affected map: %d CVEs", n_aff)
+    except Exception as e:  # noqa: BLE001
+        log.warning("affected map failed: %s", e)
 
     try:                                     # per-CVE timelines and detection pointers (digest/timeline.py)
         from .timeline import update as update_timeline

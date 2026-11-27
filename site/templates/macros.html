@@ -26,7 +26,7 @@
     <summary><h3>{{ e.headline }}</h3>{{ tags(e) }}</summary>
     <dl class="detail">
       <dt>What happened</dt><dd>{{ e.summary }}</dd>
-      <dt>Affected</dt><dd>{{ e.target }}</dd>
+      <dt>Affected</dt><dd>{{ affected(affected_for(e.identifiers, e.target), "/") }}{% if e.target %}<span class="muted">{{ e.target }}</span>{% endif %}</dd>
       {% if e.risk %}<dt>Risk</dt><dd class="risk">{{ e.risk | riskline }}</dd>{% endif %}
       {% if e.identifiers %}<dt>Identifiers</dt><dd class="ids">{% for i in e.identifiers %}{% if i | upper in cve_pages %}<a class="id" href="/cve/{{ i | upper }}/" title="Exploit timeline">{{ i }}</a>{% else %}<span class="id">{{ i }}</span>{% endif %}{% endfor %}</dd>{% endif %}
       <dt>Do this</dt><dd>{{ e.action }}</dd>
@@ -64,4 +64,9 @@
 <button type="button" class="button" data-comments data-repo="{{ c.repo }}" data-repo-id="{{ c.repo_id }}" data-category="{{ c.category }}" data-category-id="{{ c.category_id }}" data-term="{{ term }}">Show comments</button>
 <div class="giscus"></div>
 </section>{% endif %}
+{%- endmacro %}
+
+
+{% macro affected(tags, root) -%}
+{% if tags %}<ul class="affected" aria-label="Affects">{% for a in tags %}<li class="aff c-{{ a.category }}"><svg class="ico" aria-hidden="true" focusable="false"><use href="{{ root }}static/affected.svg#i-{{ a.category }}"></use></svg><span><b>{{ a.label }}</b>{% if a.product %} · {{ a.product }}{% endif %}{% if a.platforms %} ({{ a.platforms | join(", ") }}){% endif %}</span></li>{% endfor %}</ul>{% endif %}
 {%- endmacro %}
