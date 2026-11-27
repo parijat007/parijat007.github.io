@@ -44,7 +44,7 @@ jobs:
           GITHUB_TOKEN:       ${{ secrets.GITHUB_TOKEN }}
           RUN_ID:             ${{ inputs.run_id || github.event.workflow_run.id }}
           DRY:                ${{ (inputs.dry_run || (inputs.ref && inputs.ref != 'main')) && '1' || '' }}
-          WF_LLM_CHAIN:       gemini,github,groq,openrouter,cloudflare
+          WF_LLM_CHAIN:       gemini,groq,openrouter,cloudflare
           GEMINI_API_KEY:     ${{ secrets.GEMINI_API_KEY }}
           GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}

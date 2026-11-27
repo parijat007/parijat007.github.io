@@ -9,7 +9,7 @@ max_items_to_llm: 40        # pre-ranked cap on items sent to the model (token c
 # Analyst model chain. First provider that answers wins; if all fail, a facts-only brief is published.
 # On the Mac: local -> gemini -> groq -> openrouter.  In GitHub Actions: WF_LLM_CHAIN=gemini,groq,openrouter
 llm:
-  chain: [local, gemini, github, groq, cloudflare, openrouter]
+  chain: [local, gemini, groq, cloudflare, openrouter]
   providers:
     local:          # llama.cpp llama-server on the M1 Max. $0, nothing leaves the machine.
       base_url: http://127.0.0.1:8080/v1
@@ -36,7 +36,8 @@ llm:
       max_items: 40
       max_text_chars: 400
       timeout_seconds: 75         # per model; a healthy Gemini Flash answers in ~15 s
-    github:         # GitHub Models: OpenAI GPT models, free and rate-limited, through your GitHub account. In Actions the
+    github:         # NOT IN ANY CHAIN YET: from Actions the endpoint answered a bare "OK" (27 Nov), cause unknown.
+                    # GitHub Models: OpenAI GPT models, free and rate-limited, through your GitHub account. In Actions the
                     # built-in token works (job permission models: read); on the Mac it is optional (Keychain
                     # github-models-token, a fine-grained token with only "Models: read"). Small request limits:
                     # keep inputs short.
