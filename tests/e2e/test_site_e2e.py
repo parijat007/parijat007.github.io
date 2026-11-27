@@ -234,3 +234,19 @@ def test_category_and_act_feeds_are_valid(site_dir):
     for f in ["act-now.xml", "affects-os.xml", "affects-network.xml"]:
         root = ET.parse(site_dir / "feeds" / f).getroot()
         assert root.tag == "rss" and root.find("channel/title").text
+
+
+@pytest.mark.live
+@pytest.mark.parametrize("width", [390, 1280])
+def test_header_never_covers_the_page_title(browser, base_url, width):
+    page = browser.new_page(viewport={"width": width, "height": 900})
+    try:
+        for path in ["/", "/today/", "/watch/", "/trends/"]:
+            page.goto(base_url + path, wait_until="load")
+            bar = page.eval_on_selector(".bar", "e => e.getBoundingClientRect().bottom")
+            nav = page.eval_on_selector(".nav", "e => e.getBoundingClientRect().bottom")
+            h1 = page.eval_on_selector("main h1", "e => e.getBoundingClientRect().top")
+            assert bar >= nav - 1, (path, width, bar, nav)
+            assert h1 >= bar, (path, width, h1, bar)
+    finally:
+        page.close()
