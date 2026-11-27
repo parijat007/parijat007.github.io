@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import gzip
+import hashlib
 import json
 import logging
 import os
@@ -211,7 +212,7 @@ def to_markdown(note: dict, kind: str, day: date, provider: str, extra: dict | N
     acts = note.get("actions") or []
     if acts or note.get("hunt"):
         body.append("## What to do\n")
-        body += [f"- **{a['verb']}:** {a['text']}" for a in acts]
+        body += [ln for a in acts if (ln := _action_line(a))]
         if note.get("hunt"):
             body.append(f"\n**Hunt** (adapt to your logging): {note['hunt']}")
         body.append("")
@@ -219,17 +220,76 @@ def to_markdown(note: dict, kind: str, day: date, provider: str, extra: dict | N
     return slug, md
 
 
-def notify(slug: str, md: str, problems: list[str]) -> None:
+VERBS = ("Patch", "Inventory", "Contain", "Hunt", "Detect")
+
+
+def _action_line(a) -> str | None:
+    """One "What to do" bullet. Models do not always keep the requested shape ({"verb", "text"}): accept a plain
+    string, another key for the step, or a verb inside the text; skip anything with no step at all."""
+    if isinstance(a, str):
+        text, verb = a.strip(), ""
+    elif isinstance(a, dict):
+        text = str(a.get("text") or a.get("step") or a.get("action") or a.get("description") or "").strip()
+        verb = str(a.get("verb") or a.get("type") or a.get("category") or "").strip()
+    else:
+        return None
+    if not text:
+        return None
+    if not verb and (m := re.match(rf"^\**({'|'.join(VERBS)})\**\s*[:\-]\s*", text, re.I)):
+        verb, text = m.group(1).capitalize(), text[m.end():]
+    return f"- **{verb}:** {text}" if verb else f"- {text}"
+
+
+def key(slug: str) -> str:
+    """A short handle for a draft: Telegram button data is capped at 64 bytes, and slugs can be longer."""
+    return hashlib.sha256(slug.encode()).hexdigest()[:12]
+
+
+def slug_for(k: str) -> str | None:
+    """The draft a button's handle points to, or None if no such draft is waiting."""
+    if not re.fullmatch(r"[0-9a-f]{12}", k or ""):
+        return None
+    return next((f.stem for f in DRAFTS.glob("*.md") if key(f.stem) == k), None)
+
+
+def telegram(text: str, buttons: list[list[tuple[str, str]]] | None = None) -> bool:
+    """Send a message to the owner; True only when Telegram accepted it (failures are logged, never raised)."""
     tok, chat = os.environ.get("TELEGRAM_BOT_TOKEN"), os.environ.get("TELEGRAM_CHAT_ID")
     if not (tok and chat):
-        return
+        log.warning("telegram: no bot token or chat id in the environment; message not sent")
+        return False
     import requests  # noqa: PLC0415
+    body = {"chat_id": chat, "text": text[:4000], "disable_web_page_preview": True}
+    if buttons:
+        body["reply_markup"] = {"inline_keyboard": [[{"text": t, "callback_data": d} for t, d in row] for row in buttons]}
+    try:
+        r = requests.post(f"https://api.telegram.org/bot{tok}/sendMessage", timeout=30, json=body)
+    except requests.RequestException as e:
+        log.warning("telegram: send failed (%s)", type(e).__name__)
+        return False
+    if not r.ok:
+        # Status and Telegram's own description only: the URL carries the token and is never logged.
+        desc = (r.json().get("description") if r.headers.get("content-type", "").startswith("application/json") else "")
+        log.warning("telegram: send failed: HTTP %s %s", r.status_code, (desc or "")[:120])
+        return False
+    log.info("telegram: draft notice sent")
+    return True
+
+
+def notify(slug: str, md: str, problems: list[str]) -> bool:
     fm = yaml.safe_load(md.split("---", 2)[1])
     msg = (f"Draft note: {fm['title']}\n\n{fm['summary']}\n\nSources: {len(fm['sources'])}. "
            + (f"Removed before you see it: {len(problems)} sentence(s) with figures not in the sources.\n" if problems else "")
-           + f"\nFull draft on the Mac: ~/.watchfloor/notes/{slug}.md\n\nTo publish:  /note ok {slug}\nTo drop:  /note drop {slug}")
-    requests.post(f"https://api.telegram.org/bot{tok}/sendMessage", timeout=30,
-                  json={"chat_id": chat, "text": msg[:4000], "disable_web_page_preview": True})
+           + f"\nFull draft on the Mac: ~/.watchfloor/notes/{slug}.md\n\nTap Publish or Drop below "
+             f"(acted on within 10 minutes). Typed backup: /note ok {slug}")
+    k = key(slug)
+    return telegram(msg, [[("Publish", f"no:{k}"), ("Drop", f"nd:{k}")]])
+
+
+def notify_failure(what: str, err: object) -> None:
+    """Tell the owner a draft could not be made, so a missing post is never a mystery."""
+    telegram(f"Watchfloor: the {what} draft could not be made today.\nReason: {str(err)[:300]}\n"
+             "The brief is unaffected. Details: ~/Library/Logs/watchfloor.log on the Mac.")
 
 
 def run(kind: str, dry: bool = False, today: date | None = None) -> Path | None:
@@ -285,7 +345,12 @@ def main() -> None:
         print(publish(a.id or ""))
         return
     kind = a.cmd if a.cmd != "auto" else ("weekly" if datetime.now(timezone.utc).weekday() == 2 else "daily")
-    run(kind, a.dry_run)
+    try:
+        run(kind, a.dry_run)
+    except Exception as e:  # noqa: BLE001  a failed draft must reach the owner, then still fail the step
+        if not a.dry_run:
+            notify_failure(f"AI {'Spotlight' if kind == 'weekly' else 'news'} note", e)
+        raise
 
 
 if __name__ == "__main__":

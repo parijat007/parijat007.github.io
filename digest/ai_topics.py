@@ -147,7 +147,12 @@ def main() -> None:
     ap.add_argument("--topic", help="a topic id from data/topics/ai_security.yaml")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
-    run(a.topic, a.dry_run)
+    try:
+        run(a.topic, a.dry_run)
+    except Exception as e:  # noqa: BLE001  a failed draft must reach the owner, then still fail the step
+        if not a.dry_run:
+            A.notify_failure("AI Security Topics", e)
+        raise
 
 
 if __name__ == "__main__":
