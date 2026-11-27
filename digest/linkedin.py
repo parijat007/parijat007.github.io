@@ -695,9 +695,9 @@ def autopilot(cfg: dict) -> None:
             _tg("answerCallbackQuery", callback_query_id=q["id"], text="Got it. Working on it.")
     cmds = owner_commands(updates, chat)
     log.info("telegram: %d desk command(s) to act on", len(cmds))
-    labels = {"post": "post", "skip": "skip", "note-ok": "publish note", "note-drop": "drop note"}
+    labels = {"post": "post", "skip": "skip", "note-ok": "publish note", "note-drop": "drop note", "help": "help"}
     for cmd, did in cmds:
-        log.info("acting on a '%s' command", labels.get(cmd, cmd))
+        log.info("acting on a '%s' command", labels.get(cmd, "unknown"))
         if cmd == "help":
             say(HELP)
             continue
