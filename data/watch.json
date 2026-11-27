@@ -1,16 +1,56 @@
 {
- "updated": "2026-11-27T07:21:06+00:00",
+ "updated": "2026-11-27T08:18:30+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
   "CISA Advisories": "ok (1)",
-  "Microsoft MSRC": "ok (0)",
+  "Microsoft MSRC": "ok (1)",
   "Palo Alto PSIRT": "ok (0)",
   "Fortinet PSIRT": "ok (0)",
   "Cisco PSIRT": "ok (3)",
   "AWS Security Bulletins": "ok (1)"
  },
  "entries": [
+  {
+   "id": "CVE-2026-62840",
+   "kind": "ADVISORY",
+   "title": "CVE-2026-62840 Linux Kernel Elevation of Privilege Vulnerability",
+   "summary": "Information published.",
+   "source": "Microsoft MSRC",
+   "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-62840",
+   "published": "2026-11-27T09:10:39+00:00",
+   "cves": [
+    "CVE-2026-62840"
+   ],
+   "cvss": null,
+   "epss": {
+    "score": 0.002,
+    "percentile": 0.058
+   },
+   "poc": 0,
+   "kev_due": null,
+   "ransomware": null,
+   "stack_match": [],
+   "first_seen": "2026-11-27T08:18:30+00:00",
+   "required_action": null,
+   "fix": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching"
+   },
+   "affected": [
+    {
+     "category": "os",
+     "label": "Operating system",
+     "platforms": [
+      "Linux"
+     ]
+    }
+   ]
+  },
   {
    "id": "GHSA-7wwv-x6mc-pxqx",
    "kind": "GHSA",

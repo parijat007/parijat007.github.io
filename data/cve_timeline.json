@@ -2589,8 +2589,34 @@
    ],
    "detections": [],
    "title": "AWS: Kiro Web RCE and Config Remediation Flaws"
+  },
+  "CVE-2026-62840": {
+   "cve": "CVE-2026-62840",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-27"
+    },
+    "vendor_advisory": {
+     "date": "2026-11-27",
+     "source": "Microsoft MSRC",
+     "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-62840"
+    },
+    "published": {
+     "date": "2026-10-13",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-62840"
+    }
+   },
+   "epss": [
+    {
+     "date": "2026-11-27",
+     "score": 0.002
+    }
+   ],
+   "briefs": [],
+   "detections": [],
+   "title": "CVE-2026-62840 Linux Kernel Elevation of Privilege Vulnerability"
   }
  },
  "detections_checked": "2026-11-27",
- "updated": "2026-11-27T07:21:06+00:00"
+ "updated": "2026-11-27T08:18:30+00:00"
 }
