@@ -229,6 +229,8 @@ def test_my_stack_marks_rows_and_entries(base_url, page_with_checks):
 
 
 def test_category_and_act_feeds_are_valid(site_dir):
+    if not site_dir:
+        pytest.skip("needs E2E_SITE_DIR")
     for f in ["act-now.xml", "affects-os.xml", "affects-network.xml"]:
         root = ET.parse(site_dir / "feeds" / f).getroot()
         assert root.tag == "rss" and root.find("channel/title").text
