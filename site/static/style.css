@@ -477,8 +477,7 @@ table.watch td .tag.ransom { display: inline-block; margin-top: .3rem; }
   background: var(--panel); padding: 1rem 1.25rem; margin: 0 0 1.5rem; max-width: 80ch; }
 .bottomline h2 { margin: 0 0 .5rem; font-size: 1.05rem; }
 .bottomline ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .45rem; }
-.bottomline li { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: .75rem; }
-.bottomline li > span { min-width: 0; overflow-wrap: anywhere; }
+.bottomline li { display: grid; grid-template-columns: 4.5rem 1fr; gap: .75rem; }
 .bottomline b.p-act { color: var(--breach-text); }
 .bottomline b.p-attend { color: var(--deadline); }
 .bottomline .note { margin: .6rem 0 0; }
