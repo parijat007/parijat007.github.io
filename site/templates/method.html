@@ -19,6 +19,16 @@
 <p>Confirmed exploitation first; then critical issues in widely deployed edge, identity, cloud control-plane, CI/CD and AI systems; then supply-chain compromises and new techniques; then useful open-source tooling. At most eight items a day. Quiet days are published as quiet.</p>
 <h2>Risk line</h2>
 <p>Each item can carry a risk line built from public scoring data, never from the model: listing in the <a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" rel="noopener">CISA KEV catalog</a>; the <a href="https://www.first.org/epss/" rel="noopener">EPSS</a> score from FIRST, the modelled chance of exploitation in the next 30 days; CISA's <a href="https://github.com/cisagov/vulnrichment" rel="noopener">Vulnrichment</a> SSVC decision points (exploitation, automatable, technical impact); and, where configured, the <a href="https://www.vulncheck.com/kev" rel="noopener">VulnCheck KEV</a> catalog, which often lists exploitation before CISA does. EPSS data courtesy of FIRST; VulnCheck KEV data courtesy of VulnCheck.</p>
+<h2 id="priority">Priority: Act, Attend, Track</h2>
+<p>Every brief item, watch row and CVE page carries one of three priorities, worked out by fixed rules from public data, never by the model. The names follow CISA's <a href="https://www.cisa.gov/ssvc" rel="noopener">SSVC</a> outcomes.</p>
+<ul>
+<li><b>Act</b>: exploitation is confirmed. The item is in CISA KEV or VulnCheck KEV, CISA's SSVC data says exploitation is active, or the brief's sources confirm exploitation.</li>
+<li><b>Attend</b>: not confirmed, but likely soon. There is public exploit code, the EPSS score is 10% or higher or in the top 5%, or the CVSS score is 9.0 or higher and SSVC says the attack can be automated.</li>
+<li><b>Track</b>: no sign of exploitation; handle it in routine patching.</li>
+</ul>
+<p>Each priority lists its reasons. It is a general starting point: CISA's full SSVC also weighs how much the affected system matters to your mission, which only you know. A <b>Ransomware</b> badge means CISA KEV records known use in ransomware campaigns.</p>
+<h2>Your stack</h2>
+<p>On the <a href="{{ root }}watch/">hourly watch</a> you can pick the categories and vendors you run. Matching watch rows and brief items are then marked. The choice is stored only in your browser and never sent anywhere. Feeds by category and for "Act" items are on the <a href="{{ root }}feeds/">feeds page</a>.</p>
 <h2>Checks before publishing</h2>
 <p>The analyst model runs locally on the author's machine, with free cloud models as a backup when it is offline; if none answer, a facts-only brief is published without commentary. Models return structured output only. Every item must cite a URL that was actually collected; anything else is dropped. Severity data (KEV, CVSS, EPSS, PoC counts) comes from the sources, not the model. The hourly watch uses no model at all.</p>
 <h2>Corrections</h2>

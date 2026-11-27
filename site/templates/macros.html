@@ -1,5 +1,31 @@
+{% macro prio(v, long=false) -%}
+<span class="prio p-{{ v.level }}" title="{{ v.advice }}{% if v.reasons %} Why: {{ v.reasons | join('; ') }}.{% endif %}">{{ v.label }}</span>{% if long %} <span class="prio-why">{{ v.advice }}{% if v.reasons %} <span class="muted">Why: {{ v.reasons | join('; ') }}.</span>{% endif %}</span>{% endif %}
+{%- endmacro %}
+
+{% macro ransom(v) -%}{% if v.ransomware %}<span class="tag ransom" title="CISA KEV: known use in ransomware campaigns">Ransomware</span>{% endif %}{%- endmacro %}
+
+{% macro ticket(text, label) -%}
+<details class="ticket"><summary>Copy as ticket</summary>
+<pre tabindex="0" aria-label="{{ label }}">{{ text }}</pre>
+<button type="button" class="copy" data-copy hidden>Copy text</button><span class="copied" role="status" aria-live="polite"></span>
+</details>
+{%- endmacro %}
+
+{% macro bottomline(items, run_date, root) -%}{% set bl = bottom_line(items) %}
+<section class="bottomline" aria-labelledby="bl-h"><h2 id="bl-h">Bottom line</h2>
+<ul>
+  <li><b class="p-act">Act</b><span>{% if bl.act %}{{ bl.act | length }} item{{ '' if bl.act | length == 1 else 's' }}: {% for e in bl.act %}<a href="{{ root }}brief/{{ run_date }}/#item-{{ e.rank }}">#{{ e.rank }} {{ e.headline }}</a>{% if not loop.last %}; {% endif %}{% endfor %}.{% if bl.due %} Earliest CISA deadline {{ bl.due | longdate }}.{% endif %}{% if bl.ransomware %} {{ bl.ransomware | length }} with known ransomware use.{% endif %}{% else %}Nothing in today's brief is confirmed exploited.{% endif %}</span></li>
+  <li><b class="p-attend">Attend</b><span>{% if bl.attend %}{% for e in bl.attend %}<a href="{{ root }}brief/{{ run_date }}/#item-{{ e.rank }}">#{{ e.rank }} {{ e.headline }}</a>{% if not loop.last %}; {% endif %}{% endfor %}: likely to be exploited soon.{% else %}No item is flagged as likely to be exploited soon.{% endif %}</span></li>
+  <li><b>Hunt</b><span>{% if bl.hunt %}{% for e in bl.hunt %}#{{ e.rank }}: {{ e.hunt }}{% if not loop.last %} {% endif %}{% endfor %}{% else %}No specific hunt today; check the Verify step on each item.{% endif %}</span></li>
+</ul>
+<p class="note">Act, Attend and Track come from public data only: CISA KEV, CISA SSVC, EPSS and public exploit code. <a href="{{ root }}method/#priority">How it is worked out</a>.</p>
+</section>
+{%- endmacro %}
+
 {% macro tags(e) -%}
-<ul class="tags">
+{% set v = prio_item(e) %}<ul class="tags">
+  {% if v %}<li class="tag prio p-{{ v.level }}" title="{{ v.advice }}">{{ v.label }}</li>{% endif %}
+  {% if v and v.ransomware %}<li class="tag ransom" title="CISA KEV: known use in ransomware campaigns">Ransomware</li>{% endif %}
   <li class="tag sev-{{ e.severity }}">{{ e.severity | sev }}</li>
   <li class="tag x-{{ e.exploitation }}">{{ e.exploitation | xlabel }}</li>
   <li class="tag cat-{{ e.category }}">{{ e.category | cat }}</li>
@@ -19,14 +45,16 @@
 {%- endmacro %}
 
 {% macro entry(e, p, run_date) -%}
-<li class="entry" id="item-{{ e.rank }}">
+{% set aff_e = affected_for(e.identifiers, e.target) %}
+<li class="entry" id="item-{{ e.rank }}" data-cats="{{ aff_e | map(attribute='category') | unique | join(' ') }}" data-text="{{ ((e.target or '') ~ ' ' ~ (aff_e | map(attribute='product') | select | join(' ')) ~ ' ' ~ e.headline) | lower }}">
   <span class="rail {{ e.exploitation }}" aria-hidden="true"></span>
   <span class="rank">{{ e.rank }}</span>
   <details>
     <summary><h3>{{ e.headline }}</h3>{{ tags(e) }}</summary>
     <dl class="detail">
       <dt>What happened</dt><dd>{{ e.summary }}</dd>
-      <dt>Affected</dt><dd>{{ affected(affected_for(e.identifiers, e.target), "/") }}{% if e.target %}<span class="muted">{{ e.target }}</span>{% endif %}</dd>
+      {% if prio_item(e) %}<dt>Priority</dt><dd>{{ prio(prio_item(e), true) }}</dd>{% endif %}
+      <dt>Affected</dt><dd>{{ affected(aff_e, "/") }}{% if e.target %}<span class="muted">{{ e.target }}</span>{% endif %}</dd>
       {% if e.risk %}<dt>Risk</dt><dd class="risk">{{ e.risk | riskline }}</dd>{% endif %}
       {% if e.identifiers %}<dt>Identifiers</dt><dd class="ids">{% for i in e.identifiers %}{% if i | upper in cve_pages %}<a class="id" href="/cve/{{ i | upper }}/" title="Exploit timeline">{{ i }}</a>{% else %}<span class="id">{{ i }}</span>{% endif %}{% endfor %}</dd>{% endif %}
       <dt>Do this</dt><dd>{{ e.action }}</dd>
@@ -35,6 +63,7 @@
       <dt>Confidence</dt><dd>{{ e.confidence | title }}{% if e.verify_flags %} <span class="muted">(a second model found {{ e.verify_flags }} statement{{ '' if e.verify_flags == 1 else 's' }} not in the sources)</span>{% endif %}</dd>
       <dt>Sources</dt><dd><a href="{{ e.primary_source | safe_url }}" rel="noopener nofollow">{{ e.primary_source | host }}</a>{% for u in e.corroborating_sources %}, <a href="{{ u | safe_url }}" rel="noopener nofollow">{{ u | host }}</a>{% endfor %}</dd>
     </dl>
+    {% if prio_item(e) %}{{ ticket(ticket_item(e, run_date), "Ticket text for item " ~ e.rank) }}{% endif %}
     <a class="report" href="{{ p.repo_url }}/issues/new?title={{ ('Correction: ' ~ run_date ~ ' #' ~ e.rank) | urlencode }}&labels=correction">Report an error in this item</a>
   </details>
 </li>

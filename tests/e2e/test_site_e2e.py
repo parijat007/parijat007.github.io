@@ -197,3 +197,38 @@ def test_watch_affected_icons_and_filter(base_url, page_with_checks):
     assert cats and all(opts[0] in c.split() for c in cats)
     page.select_option("select[data-cat]", "")
     assert page.locator("table.watch tbody tr:not([hidden])").count() == page.locator("table.watch tbody tr").count()
+
+
+@pytest.mark.live
+def test_priority_bottom_line_and_ticket(base_url, page_with_checks):
+    page = page_with_checks
+    page.goto(base_url + "/watch/", wait_until="load")
+    levels = set(page.eval_on_selector_all("table.watch tbody tr", "rs => rs.map(r => r.dataset.prio)"))
+    assert levels and levels <= {"act", "attend", "track"}
+    page.select_option("select[data-prio]", "act")
+    shown = page.eval_on_selector_all("table.watch tbody tr:not([hidden])", "rs => rs.map(r => r.dataset.prio)")
+    assert all(p == "act" for p in shown)
+    page.goto(base_url + "/archive/", wait_until="load")
+    page.goto(urljoin(base_url + "/archive/", page.locator("a[href*='brief/']").first.get_attribute("href")), wait_until="load")
+    assert page.locator(".bottomline li").count() == 3
+
+
+def test_my_stack_marks_rows_and_entries(base_url, page_with_checks):
+    page = page_with_checks
+    page.goto(base_url + "/watch/", wait_until="load")
+    assert page.is_disabled("button[data-f='mine']")
+    cat = page.eval_on_selector("table.watch tbody tr", "r => r.dataset.cats.split(' ')[0]")
+    page.click("[data-mystack] summary")
+    page.check(f"[data-ms-cat][value='{cat}']")
+    page.click("[data-ms-save]")
+    assert page.locator("table.watch tbody tr.mine").count() > 0
+    page.click("button[data-f='mine']")
+    assert page.locator("table.watch tbody tr:not([hidden])").count() == page.locator("table.watch tbody tr.mine").count()
+    page.click("[data-ms-clear]")
+    assert page.locator("table.watch tbody tr.mine").count() == 0
+
+
+def test_category_and_act_feeds_are_valid(site_dir):
+    for f in ["act-now.xml", "affects-os.xml", "affects-network.xml"]:
+        root = ET.parse(site_dir / "feeds" / f).getroot()
+        assert root.tag == "rss" and root.find("channel/title").text

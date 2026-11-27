@@ -166,6 +166,44 @@ def topic_feeds(briefs: list[dict], watch: dict, watchlist: list[str], base: str
     return topics
 
 
+def category_feeds(briefs: list[dict], watch: dict, base: str, affected_for, PRI, ransom: set) -> dict[str, dict]:
+    """feeds/act-now.xml plus one feed per affected category (feeds/affects-<category>.xml)."""
+    from digest.affected import CATEGORIES  # noqa: PLC0415
+    feeds = {"act-now": {"name": "Act now", "items": [],
+                         "desc": "Items with confirmed exploitation (Watchfloor priority Act), from the daily brief and hourly watch"}}
+    for k, label in CATEGORIES.items():
+        if k != "other":
+            feeds[f"affects-{k}"] = {"name": f"Affects: {label}", "items": [],
+                                     "desc": f"Brief items and watch entries that affect {label.lower()}"}
+
+    def add(cats, level, item):
+        if level == "act":
+            feeds["act-now"]["items"].append(item)
+        for c in set(cats):
+            if f"affects-{c}" in feeds:
+                feeds[f"affects-{c}"]["items"].append(item)
+    for b in briefs[:60]:
+        pub = datetime.fromisoformat(b["run_date"]).replace(hour=12, tzinfo=timezone.utc)
+        for e in b.get("items", []):
+            add([a["category"] for a in affected_for(e.get("identifiers"), e.get("target") or "")],
+                (PRI.for_item(e, ransom) or {}).get("level"),
+                {"title": e["headline"], "link": f"{base}/brief/{b['run_date']}/#item-{e['rank']}", "pub": pub,
+                 "desc": e.get("summary", "")})
+    for w in watch.get("entries", []):
+        try:
+            pub = datetime.fromisoformat((w.get("first_seen") or w.get("published") or "").replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        add([a["category"] for a in (w.get("affected") or affected_for(w.get("cves"), w.get("title", ""), w.get("source")))],
+            PRI.for_watch(w, ransom)["level"],
+            {"title": w.get("title", ""), "link": safe_url(w.get("url")) or f"{base}/watch/", "pub": pub,
+             "desc": w.get("summary", "")})
+    for t in feeds.values():
+        t["items"].sort(key=lambda i: i["pub"], reverse=True)
+        t["items"] = t["items"][:40]
+    return feeds
+
+
 def topic_rss(t: dict, slug: str, p: dict, base: str) -> str:
     items = "".join(
         f"<item><title>{escape(i['title'])}</title><link>{escape(i['link'])}</link>"
@@ -174,7 +212,7 @@ def topic_rss(t: dict, slug: str, p: dict, base: str) -> str:
         for i in t["items"])
     return ('<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel>'
             f"<title>{escape(p['site_title'])}: {escape(t['name'])}</title><link>{base}/feeds/</link>"
-            f"<description>Exploited and critical issues touching {escape(t['name'])}, from the daily brief and hourly watch</description>"
+            f"<description>{escape(t.get('desc') or ('Exploited and critical issues touching ' + t['name'] + ', from the daily brief and hourly watch'))}</description>"
             f"{items}</channel></rss>")
 
 
@@ -291,6 +329,51 @@ def build(out: Path) -> None:
     E.globals["affected_for"] = affected_for
     E.globals["aff_labels"] = AFF.CATEGORIES
 
+    from digest import priority as PRI  # noqa: PLC0415
+    _ransom = set(json.loads((DATA / "kev_ransomware.json").read_text())) if (DATA / "kev_ransomware.json").exists() else set()
+    E.globals["prio_watch"] = lambda e: PRI.for_watch(e, _ransom)
+    E.globals["prio_item"] = lambda e: PRI.for_item(e, _ransom)
+    E.globals["prio_cve"] = lambda rec: PRI.for_cve(rec, _ransom)
+    E.globals["prio_levels"] = PRI.LEVELS
+
+    def bottom_line(items: list[dict]) -> dict:
+        """The three-line summary at the top of a brief: what to act on, what to schedule, what to hunt."""
+        rows = [(e, v) for e in items or [] if (v := PRI.for_item(e, _ransom))]
+        act = [e for e, v in rows if v["level"] == "act"]
+        dues = sorted(e["kev_due_date"] for e in act if e.get("kev_due_date"))
+        return {"act": act, "attend": [e for e, v in rows if v["level"] == "attend"],
+                "due": dues[0] if dues else None, "hunt": [e for e in items or [] if e.get("hunt")],
+                "ransomware": [e for e, v in rows if v["ransomware"]]}
+    E.globals["bottom_line"] = bottom_line
+
+    def _lines(*pairs) -> str:
+        return "\n".join(f"{k}: {v}" for k, v in pairs if v)
+
+    def ticket_item(e: dict, run_date: str) -> str:
+        """Plain text for a ticket (Jira, ServiceNow, email) built only from the item's own fields."""
+        v, rm = PRI.for_item(e, _ransom) or {"label": "Info", "reasons": []}, e.get("remediation") or {}
+        return f"[{v['label']}] {e['headline']}\n" + _lines(
+            ("Identifiers", ", ".join(e.get("identifiers") or [])), ("Affected", e.get("target")),
+            ("Priority", f"{v['label']}: {'; '.join(v['reasons'])}" if v["reasons"] else v["label"]),
+            ("Patch by", f"{e['kev_due_date']} (CISA KEV)" if e.get("kev_due_date") else None),
+            ("Do this", e.get("action")), ("Fixed versions", rm.get("fixed_versions")),
+            ("Until patched", "; ".join(rm.get("compensating_controls") or [])), ("Verify", rm.get("verify")),
+            ("Hunt", e.get("hunt")), ("Source", e.get("primary_source")),
+            ("Watchfloor", f"{base}/brief/{run_date}/#item-{e['rank']}"))
+
+    def ticket_cve(rec: dict) -> str:
+        v, ev = PRI.for_cve(rec, _ransom), rec.get("events") or {}
+        aff = affected_for([rec["cve"]], rec.get("title", ""))
+        return f"[{v['label']}] {rec['cve']}: {rec.get('title', '')}\n" + _lines(
+            ("Affected", ", ".join(a.get("product") or a["label"] for a in aff)),
+            ("Priority", f"{v['label']}: {'; '.join(v['reasons'])}" if v["reasons"] else v["label"]),
+            ("Patch by", f"{(ev.get('kev_added') or {}).get('due')} (CISA KEV)" if (ev.get("kev_added") or {}).get("due") else None),
+            ("Vendor advisory", (ev.get("vendor_advisory") or {}).get("url")),
+            ("Public detections", ", ".join(d["url"] for d in rec.get("detections") or [])),
+            ("Watchfloor", f"{base}/cve/{rec['cve']}/"))
+    E.globals["ticket_item"] = ticket_item
+    E.globals["ticket_cve"] = ticket_cve
+
     sitemap: list[tuple[str, str | None]] = []
 
     def page(tpl: str, path: str, page_key: str, lastmod: str | None = None, **ctx):
@@ -349,7 +432,8 @@ def build(out: Path) -> None:
     perf = json.loads((DATA / "perf.json").read_text()) if (DATA / "perf.json").exists() else None
     page("status.html", "status/", "status/", perf=perf)
     topics = topic_feeds(briefs, watch, cfg.get("stack_watchlist", []), base)
-    page("feeds.html", "feeds/", "feeds/", topics=topics)
+    extra = category_feeds(briefs, watch, base, affected_for, PRI, _ransom)
+    page("feeds.html", "feeds/", "feeds/", topics=topics, cat_feeds=extra)
     months = [json.loads(f.read_text()) for f in sorted((DATA / "trends").glob("*.json"), reverse=True)] \
         if (DATA / "trends").exists() else []
     page("trends_index.html", "trends/", "trends/", months=months)
@@ -379,6 +463,8 @@ def build(out: Path) -> None:
     (out / "feed.xml").write_text(rss(briefs, p, base))
     (out / "feeds").mkdir(exist_ok=True)
     for slug, t in topics.items():
+        (out / "feeds" / f"{slug}.xml").write_text(topic_rss(t, slug, p, base))
+    for slug, t in extra.items():
         (out / "feeds" / f"{slug}.xml").write_text(topic_rss(t, slug, p, base))
     robots = "User-agent: *\nAllow: /\n" + (f"Sitemap: {base}/sitemap.xml\n" if base else "")
     (out / "robots.txt").write_text(robots)

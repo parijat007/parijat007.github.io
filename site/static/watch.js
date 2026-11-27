@@ -1,10 +1,12 @@
-// Filter the watch table by type and by what is affected. No network calls, no storage.
+// Filter the watch table by type, priority, what is affected and the reader's stack. No network calls.
 (() => {
-  let type = "all", cat = "";
+  let type = "all", cat = "", prio = "";
   const apply = () => document.querySelectorAll("table.watch tbody tr").forEach((tr) => {
-    const okType = type === "all" || (type === "stack" ? tr.dataset.stack === "yes" : tr.dataset.kind === type);
+    const okType = type === "all" || (type === "stack" ? tr.dataset.stack === "yes"
+      : type === "mine" ? tr.classList.contains("mine") : tr.dataset.kind === type);
     const okCat = !cat || (tr.dataset.cats || "").split(" ").includes(cat);
-    tr.hidden = !(okType && okCat);
+    const okPrio = !prio || tr.dataset.prio === prio;
+    tr.hidden = !(okType && okCat && okPrio);
   });
   document.querySelectorAll(".filters button").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -15,4 +17,7 @@
   });
   const sel = document.querySelector(".filters select[data-cat]");
   if (sel) sel.addEventListener("change", () => { cat = sel.value; apply(); });
+  const ps = document.querySelector(".filters select[data-prio]");
+  if (ps) ps.addEventListener("change", () => { prio = ps.value; apply(); });
+  document.addEventListener("mystack", apply);
 })();

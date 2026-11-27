@@ -1414,3 +1414,35 @@ def test_affected_icons_exist_for_every_category():
         assert f'id="i-{cat}"' in svg, cat
     assert "<script" not in svg and "href=\"http" not in svg
 
+
+
+def test_priority_act_attend_track():
+    from digest import priority as P
+    v = P.verdict(kev=True, kev_due="2026-12-01", ransomware=True)
+    assert v["level"] == "act" and v["ransomware"] and "CISA KEV" in v["reasons"][0]
+    assert P.verdict(ssvc={"exploitation": "active"})["level"] == "act"
+    assert P.verdict(poc=3)["level"] == "attend"
+    assert P.verdict(epss={"score": 0.02, "percentile": 0.97})["level"] == "attend"
+    assert P.verdict(epss={"score": 0.02, "percentile": 0.5})["level"] == "track"
+    assert P.verdict(cvss=9.8, ssvc={"automatable": "yes"})["level"] == "attend"
+    assert P.verdict(cvss=9.8)["level"] == "track"
+    item = {"category": "VULNERABILITY", "exploitation": "EXPLOITED_REPORTED", "risk": {}, "identifiers": ["CVE-2099-1"]}
+    assert P.for_item(item)["level"] == "attend"
+    assert P.for_item({**item, "identifiers": ["CVE-2099-1"], "exploitation": "EXPLOITED_CONFIRMED"}, {"CVE-2099-1"})["ransomware"]
+    assert P.for_item({"category": "GITHUB_REPO", "exploitation": "N/A"}) is None
+    assert P.for_watch({"kind": "KEV", "kev_due": "2026-12-01", "cves": []})["level"] == "act"
+    rec = {"cve": "CVE-2099-2", "events": {"poc_first_seen": {"count": 2}}, "epss": [{"score": 0.01}]}
+    assert P.for_cve(rec)["level"] == "attend"
+
+
+def test_sigma_attack_tags_are_read_not_inferred():
+    from digest import timeline as T
+    body = "tags:\n    - attack.initial-access\n    - attack.t1190\n    - attack.T1059.001\n    - cve.2099-0001\n"
+    assert sorted(t.upper() for t in T.ATTACK_RE.findall(body)) == ["T1059.001", "T1190"]
+
+
+def test_write_ransomware_list(tmp_path):
+    from digest import priority as P
+    kev = {"CVE-1": {"knownRansomwareCampaignUse": "Known"}, "CVE-2": {"knownRansomwareCampaignUse": "Unknown"}}
+    assert P.write_ransomware(kev, tmp_path / "r.json") == 1
+    assert json.loads((tmp_path / "r.json").read_text()) == ["CVE-1"]

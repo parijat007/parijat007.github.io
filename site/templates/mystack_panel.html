@@ -1,0 +1,10 @@
+<details class="mystack" data-mystack>
+  <summary>Set up my stack</summary>
+  <p class="muted">Pick what you run. Matching items are marked on the watch and in every brief. Saved only in this browser; nothing is sent anywhere.</p>
+  <fieldset><legend>Categories</legend>
+    <ul class="mystack-cats">{% for k, v in aff_labels.items() if k != "other" %}<li><label><input type="checkbox" value="{{ k }}" data-ms-cat> {{ v }}</label></li>{% endfor %}</ul>
+  </fieldset>
+  <label class="mystack-words">Vendors or products, comma separated <input type="text" data-ms-words placeholder="fortinet, exchange, citrix" autocomplete="off" spellcheck="false"></label>
+  <p><button type="button" data-ms-save>Save</button> <button type="button" data-ms-clear>Clear</button> <span class="ms-status" role="status" aria-live="polite"></span></p>
+  <p class="muted">Prefer a feed? <a href="{{ root }}feeds/">Feeds by category and priority</a>.</p>
+</details>

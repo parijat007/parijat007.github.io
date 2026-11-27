@@ -1,4 +1,4 @@
-{% extends "base.html" %}{% from "macros.html" import entry, share, comments %}
+{% extends "base.html" %}{% from "macros.html" import entry, share, comments, bottomline %}
 {% block title %}Threat brief, {{ brief.run_date | longdate }} — {{ p.name }}{% endblock %}
 {% block desc %}{{ brief.executive_pulse }}{% endblock %}
 {% block csp_style %}{% if cfg_comments and cfg_comments.category_id %} https://giscus.app{% endif %}{% endblock %}
@@ -10,7 +10,8 @@
   <p class="lede">{{ brief.executive_pulse }}</p>
 </section>
 {{ share(p, 'brief/' ~ brief.run_date ~ '/', 'Threat brief, ' ~ (brief.run_date | longdate)) }}
-{% if brief["items"] %}<h2 class="vh">Ranked items</h2><ol class="entries">{% for e in brief["items"] %}{{ entry(e, p, brief.run_date) }}{% endfor %}</ol>
+{% if brief["items"] %}{{ bottomline(brief["items"], brief.run_date, root) }}
+<h2 class="vh">Ranked items</h2><ol class="entries">{% for e in brief["items"] %}{{ entry(e, p, brief.run_date) }}{% endfor %}</ol>
 {% else %}<p class="empty">Quiet day: nothing met the bar for exploitation or exposure.</p>{% endif %}
 {% if brief.meta %}
 <section class="block prose"><h2>Run details</h2>
@@ -20,4 +21,4 @@
 </section>{% endif %}
 {{ comments(cfg_comments, "brief-" ~ brief.run_date) }}
 {% endblock %}
-{% block scripts %}<script src="{{ root }}static/comments.js" defer></script><script src="{{ root }}static/share.js" defer></script>{% endblock %}
+{% block scripts %}<script src="{{ root }}static/comments.js" defer></script><script src="{{ root }}static/share.js" defer></script><script src="{{ root }}static/mystack.js" defer></script><script src="{{ root }}static/copy.js" defer></script>{% endblock %}
