@@ -411,28 +411,28 @@ h3.sub + .creds + h3.sub { margin-top: 1.4rem; }
 .bars { list-style: none; padding: 0; margin: .5rem 0 0; max-width: 46rem; }
 .bars li { display: grid; grid-template-columns: minmax(9rem, 16rem) 1fr 2.5rem; gap: .75rem; align-items: center; padding: .3rem 0; }
 .bar-label { font-size: .93rem; }
-.bar { height: .65rem; min-width: 2px; background: var(--info); border-radius: 2px; }
-.bar.w0 { width: 0%; }
-.bar.w1 { width: 5%; }
-.bar.w2 { width: 10%; }
-.bar.w3 { width: 15%; }
-.bar.w4 { width: 20%; }
-.bar.w5 { width: 25%; }
-.bar.w6 { width: 30%; }
-.bar.w7 { width: 35%; }
-.bar.w8 { width: 40%; }
-.bar.w9 { width: 45%; }
-.bar.w10 { width: 50%; }
-.bar.w11 { width: 55%; }
-.bar.w12 { width: 60%; }
-.bar.w13 { width: 65%; }
-.bar.w14 { width: 70%; }
-.bar.w15 { width: 75%; }
-.bar.w16 { width: 80%; }
-.bar.w17 { width: 85%; }
-.bar.w18 { width: 90%; }
-.bar.w19 { width: 95%; }
-.bar.w20 { width: 100%; }
+.hbar { height: .65rem; min-width: 2px; background: var(--info); border-radius: 2px; }
+.hbar.w0 { width: 0%; }
+.hbar.w1 { width: 5%; }
+.hbar.w2 { width: 10%; }
+.hbar.w3 { width: 15%; }
+.hbar.w4 { width: 20%; }
+.hbar.w5 { width: 25%; }
+.hbar.w6 { width: 30%; }
+.hbar.w7 { width: 35%; }
+.hbar.w8 { width: 40%; }
+.hbar.w9 { width: 45%; }
+.hbar.w10 { width: 50%; }
+.hbar.w11 { width: 55%; }
+.hbar.w12 { width: 60%; }
+.hbar.w13 { width: 65%; }
+.hbar.w14 { width: 70%; }
+.hbar.w15 { width: 75%; }
+.hbar.w16 { width: 80%; }
+.hbar.w17 { width: 85%; }
+.hbar.w18 { width: 90%; }
+.hbar.w19 { width: 95%; }
+.hbar.w20 { width: 100%; }
 .bar-n { font-variant-numeric: tabular-nums; text-align: right; }
 .muted { color: var(--muted); }
 /* Anatomy of a bug */
