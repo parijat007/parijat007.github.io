@@ -96,6 +96,11 @@ llm:
       max_output_tokens: 8000
       extra_body: {reasoning: {effort: low, exclude: true}}   # free routed models may "think" first
       timeout_seconds: 180
+# Second-model checks (brief verification and the LinkedIn judge) use only these, first one with a key that is not
+# the writer. Z.ai is left out: in the 27 Nov self-test it failed a correct, revised draft (too strict to judge).
+verify:
+  chain: [local, gemini, groq, cloudflare, openrouter]
+
 site:
   url: "https://theparijat.com"
 
