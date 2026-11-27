@@ -1,0 +1,249 @@
+{
+ "run_date": "2026-11-27",
+ "quiet_day": false,
+ "executive_pulse": "Active campaigns target enterprise identity controls via Okta phishing and North Korean supply-chain poisoning across open-source repositories, while newly disclosed RCE flaws affect llama.cpp and Budibase platforms.",
+ "items": [
+  {
+   "rank": 1,
+   "headline": "GoodGuys Phishing Campaign Impersonates Brands to Target Corporate Okta and Google Logins",
+   "category": "ACTIVE_ATTACK",
+   "severity": "HIGH",
+   "exploitation": "EXPLOITED_REPORTED",
+   "is_update": false,
+   "stack_match": [
+    "Okta"
+   ],
+   "target": "Corporate identity infrastructure / Okta / Google Workspace",
+   "identifiers": [
+    "T1566.002",
+    "T1078"
+   ],
+   "kev_due_date": null,
+   "summary": "Ongoing phishing campaign 'GoodGuys' impersonates major brands like Google, Nvidia, and SpaceX using fake webinar and expert interview invitations to capture corporate Google and Okta credentials.",
+   "action": "Enforce strict phishing-resistant FIDO2/WebAuthn MFA across Okta and Google accounts and audit recent single sign-in logs for anomalous device authorizations.",
+   "hunt": "Okta System Log: DebugContext.LogData.ClientIPHost from novel geographic locations combined with prompt authentication requests from external referral domains.",
+   "fixed_versions": null,
+   "confidence": "MEDIUM",
+   "primary_source": "https://www.bleepingcomputer.com/news/apple/fake-paid-expert-interviews-impersonate-brands-to-steal-google-logins/",
+   "corroborating_sources": [],
+   "source_tiers": [
+    "press"
+   ],
+   "remediation": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching",
+    "fixed_versions": null
+   },
+   "risk": null
+  },
+  {
+   "rank": 2,
+   "headline": "PolinRider Campaign Poisons Over 7,600 GitHub Repositories to Deliver Malware",
+   "category": "SUPPLY_CHAIN",
+   "severity": "HIGH",
+   "exploitation": "EXPLOITED_REPORTED",
+   "is_update": false,
+   "stack_match": [],
+   "target": "Python open-source ecosystem / GitHub repositories",
+   "identifiers": [
+    "T1195.001"
+   ],
+   "kev_due_date": null,
+   "summary": "North Korea-linked threat actors behind PolinRider are planting malicious Python loaders in repository files like conftest.py or utility packages across 7,600+ GitHub repositories to infect developer environments.",
+   "action": "Implement strict dependency pin verification and scan local clone environments/CI scripts for unauthorized obfuscated code imports in conftest.py.",
+   "hunt": "GitHub Actions workflow logs: Execution of unrecognized inline Python loader scripts or suspicious outbound transactions during test suites.",
+   "fixed_versions": null,
+   "confidence": "LOW",
+   "primary_source": "https://thehackernews.com/2026/11/north-korea-linked-polinrider-poisons.html",
+   "corroborating_sources": [],
+   "source_tiers": [
+    "press"
+   ],
+   "remediation": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching",
+    "fixed_versions": null
+   },
+   "risk": null,
+   "verify_flags": 2
+  },
+  {
+   "rank": 3,
+   "headline": "CVE-2026-137567: Heap Out-of-Bounds Write in llama.cpp GGML RPC Server Leads to RCE",
+   "category": "AI_THREAT",
+   "severity": "CRITICAL",
+   "exploitation": "NO_KNOWN_EXPLOIT",
+   "is_update": false,
+   "stack_match": [
+    "LLM"
+   ],
+   "target": "llama.cpp / GGML RPC server / b11450 to before b12658",
+   "identifiers": [
+    "CVE-2026-137567",
+    "CWE-787"
+   ],
+   "kev_due_date": null,
+   "summary": "An out-of-bounds write in the ggml RPC server of llama.cpp allows unauthenticated remote attackers to manipulate memory base addresses via zero-element destination tensors and execute code.",
+   "action": "Upgrade llama.cpp to version b12658 or later and restrict RPC server network listener exposure.",
+   "hunt": null,
+   "fixed_versions": null,
+   "confidence": "HIGH",
+   "primary_source": "https://nvd.nist.gov/vuln/detail/CVE-2026-137567",
+   "corroborating_sources": [],
+   "source_tiers": [
+    "authority"
+   ],
+   "remediation": {
+    "weakness": "Memory corruption",
+    "compensating_controls": [
+     "Remove internet exposure of the affected service until patched",
+     "Enable platform exploit mitigations and restart the service after patching"
+    ],
+    "verify": "Monitor for crashes or unexpected restarts of the affected service",
+    "fixed_versions": null
+   },
+   "risk": null
+  },
+  {
+   "rank": 4,
+   "headline": "CVE-2026-137498 & CVE-2026-137499: Critical Flaws in Budibase Server Enable Filter Erasure and ATO",
+   "category": "VULNERABILITY",
+   "severity": "CRITICAL",
+   "exploitation": "NO_KNOWN_EXPLOIT",
+   "is_update": false,
+   "stack_match": [],
+   "target": "Budibase Server / 3.39.18 before 4.0.0, 3.41.0 before 4.0.0",
+   "identifiers": [
+    "CVE-2026-137498",
+    "CVE-2026-137499",
+    "CWE-943",
+    "CWE-287"
+   ],
+   "kev_due_date": null,
+   "summary": "Budibase Server contains a prototype pollution issue allowing unauthenticated erasure of MongoDB query filters, alongside an unverified-email OIDC/SSO account linking vulnerability allowing global account takeovers.",
+   "action": "Upgrade Budibase Server to version 4.0.0 or later.",
+   "hunt": "Budibase access logs: Requests to query execution endpoints containing '__proto__' keys or incoming OIDC callback payloads with 'email_verified: false'.",
+   "fixed_versions": "4.0.0",
+   "confidence": "HIGH",
+   "primary_source": "https://nvd.nist.gov/vuln/detail/CVE-2026-137498",
+   "corroborating_sources": [
+    "https://nvd.nist.gov/vuln/detail/CVE-2026-137499"
+   ],
+   "source_tiers": [
+    "authority"
+   ],
+   "remediation": {
+    "weakness": "Authentication bypass",
+    "compensating_controls": [
+     "Restrict management and admin interfaces to a dedicated admin network or VPN; block them from the internet",
+     "Require phishing-resistant MFA for administrative access where the product supports it",
+     "Rotate admin credentials and API keys, and remove unknown admin accounts"
+    ],
+    "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event",
+    "fixed_versions": "4.0.0"
+   },
+   "risk": null
+  },
+  {
+   "rank": 5,
+   "headline": "ThreatDefence/agentic-attack-detections: Detection Rules for Agentic AI Attack Frameworks",
+   "category": "GITHUB_REPO",
+   "severity": "INFO",
+   "exploitation": "N/A",
+   "is_update": false,
+   "stack_match": [
+    "Splunk",
+    "LLM"
+   ],
+   "target": "Detection Engineering / AI Agent Security / SIEM Detections",
+   "identifiers": [
+    "ThreatDefence/agentic-attack-detections"
+   ],
+   "kev_due_date": null,
+   "summary": "Repository providing Sigma, KQL, Splunk, Suricata, and YARA detection rules targeting agentic AI attack frameworks such as ARTEX, PentAGI, HexStrike, and Agent Zero.",
+   "action": "Evaluate detection rules in a staging SIEM environment against LLM/Agent execution telemetry.",
+   "hunt": null,
+   "fixed_versions": null,
+   "confidence": "HIGH",
+   "primary_source": "https://github.com/ThreatDefence/agentic-attack-detections",
+   "corroborating_sources": [],
+   "source_tiers": [
+    "data"
+   ],
+   "risk": null
+  }
+ ],
+ "notes": "",
+ "meta": {
+  "generated_at": "2026-11-27T10:45:05+00:00",
+  "mode": "analyst",
+  "prompt_version": "v2.1",
+  "model": "Gemini Flash (free tier)",
+  "provider": "gemini",
+  "window_start": "2026-11-26 04:45 UTC",
+  "window_end": "2026-11-27 10:45 UTC",
+  "items_screened": 40,
+  "dropped": [
+   "fixed version not in source text, removed: CVE-2026-137567: Heap Out-of-Bounds Write in llama"
+  ],
+  "sources": {
+   "CISA KEV": "ok (0 new)",
+   "NVD": "ok (16)",
+   "GitHub Advisory": "ok (0)",
+   "GitHub": "ok (7)",
+   "CISA Advisories": "ok (0)",
+   "Microsoft MSRC": "ok (1)",
+   "Microsoft Security": "ok (0)",
+   "Palo Alto PSIRT": "ok (0)",
+   "Fortinet PSIRT": "ok (0)",
+   "Cisco PSIRT": "ok (0)",
+   "AWS Security Bulletins": "ok (0)",
+   "Unit 42": "ok (0)",
+   "Google Threat Intel": "ok (0)",
+   "BleepingComputer": "ok (9)",
+   "The Hacker News": "ok (8)",
+   "SecurityWeek": "ok (8)",
+   "The Record": "ok (1)",
+   "Krebs on Security": "ok (0)"
+  },
+  "verification": {
+   "verifier": "gpt-oss-120b (Groq free tier)",
+   "status": "checked",
+   "items": 5,
+   "flagged": [
+    {
+     "rank": 2,
+     "headline": "PolinRider Campaign Poisons Over 7,600 GitHub Repositories to Deliver Malware",
+     "unsupported": [
+      "over 7,600 GitHub repositories",
+      "to infect developer environments"
+     ]
+    }
+   ]
+  },
+  "perf": {
+   "collect_s": 25.4,
+   "llm_s": 85.1,
+   "total_s": 110.5,
+   "attempts": [
+    {
+     "provider": "gemini",
+     "model": "gemini-3.6-flash",
+     "attempt": 1,
+     "seconds": 83.8,
+     "ok": true
+    }
+   ],
+   "runner": "mac",
+   "schedule_delay_min": null
+  }
+ }
+}
