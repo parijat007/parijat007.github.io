@@ -30,7 +30,6 @@ jobs:
       pull-requests: write     # open the PR
       issues: write            # "could not fix" issue, once per failure
       actions: read            # read the failed run's logs
-      models: read             # GitHub Models (free OpenAI models) as a fallback
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with: { ref: "${{ inputs.ref || 'main' }}", persist-credentials: false }   # the token is used only for the final push
@@ -44,10 +43,11 @@ jobs:
           GITHUB_TOKEN:       ${{ secrets.GITHUB_TOKEN }}
           RUN_ID:             ${{ inputs.run_id || github.event.workflow_run.id }}
           DRY:                ${{ (inputs.dry_run || (inputs.ref && inputs.ref != 'main')) && '1' || '' }}
-          WF_LLM_CHAIN:       gemini,groq,openrouter,cloudflare
+          WF_LLM_CHAIN:       gemini,groq,zai,openrouter,cloudflare
           GEMINI_API_KEY:     ${{ secrets.GEMINI_API_KEY }}
           GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          ZAI_API_KEY:        ${{ secrets.ZAI_API_KEY }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN:  ${{ secrets.CLOUDFLARE_API_TOKEN }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}

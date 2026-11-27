@@ -9,7 +9,7 @@ max_items_to_llm: 40        # pre-ranked cap on items sent to the model (token c
 # Analyst model chain. First provider that answers wins; if all fail, a facts-only brief is published.
 # On the Mac: local -> gemini -> groq -> openrouter.  In GitHub Actions: WF_LLM_CHAIN=gemini,groq,openrouter
 llm:
-  chain: [local, gemini, groq, cloudflare, openrouter]
+  chain: [local, gemini, groq, cloudflare, zai, openrouter]
   providers:
     local:          # llama.cpp llama-server on the M1 Max. $0, nothing leaves the machine.
       base_url: http://127.0.0.1:8080/v1
@@ -36,21 +36,30 @@ llm:
       max_items: 40
       max_text_chars: 400
       timeout_seconds: 75         # per model; a healthy Gemini Flash answers in ~15 s
-    github:         # NOT IN ANY CHAIN YET: from Actions the endpoint answered a bare "OK" (27 Nov), cause unknown.
-                    # GitHub Models: OpenAI GPT models, free and rate-limited, through your GitHub account. In Actions the
-                    # built-in token works (job permission models: read); on the Mac it is optional (Keychain
-                    # github-models-token, a fine-grained token with only "Models: read"). Small request limits:
-                    # keep inputs short.
-      base_url: https://models.github.ai/inference
-      models: [openai/gpt-4.1, openai/gpt-4.1-mini, openai/gpt-4o-mini]
-      label: GitHub Models (OpenAI, free tier)
-      headers: {Accept: application/vnd.github+json, X-GitHub-Api-Version: "2022-11-28"}   # without these: "OK" in plain text
-      api_key_env: [GITHUB_MODELS_TOKEN, GITHUB_TOKEN]
+    ovh:            # NOT IN ANY CHAIN: anonymous OVHcloud answers short requests but returns HTTP 429 for brief-sized
+                    # ones (27 Nov self-test, even after waiting). A key (400/min) needs an OVHcloud Public Cloud project.
+                    # OVHcloud AI Endpoints (EU), states no training on inputs.
+      base_url: https://oai.endpoints.kepler.ai.cloud.ovh.net/v1
+      models: [gpt-oss-120b, Qwen3.5-397B-A17B, Mistral-Small-3.2-24B-Instruct-2506, Olala-v1.0-summarise]
+      label: OVHcloud AI Endpoints (anonymous)
+      wait_on_429: 35          # the limit is per minute: wait it out once per model instead of failing over
       json: object
-      max_items: 15
-      max_text_chars: 250
-      max_output_tokens: 3500
+      max_items: 20
+      max_text_chars: 300
+      max_output_tokens: 4000
       timeout_seconds: 120
+    zai:            # Z.ai (Zhipu) GLM Flash models, listed free. Key: z.ai -> API keys (Keychain zai-apikey,
+                    # GitHub secret ZAI_API_KEY). Rate limits are not published.
+      base_url: https://api.z.ai/api/paas/v4
+      models: [glm-4.7-flash, glm-4.5-flash]
+      label: Z.ai GLM Flash (free)
+      api_key_env: [ZAI_API_KEY]
+      json: object
+      max_items: 30
+      max_text_chars: 300
+      max_output_tokens: 6000
+      extra_body: {thinking: {type: disabled}}   # answer directly; hidden reasoning would eat the output budget
+      timeout_seconds: 150
     groq:           # Groq free tier (no card). Key: console.groq.com/keys. ~8K tokens/min, so a smaller input
       base_url: https://api.groq.com/openai/v1
       models: [openai/gpt-oss-120b]
