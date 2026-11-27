@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-27T01:01:18+00:00",
+ "updated": "2026-11-27T01:20:23+00:00",
  "sources": {
   "CISA KEV": "ok",
   "GitHub Advisory": "ok",
@@ -40,8 +40,9 @@
    },
    "affected": [
     {
-     "category": "web",
-     "label": "Web & app server"
+     "category": "dev",
+     "label": "Code & CI/CD",
+     "product": "tastyigniter/tastyigniter"
     }
    ]
   },
@@ -75,8 +76,9 @@
    },
    "affected": [
     {
-     "category": "web",
-     "label": "Web & app server"
+     "category": "dev",
+     "label": "Code & CI/CD",
+     "product": "tastyigniter/tastyigniter"
     }
    ]
   },
@@ -736,8 +738,9 @@
    },
    "affected": [
     {
-     "category": "other",
-     "label": "Other"
+     "category": "dev",
+     "label": "Code & CI/CD",
+     "product": "@waline/client"
     }
    ]
   },
