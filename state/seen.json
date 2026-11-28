@@ -1,4 +1,5 @@
 {
+ "4HTTP2SHELL": "2026-11-28",
  "CVE-2025-41450": "2026-11-26",
  "CVE-2025-42884": "2026-11-23",
  "CVE-2026-103406": "2026-11-26",
@@ -82,9 +83,11 @@
  "https://thehackernews.com/2026/11/hackers-exploit-critical-vmware-cisco.html": "2026-11-22",
  "https://thehackernews.com/2026/11/north-korea-linked-polinrider-poisons.html": "2026-11-27",
  "https://thehackernews.com/2026/11/openrouter-drops-3-providers-after.html": "2026-11-22",
+ "https://thehackernews.com/2026/11/suspected-vietnam-linked-hackers-target.html": "2026-11-28",
  "https://www.bleepingcomputer.com/news/apple/fake-paid-expert-interviews-impersonate-brands-to-steal-google-logins/": "2026-11-27",
  "https://www.bleepingcomputer.com/news/security/microsoft-azure-flaw-exploited-to-steal-customers-api-credentials/": "2026-11-24",
  "https://www.bleepingcomputer.com/news/security/rackspace-spot-breach-let-hackers-access-customer-kubernetes-secrets/": "2026-11-22",
+ "https://www.bleepingcomputer.com/news/security/unpatched-cacti-zero-day-with-public-poc-gives-remote-code-execution/": "2026-11-28",
  "https://www.cisa.gov/news-events/alerts/2026/11/23/cisa-adds-two-known-exploited-vulnerabilities-catalog": "2026-11-24",
  "https://www.cisa.gov/news-events/alerts/2026/11/24/cisa-adds-three-known-exploited-vulnerabilities-catalog": "2026-11-25",
  "https://www.cisa.gov/news-events/alerts/2026/11/25/cisa-adds-10-known-exploited-vulnerabilities-catalog": "2026-11-26",
