@@ -3001,7 +3001,9 @@
     }
    },
    "epss": [],
-   "briefs": [],
+   "briefs": [
+    "2026-11-28"
+   ],
    "detections": [],
    "title": "OSGeo GeoServer XML Injection Vulnerability"
   },
@@ -3033,7 +3035,9 @@
     }
    },
    "epss": [],
-   "briefs": [],
+   "briefs": [
+    "2026-11-28"
+   ],
    "detections": [
     {
      "kind": "Nuclei",
@@ -3080,11 +3084,31 @@
      "score": 0.0121
     }
    ],
-   "briefs": [],
+   "briefs": [
+    "2026-11-28"
+   ],
    "detections": [],
    "title": "Drupal Core Improper Check for Unusual or Exceptional Conditions Vulnerability"
+  },
+  "CVE-2026-137964": {
+   "cve": "CVE-2026-137964",
+   "events": {
+    "watchfloor_first": {
+     "date": "2026-11-28"
+    },
+    "published": {
+     "date": "2026-11-27",
+     "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-137964"
+    }
+   },
+   "epss": [],
+   "briefs": [
+    "2026-11-28"
+   ],
+   "detections": [],
+   "title": "ToolJet Release Workflow Pull Request Title Command Injection"
   }
  },
  "detections_checked": "2026-11-28",
- "updated": "2026-11-28T11:20:25+00:00"
+ "updated": "2026-11-28T12:20:22+00:00"
 }
