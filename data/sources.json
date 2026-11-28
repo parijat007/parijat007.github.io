@@ -1,76 +1,76 @@
 {
  "status": {
   "CISA KEV": {
-   "status": "ok (0 new)",
-   "checked": "2026-11-27 10:45 UTC"
+   "status": "ok (3 new)",
+   "checked": "2026-11-28 11:25 UTC"
   },
   "NVD": {
-   "status": "ok (16)",
-   "checked": "2026-11-27 10:45 UTC"
+   "status": "ok (4)",
+   "checked": "2026-11-28 11:25 UTC"
   },
   "GitHub Advisory": {
    "status": "ok (0)",
-   "checked": "2026-11-27 10:45 UTC"
+   "checked": "2026-11-28 11:25 UTC"
   },
   "GitHub": {
    "status": "ok (7)",
-   "checked": "2026-11-27 10:45 UTC"
+   "checked": "2026-11-28 11:25 UTC"
   },
   "CISA Advisories": {
-   "status": "ok (0)",
-   "checked": "2026-11-27 10:45 UTC"
+   "status": "ok (1)",
+   "checked": "2026-11-28 11:25 UTC"
   },
   "Microsoft MSRC": {
    "status": "ok (1)",
-   "checked": "2026-11-27 10:45 UTC"
+   "checked": "2026-11-28 11:25 UTC"
   },
   "Microsoft Security": {
    "status": "ok (0)",
-   "checked": "2026-11-27 10:45 UTC"
+   "checked": "2026-11-28 11:25 UTC"
   },
   "Palo Alto PSIRT": {
    "status": "ok (0)",
-   "checked": "2026-11-27 10:45 UTC"
+   "checked": "2026-11-28 11:25 UTC"
   },
   "Fortinet PSIRT": {
    "status": "ok (0)",
-   "checked": "2026-11-27 10:45 UTC"
+   "checked": "2026-11-28 11:25 UTC"
   },
   "Cisco PSIRT": {
-   "status": "ok (0)",
-   "checked": "2026-11-27 10:45 UTC"
+   "status": "ok (1)",
+   "checked": "2026-11-28 11:25 UTC"
   },
   "AWS Security Bulletins": {
    "status": "ok (0)",
-   "checked": "2026-11-27 10:45 UTC"
+   "checked": "2026-11-28 11:25 UTC"
   },
   "Unit 42": {
    "status": "ok (0)",
-   "checked": "2026-11-27 10:45 UTC"
+   "checked": "2026-11-28 11:25 UTC"
   },
   "Google Threat Intel": {
    "status": "ok (0)",
-   "checked": "2026-11-27 10:45 UTC"
+   "checked": "2026-11-28 11:25 UTC"
   },
   "BleepingComputer": {
-   "status": "ok (9)",
-   "checked": "2026-11-27 10:45 UTC"
+   "status": "ok (11)",
+   "checked": "2026-11-28 11:25 UTC"
   },
   "The Hacker News": {
-   "status": "ok (8)",
-   "checked": "2026-11-27 10:45 UTC"
+   "status": "ok (7)",
+   "checked": "2026-11-28 11:25 UTC"
   },
   "SecurityWeek": {
-   "status": "ok (8)",
-   "checked": "2026-11-27 10:45 UTC"
+   "status": "ok (4)",
+   "checked": "2026-11-28 11:25 UTC"
   },
   "The Record": {
-   "status": "ok (1)",
-   "checked": "2026-11-27 10:45 UTC"
+   "status": "ok (2)",
+   "checked": "2026-11-28 11:25 UTC"
   },
   "Krebs on Security": {
    "status": "ok (0)",
-   "checked": "2026-11-27 10:45 UTC"
+   "checked": "2026-11-28 11:25 UTC"
   }
  }
 }

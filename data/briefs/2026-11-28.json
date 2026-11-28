@@ -1,0 +1,254 @@
+{
+ "run_date": "2026-11-28",
+ "quiet_day": false,
+ "executive_pulse": "CISA added OSGeo GeoServer and Drupal Core vulnerabilities to the KEV catalog following active exploitation reports. Supply chain and AI detection tools continue to see active updates.",
+ "items": [
+  {
+   "rank": 1,
+   "headline": "CISA Adds OSGeo GeoServer Flaws to KEV Catalog Following In-the-Wild Exploitation",
+   "category": "ACTIVE_ATTACK",
+   "severity": "HIGH",
+   "exploitation": "EXPLOITED_CONFIRMED",
+   "is_update": false,
+   "stack_match": [],
+   "target": "OSGeo GeoServer",
+   "identifiers": [
+    "CVE-2026-120705",
+    "CVE-2026-129243"
+   ],
+   "kev_due_date": "2026-11-30",
+   "summary": "CISA added CVE-2026-120705 (XML injection/SSRF via GetFeatureById) and CVE-2026-129243 (authorization bypass via prefixed service parameters) to KEV. The flaws can be chained with additional vulnerabilities to achieve unauthenticated remote code execution.",
+   "action": "Prioritize patching OSGeo GeoServer installations or restricting public interface access in accordance with CISA BOD 26-04.",
+   "hunt": null,
+   "fixed_versions": null,
+   "confidence": "HIGH",
+   "primary_source": "https://www.cisa.gov/news-events/alerts/2026/11/27/cisa-adds-three-known-exploited-vulnerabilities-catalog",
+   "corroborating_sources": [
+    "https://nvd.nist.gov/vuln/detail/CVE-2026-120705",
+    "https://nvd.nist.gov/vuln/detail/CVE-2026-129243"
+   ],
+   "source_tiers": [
+    "authority"
+   ],
+   "remediation": {
+    "weakness": "Authentication bypass",
+    "compensating_controls": [
+     "Restrict management and admin interfaces to a dedicated admin network or VPN; block them from the internet",
+     "Require phishing-resistant MFA for administrative access where the product supports it",
+     "Rotate admin credentials and API keys, and remove unknown admin accounts"
+    ],
+    "verify": "Review admin and auth logs since the disclosure date for logins without a matching MFA or SSO event",
+    "fixed_versions": null
+   },
+   "risk": {
+    "kev": true,
+    "epss": {
+     "score": 0.0121,
+     "percentile": 0.684
+    },
+    "ssvc": {
+     "exploitation": "active",
+     "automatable": "yes",
+     "technical_impact": "total"
+    }
+   }
+  },
+  {
+   "rank": 2,
+   "headline": "CISA KEV Addition: Unauthenticated Site Takeover in Incomplete Drupal Installations",
+   "category": "ACTIVE_ATTACK",
+   "severity": "HIGH",
+   "exploitation": "EXPLOITED_CONFIRMED",
+   "is_update": false,
+   "stack_match": [],
+   "target": "Drupal Core",
+   "identifiers": [
+    "CVE-2026-136716",
+    "CWE-754"
+   ],
+   "kev_due_date": "2026-11-30",
+   "summary": "CVE-2026-136716 permits unauthenticated remote attackers to take over sites exposed during unusual or incomplete installation states due to improper condition checks in Drupal Core.",
+   "action": "Ensure Drupal installations are complete and remove exposed installer files or restrict access to setup paths.",
+   "hunt": "Web server logs: unauthenticated HTTP requests targeting the Drupal installer endpoints (e.g., core/install.php).",
+   "fixed_versions": null,
+   "confidence": "HIGH",
+   "primary_source": "https://www.cisa.gov/news-events/alerts/2026/11/27/cisa-adds-three-known-exploited-vulnerabilities-catalog",
+   "corroborating_sources": [
+    "https://nvd.nist.gov/vuln/detail/CVE-2026-136716",
+    "https://www.bleepingcomputer.com/news/security/drupal-warns-of-new-access-bypass-flaw-exploited-in-attacks/"
+   ],
+   "source_tiers": [
+    "authority",
+    "press"
+   ],
+   "remediation": {
+    "weakness": "Vulnerability",
+    "compensating_controls": [
+     "Reduce exposure: remove internet access to the affected service or interface until patched",
+     "Apply vendor-provided mitigations or IPS/WAF signatures where published"
+    ],
+    "verify": "Confirm the installed version on every instance after patching",
+    "fixed_versions": null
+   },
+   "risk": {
+    "kev": true,
+    "epss": {
+     "score": 0.0121,
+     "percentile": 0.684
+    },
+    "ssvc": {
+     "exploitation": "active",
+     "automatable": "yes",
+     "technical_impact": "total"
+    }
+   }
+  },
+  {
+   "rank": 3,
+   "headline": "ToolJet Release Workflow Pull Request Title Command Injection",
+   "category": "SUPPLY_CHAIN",
+   "severity": "CRITICAL",
+   "exploitation": "NO_KNOWN_EXPLOIT",
+   "is_update": false,
+   "stack_match": [
+    "GitHub Actions"
+   ],
+   "target": "ToolJet < 3.21.96-LTS",
+   "identifiers": [
+    "CVE-2026-137964",
+    "CWE-94"
+   ],
+   "kev_due_date": null,
+   "summary": "ToolJet GitHub Actions release workflow directly interpolates PR titles into shell run blocks. Merging a crafted PR title allows command execution using a cross-repository GITHUB_TOKEN.",
+   "action": "Update ToolJet to version 3.21.96-LTS or later and audit GitHub Actions workflows for untrusted script evaluations.",
+   "hunt": "GitHub Audit Logs: workflow run triggers on release branches associated with pull requests containing shell metacharacters in titles.",
+   "fixed_versions": "3.21.96-LTS",
+   "confidence": "HIGH",
+   "primary_source": "https://nvd.nist.gov/vuln/detail/CVE-2026-137964",
+   "corroborating_sources": [],
+   "source_tiers": [
+    "authority"
+   ],
+   "remediation": {
+    "weakness": "Command or code injection",
+    "compensating_controls": [
+     "Remove internet exposure of the affected interface until patched",
+     "Apply WAF or IPS signatures from your vendor for the CVE, in blocking mode",
+     "Run the service as a non-privileged user and restrict outbound connections"
+    ],
+    "verify": "Hunt for shells or scripting engines spawned by the affected service, and new scheduled tasks or cron entries",
+    "fixed_versions": "3.21.96-LTS"
+   },
+   "risk": null
+  },
+  {
+   "rank": 4,
+   "headline": "ThreatDefence/agentic-attack-detections: Detection Content for AI Agent Attack Frameworks",
+   "category": "GITHUB_REPO",
+   "severity": "INFO",
+   "exploitation": "N/A",
+   "is_update": false,
+   "stack_match": [
+    "Splunk",
+    "LLM"
+   ],
+   "target": "ThreatDefence / agentic-attack-detections",
+   "identifiers": [
+    "ThreatDefence/agentic-attack-detections"
+   ],
+   "kev_due_date": null,
+   "summary": "Repository providing detection rules (KQL, Sigma, Suricata, Zeek, YARA, Splunk) and IOCs for evaluating and detecting AI agent attack frameworks such as ARTEX and Agent Zero.",
+   "action": "Evaluate provided KQL, Splunk, and Sigma detection rules for inclusion in SIEM/XDR detections monitoring AI agent activity.",
+   "hunt": null,
+   "fixed_versions": null,
+   "confidence": "HIGH",
+   "primary_source": "https://github.com/ThreatDefence/agentic-attack-detections",
+   "corroborating_sources": [],
+   "source_tiers": [
+    "data"
+   ],
+   "risk": null
+  },
+  {
+   "rank": 5,
+   "headline": "Root0ne/gguf-radar: Static Analysis and Malware Scanner for GGUF Files",
+   "category": "GITHUB_REPO",
+   "severity": "INFO",
+   "exploitation": "N/A",
+   "is_update": false,
+   "stack_match": [
+    "LLM"
+   ],
+   "target": "Root0ne / gguf-radar",
+   "identifiers": [
+    "Root0ne/gguf-radar"
+   ],
+   "kev_due_date": null,
+   "summary": "Tool for inspecting LLM model files (GGUF format) for hidden malware and poisoned chat templates without execution, aiding in supply chain security for AI deployments.",
+   "action": "Review the scanner for deployment into automated AI/ML model ingestion pipelines to validate third-party GGUF artifacts.",
+   "hunt": null,
+   "fixed_versions": null,
+   "confidence": "HIGH",
+   "primary_source": "https://github.com/Root0ne/gguf-radar",
+   "corroborating_sources": [],
+   "source_tiers": [
+    "data"
+   ],
+   "risk": null
+  }
+ ],
+ "notes": "",
+ "meta": {
+  "generated_at": "2026-11-28T11:25:15+00:00",
+  "mode": "analyst",
+  "prompt_version": "v2.1",
+  "model": "Gemini Flash (free tier)",
+  "provider": "gemini",
+  "window_start": "2026-11-27 05:25 UTC",
+  "window_end": "2026-11-28 11:25 UTC",
+  "items_screened": 40,
+  "dropped": [],
+  "sources": {
+   "CISA KEV": "ok (3 new)",
+   "NVD": "ok (4)",
+   "GitHub Advisory": "ok (0)",
+   "GitHub": "ok (7)",
+   "CISA Advisories": "ok (1)",
+   "Microsoft MSRC": "ok (1)",
+   "Microsoft Security": "ok (0)",
+   "Palo Alto PSIRT": "ok (0)",
+   "Fortinet PSIRT": "ok (0)",
+   "Cisco PSIRT": "ok (1)",
+   "AWS Security Bulletins": "ok (0)",
+   "Unit 42": "ok (0)",
+   "Google Threat Intel": "ok (0)",
+   "BleepingComputer": "ok (11)",
+   "The Hacker News": "ok (7)",
+   "SecurityWeek": "ok (4)",
+   "The Record": "ok (2)",
+   "Krebs on Security": "ok (0)"
+  },
+  "verification": {
+   "verifier": "gpt-oss-120b (Groq free tier)",
+   "status": "checked",
+   "items": 5,
+   "flagged": []
+  },
+  "perf": {
+   "collect_s": 14.7,
+   "llm_s": 14.4,
+   "total_s": 29.0,
+   "attempts": [
+    {
+     "provider": "gemini",
+     "model": "gemini-3.6-flash",
+     "attempt": 1,
+     "seconds": 13.2,
+     "ok": true
+    }
+   ],
+   "runner": "github",
+   "schedule_delay_min": null
+  }
+ }
+}
