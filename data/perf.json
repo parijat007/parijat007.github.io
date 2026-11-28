@@ -1,18 +1,18 @@
 {
- "updated": "2026-11-27T00:50:49+00:00",
+ "updated": "2026-11-28T00:16:14+00:00",
  "site": {
   "home": {
    "url": "https://theparijat.com/",
    "scores": {
-    "performance": null,
-    "accessibility": null,
-    "best-practices": null,
-    "seo": null
+    "performance": 0.94,
+    "accessibility": 1,
+    "best-practices": 1,
+    "seo": 1
    },
-   "lcp_ms": 0,
+   "lcp_ms": 942,
    "cls": 0,
-   "tbt_ms": 0,
-   "bytes": 0
+   "tbt_ms": 275,
+   "bytes": 164923
   },
   "today": {
    "url": "https://theparijat.com/today/",
@@ -22,68 +22,68 @@
     "best-practices": 1,
     "seo": 1
    },
-   "lcp_ms": 852,
+   "lcp_ms": 905,
    "cls": 0,
-   "tbt_ms": 52,
-   "bytes": 103739
+   "tbt_ms": 0,
+   "bytes": 109787
   },
   "watch": {
    "url": "https://theparijat.com/watch/",
    "scores": {
-    "performance": 0.98,
+    "performance": 1,
     "accessibility": 1,
     "best-practices": 1,
     "seo": 1
    },
    "lcp_ms": 909,
    "cls": 0,
-   "tbt_ms": 176,
-   "bytes": 150978
+   "tbt_ms": 27,
+   "bytes": 160069
   }
  },
  "pipeline": {
   "brief": {
-   "runs": 30,
-   "success_rate": 0.933,
-   "p50_s": 24,
+   "runs": 35,
+   "success_rate": 0.943,
+   "p50_s": 20,
    "max_s": 250,
-   "scheduled_runs": 11,
-   "schedule_delay_p50_min": 510,
+   "scheduled_runs": 14,
+   "schedule_delay_p50_min": 506,
    "schedule_delay_max_min": 644
   },
   "watch": {
    "runs": 100,
-   "success_rate": 0.97,
-   "p50_s": 87,
-   "max_s": 290,
+   "success_rate": 0.92,
+   "p50_s": 148,
+   "max_s": 355,
    "scheduled_runs": 7,
    "schedule_delay_p50_min": 36,
-   "schedule_delay_max_min": 41
+   "schedule_delay_max_min": 48
   },
   "health": {
-   "runs": 92,
-   "success_rate": 0.946,
-   "p50_s": 22,
+   "runs": 100,
+   "success_rate": 0.95,
+   "p50_s": 23,
    "max_s": 219,
-   "scheduled_runs": 8,
-   "schedule_delay_p50_min": 24,
+   "scheduled_runs": 10,
+   "schedule_delay_p50_min": 30,
    "schedule_delay_max_min": 53
   }
  },
  "models": {
-  "briefs": 6,
+  "briefs": 7,
   "written_by": {
-   "gemini": 3,
+   "gemini": 4,
    "local": 2,
    "groq": 1
   },
   "analyst_rate": 1.0,
-  "llm_s_p50": 103,
-  "total_s_p50": 121,
+  "llm_s_p50": 94,
+  "total_s_p50": 116,
   "top_failures": {}
  },
  "alerts": [
-  "Daily brief: 93% of runs succeeded in the last 7 days",
-  "Health check: 95% of runs succeeded in the last 7 days"
+  "Daily brief: 94% of runs succeeded in the last 7 days",
+  "Hourly watch: 92% of runs succeeded in the last 7 days"
  ]
 }

@@ -186,5 +186,52 @@
    }
   },
   "analyst_rate": 1.0
+ },
+ {
+  "date": "2026-11-28",
+  "site": {
+   "home": {
+    "performance": 0.94,
+    "accessibility": 1,
+    "best-practices": 1,
+    "seo": 1,
+    "lcp_ms": 942,
+    "bytes": 164923
+   },
+   "today": {
+    "performance": 1,
+    "accessibility": 1,
+    "best-practices": 1,
+    "seo": 1,
+    "lcp_ms": 905,
+    "bytes": 109787
+   },
+   "watch": {
+    "performance": 1,
+    "accessibility": 1,
+    "best-practices": 1,
+    "seo": 1,
+    "lcp_ms": 909,
+    "bytes": 160069
+   }
+  },
+  "pipeline": {
+   "brief": {
+    "success_rate": 0.943,
+    "p50_s": 20,
+    "delay_max_min": 644
+   },
+   "watch": {
+    "success_rate": 0.92,
+    "p50_s": 148,
+    "delay_max_min": 48
+   },
+   "health": {
+    "success_rate": 0.95,
+    "p50_s": 23,
+    "delay_max_min": 53
+   }
+  },
+  "analyst_rate": 1.0
  }
 ]
